@@ -1,0 +1,254 @@
+<div class="container-fluid">
+  <!-- Tarjetas de resumen -->
+  <div class="row mb-4">
+    <!-- Clientes -->
+    <div class="col-md-3 mb-3">
+      <div class="card dashboard-card h-100">
+        <div class="card-body d-flex align-items-center">
+          <div class="icon-wrapper bg-primary-light p-3 rounded-circle me-3">
+            <i class="fas fa-building fa-lg text-primary"></i>
+          </div>
+          <div>
+            <h6 class="card-subtitle text-muted mb-1">Clientes</h6>
+            <h3 class="card-title mb-0 fw-bold"><%= totalClientes %></h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Solicitudes Pendientes -->
+    <div class="col-md-3 mb-3">
+      <div class="card dashboard-card h-100">
+        <div class="card-body d-flex align-items-center">
+          <div class="icon-wrapper bg-warning-light p-3 rounded-circle me-3">
+            <i class="fas fa-file-alt fa-lg text-warning"></i>
+          </div>
+          <div>
+            <h6 class="card-subtitle text-muted mb-1">Solicitudes Pendientes</h6>
+            <h3 class="card-title mb-0 fw-bold"><%= solicitudesPendientes %></h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visitas Hoy -->
+    <div class="col-md-3 mb-3">
+      <div class="card dashboard-card h-100">
+        <div class="card-body d-flex align-items-center">
+          <div class="icon-wrapper bg-info-light p-3 rounded-circle me-3">
+            <i class="fas fa-calendar-check fa-lg text-info"></i>
+          </div>
+          <div>
+            <h6 class="card-subtitle text-muted mb-1">Visitas Hoy</h6>
+            <h3 class="card-title mb-0 fw-bold"><%= visitasHoy %></h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visitas Completadas -->
+    <div class="col-md-3 mb-3">
+      <div class="card dashboard-card h-100">
+        <div class="card-body d-flex align-items-center">
+          <div class="icon-wrapper bg-success-light p-3 rounded-circle me-3">
+            <i class="fas fa-truck fa-lg text-success"></i>
+          </div>
+          <div>
+            <h6 class="card-subtitle text-muted mb-1">Visitas Completadas</h6>
+            <h3 class="card-title mb-0 fw-bold"><%= typeof solicitudesCompletadas !== 'undefined' ? solicitudesCompletadas : 0 %></h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="row">
+    <!-- Solicitudes por Estado -->
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header bg-white">
+          <h5 class="card-title mb-0">Solicitudes por Estado</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="solicitudesPorEstadoChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Solicitudes por Mes -->
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header bg-white">
+          <h5 class="card-title mb-0">Solicitudes por Mes</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="solicitudesPorMesChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Últimas Solicitudes y Próximas Visitas -->
+  <div class="row">
+    <!-- Últimas Solicitudes -->
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">Últimas Solicitudes</h5>
+          <a href="/solicitudes" class="btn btn-sm btn-outline-primary">Ver todas</a>
+        </div>
+        <div class="card-body p-0">
+          <% if (ultimasSolicitudes && ultimasSolicitudes.length) { %>
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th class="px-3">ID</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th class="text-end pe-3">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% ultimasSolicitudes.forEach(solicitud => { %>
+                    <tr>
+                      <td class="px-3"><%= solicitud.id %></td>
+                      <td><%= solicitud.Cliente?.nombreEmpresa || 'N/A' %></td>
+                      <td><%= new Date(solicitud.fechaSolicitud).toLocaleDateString('es-ES') %></td>
+                      <td>
+                        <% 
+                          let badge = 'secondary';
+                          switch(solicitud.estado) {
+                            case 'pendiente': badge='warning'; break;
+                            case 'cotizada': badge='info'; break;
+                            case 'programada': badge='primary'; break;
+                            case 'completada': badge='success'; break;
+                            case 'cancelada': badge='danger'; break;
+                          }
+                        %>
+                        <span class="badge bg-<%= badge %>"><%= solicitud.estado %></span>
+                      </td>
+                      <td class="text-end pe-3">
+                        <a href="/solicitudes/detalles/<%= solicitud.id %>" class="btn btn-sm btn-outline-secondary">
+                          <i class="fas fa-eye"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="p-4 text-center">
+              <p class="text-muted mb-0">No hay solicitudes recientes</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Próximas Visitas -->
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">Próximas Visitas</h5>
+          <a href="/visitas/calendario" class="btn btn-sm btn-outline-primary">Ver calendario</a>
+        </div>
+        <div class="card-body p-0">
+          <% if (proximasVisitas && proximasVisitas.length) { %>
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th class="px-3">ID</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Operador</th>
+                    <th class="text-end pe-3">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% proximasVisitas.forEach(visita => { %>
+                    <tr>
+                      <td class="px-3"><%= visita.id %></td>
+                      <td><%= visita.SolicitudRetiro?.Cliente?.nombreEmpresa || 'N/A' %></td>
+                      <td>
+                        <%= new Date(visita.fechaProgramada).toLocaleDateString('es-ES') %>
+                        <%= visita.horaInicio?.substring(0,5) || '' %>
+                      </td>
+                      <td><%= visita.Operador?.nombre || 'Sin asignar' %></td>
+                      <td class="text-end pe-3">
+                        <a href="/visitas/detalles/<%= visita.id %>" class="btn btn-sm btn-outline-secondary">
+                          <i class="fas fa-eye"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="p-4 text-center">
+              <p class="text-muted mb-0">No hay visitas programadas próximamente</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts de Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // 1) Solicitudes por Estado (Doughnut)
+  const ctxEstado = document.getElementById('solicitudesPorEstadoChart').getContext('2d');
+  new Chart(ctxEstado, {
+    type: 'doughnut',
+    data: {
+      labels: <%= typeof datosSolicitudesPorEstado !== 'undefined' ? JSON.stringify(datosSolicitudesPorEstado.labels) : '[]' %>,
+      datasets: [{
+        data: <%= typeof datosSolicitudesPorEstado !== 'undefined' ? JSON.stringify(datosSolicitudesPorEstado.data) : '[]' %>,
+        backgroundColor: ['#ffc107', '#17a2b8', '#007bff', '#28a745', '#dc3545'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right' }
+      }
+    }
+  });
+
+  // 2) Solicitudes por Mes (Line)
+  const ctxMes = document.getElementById('solicitudesPorMesChart').getContext('2d');
+  new Chart(ctxMes, {
+    type: 'line',
+    data: {
+      labels: <%= typeof datosSolicitudesPorMes !== 'undefined' ? JSON.stringify(datosSolicitudesPorMes.labels) : '[]' %>,
+      datasets: [{
+        label: 'Solicitudes',
+        data: <%= typeof datosSolicitudesPorMes !== 'undefined' ? JSON.stringify(datosSolicitudesPorMes.data) : '[]' %>,
+        fill: true,
+        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+        borderColor: '#007bff',
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true, ticks: { precision: 0 } }
+      },
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: { mode: 'index', intersect: false }
+      }
+    }
+  });
+</script>

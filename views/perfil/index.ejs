@@ -1,0 +1,100 @@
+<!-- views/perfil/index.ejs -->
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-body text-center">
+          <div class="avatar-circle mb-3">
+            <i class="fas fa-user fa-4x"></i>
+          </div>
+          <h5 class="card-title"><%= perfilUsuario.nombre %></h5>
+          <p class="card-text text-muted">
+            <i class="fas fa-building mr-2"></i> <%= perfilUsuario.empresa || 'No especificada' %>
+          </p>
+          <p class="card-text">
+            <i class="fas fa-envelope mr-2"></i> <%= perfilUsuario.email %>
+          </p>
+          <p class="card-text">
+            <i class="fas fa-phone mr-2"></i> <%= perfilUsuario.telefono || 'No especificado' %>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-8">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title">Actualizar información</h5>
+        </div>
+        <div class="card-body">
+          <form action="/perfil/actualizar" method="POST">
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre completo</label>
+              <input type="text" class="form-control" id="nombre" name="nombre" 
+                value="<%= perfilUsuario.nombre %>" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" 
+                value="<%= perfilUsuario.email %>" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input type="tel" class="form-control" id="telefono" name="telefono" 
+                value="<%= perfilUsuario.telefono || '' %>">
+            </div>
+            
+            <div class="mb-3">
+              <label for="empresa" class="form-label">Empresa</label>
+              <input type="text" class="form-control" id="empresa" name="empresa" 
+                value="<%= perfilUsuario.empresa || '' %>">
+            </div>
+            
+            <div class="mb-3">
+              <label for="direccion" class="form-label">Dirección</label>
+              <textarea class="form-control" id="direccion" name="direccion" rows="2"><%= perfilUsuario.direccion || '' %></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save mr-1"></i> Guardar cambios
+            </button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Cambiar contraseña</h5>
+        </div>
+        <div class="card-body">
+          <form action="/perfil/cambiar-password" method="POST">
+            <div class="mb-3">
+              <label for="password_actual" class="form-label">Contraseña actual</label>
+              <input type="password" class="form-control" id="password_actual" name="password_actual" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="password_nuevo" class="form-label">Nueva contraseña</label>
+              <input type="password" class="form-control" id="password_nuevo" name="password_nuevo" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="password_confirmar" class="form-label">Confirmar nueva contraseña</label>
+              <input type="password" class="form-control" id="password_confirmar" name="password_confirmar" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-key mr-1"></i> Cambiar contraseña
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,130 @@
+<!-- views/dashboard/index.ejs -->
+<%- include('../partials/header') %>
+
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- Tarjetas informativas -->
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-body text-center">
+          <div class="dashboard-icon bg-primary">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <h5 class="card-title mt-3">Mis Solicitudes</h5>
+          <h2 class="counter"><%= countSolicitudes %></h2>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-body text-center">
+          <div class="dashboard-icon bg-warning">
+            <i class="fas fa-clock"></i>
+          </div>
+          <h5 class="card-title mt-3">Pendientes</h5>
+          <h2 class="counter"><%= countPendientes %></h2>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-body text-center">
+          <div class="dashboard-icon bg-info">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <h5 class="card-title mt-3">Próximas Visitas</h5>
+          <h2 class="counter"><%= countVisitas %></h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Acciones rápidas -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title">Acciones Rápidas</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex flex-wrap gap-2">
+            <a href="/solicitudes/nueva" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Nueva Solicitud de Retiro
+            </a>
+            <a href="/calendario" class="btn btn-info text-white">
+              <i class="fas fa-calendar"></i> Ver Calendario
+            </a>
+            <a href="/certificados" class="btn btn-success">
+              <i class="fas fa-certificate"></i> Mis Certificados
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Solicitudes recientes -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">Mis Solicitudes Recientes</h5>
+          <a href="/solicitudes" class="btn btn-sm btn-outline-primary">Ver todas</a>
+        </div>
+        <div class="card-body">
+          <% if (solicitudesRecientes && solicitudesRecientes.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Tipo de Residuo</th>
+                    <th>Fecha de Retiro</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% solicitudesRecientes.forEach(solicitud => { %>
+                    <tr>
+                      <td><%= solicitud.id %></td>
+                      <td><%= solicitud.tipo_residuo %></td>
+                      <td><%= new Date(solicitud.fecha_retiro).toLocaleDateString('es-ES') %></td>
+                      <td>
+                        <span class="badge bg-<%= 
+                          solicitud.estado === 'pendiente' ? 'warning' : 
+                          solicitud.estado === 'confirmada' ? 'success' : 
+                          solicitud.estado === 'completada' ? 'primary' : 
+                          solicitud.estado === 'cancelada' ? 'danger' : 'secondary' 
+                        %>">
+                          <%= solicitud.estado %>
+                        </span>
+                      </td>
+                      <td>
+                        <a href="/solicitudes/<%= solicitud.id %>" class="btn btn-sm btn-info text-white">
+                          <i class="fas fa-eye"></i> Ver
+                        </a>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="text-center my-4 empty-state">
+              <i class="fas fa-file-alt fa-4x text-muted mb-3"></i>
+              <p class="lead text-muted">No tienes solicitudes recientes</p>
+              <a href="/solicitudes/nueva" class="btn btn-primary mt-2">
+                <i class="fas fa-plus"></i> Crear una solicitud
+              </a>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,147 @@
+<!-- views/dashboard/operador.ejs -->
+<div class="container-fluid">
+    <!-- Tarjetas de resumen -->
+    <div class="row mb-4">
+      <!-- Visitas Asignadas -->
+      <div class="col-md-4 mb-3">
+        <div class="card h-100">
+          <div class="card-body d-flex align-items-center">
+            <div class="flex-shrink-0 bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+              <i class="fas fa-calendar-check fa-2x text-primary"></i>
+            </div>
+            <div>
+              <h6 class="card-title">Visitas Asignadas</h6>
+              <h3 class="mb-0"><%= typeof visitasAsignadas !== 'undefined' ? visitasAsignadas : 0 %></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Visitas Hoy -->
+      <div class="col-md-4 mb-3">
+        <div class="card h-100">
+          <div class="card-body d-flex align-items-center">
+            <div class="flex-shrink-0 bg-warning bg-opacity-10 p-3 rounded-circle me-3">
+              <i class="fas fa-calendar-day fa-2x text-warning"></i>
+            </div>
+            <div>
+              <h6 class="card-title">Visitas Hoy</h6>
+              <h3 class="mb-0"><%= typeof visitasHoy !== 'undefined' ? visitasHoy : 0 %></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Certificados Pendientes -->
+      <div class="col-md-4 mb-3">
+        <div class="card h-100">
+          <div class="card-body d-flex align-items-center">
+            <div class="flex-shrink-0 bg-info bg-opacity-10 p-3 rounded-circle me-3">
+              <i class="fas fa-certificate fa-2x text-info"></i>
+            </div>
+            <div>
+              <h6 class="card-title">Certificados Pendientes</h6>
+              <h3 class="mb-0"><%= typeof certificadosPendientes !== 'undefined' ? certificadosPendientes : 0 %></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Acciones Rápidas -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Acciones Rápidas</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <a href="/visitas/calendario" class="btn btn-primary w-100 d-flex align-items-center justify-content-center py-3">
+                  <i class="fas fa-calendar me-2"></i> Calendario de Visitas
+                </a>
+              </div>
+              <div class="col-md-4 mb-3">
+                <a href="/certificados/crear" class="btn btn-info w-100 d-flex align-items-center justify-content-center py-3">
+                  <i class="fas fa-file-certificate me-2"></i> Generar Certificado
+                </a>
+              </div>
+              <div class="col-md-4 mb-3">
+                <a href="/reportes/visitas" class="btn btn-success w-100 d-flex align-items-center justify-content-center py-3">
+                  <i class="fas fa-chart-bar me-2"></i> Ver Reportes
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Visitas Asignadas -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Mis Visitas Asignadas</h5>
+            <a href="/visitas/calendario" class="btn btn-sm btn-outline-primary">Ver calendario</a>
+          </div>
+          <div class="card-body">
+            <% if (typeof visitasAsignadasLista !== 'undefined' && visitasAsignadasLista && visitasAsignadasLista.length > 0) { %>
+              <div class="table-container">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Cliente</th>
+                      <th>Fecha</th>
+                      <th>Dirección</th>
+                      <th>Estado</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% visitasAsignadasLista.forEach(visita => { %>
+                      <tr>
+                        <td><%= visita.id %></td>
+                        <td>
+                          <%= visita.SolicitudRetiro && visita.SolicitudRetiro.Cliente ? 
+                              visita.SolicitudRetiro.Cliente.nombreEmpresa : 'N/A' %>
+                        </td>
+                        <td>
+                          <%= new Date(visita.fechaProgramada).toLocaleDateString('es-ES') %>
+                          <%= visita.horaInicio ? visita.horaInicio.substring(0,5) : '' %>
+                        </td>
+                        <td>
+                          <%= visita.SolicitudRetiro ? visita.SolicitudRetiro.direccionRetiro : 'N/A' %>
+                        </td>
+                        <td>
+                          <% 
+                            let badgeClass = 'secondary';
+                            switch(visita.estado) {
+                              case 'programada': badgeClass = 'primary'; break;
+                              case 'en_proceso': badgeClass = 'warning'; break;
+                              case 'completada': badgeClass = 'success'; break;
+                              case 'cancelada': badgeClass = 'danger'; break;
+                            }
+                          %>
+                          <span class="badge bg-<%= badgeClass %>"><%= visita.estado %></span>
+                        </td>
+                        <td>
+                          <a href="/visitas/detalles/<%= visita.id %>" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-eye"></i>
+                          </a>
+                        </td>
+                      </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+              </div>
+            <% } else { %>
+              <p class="text-center py-3 text-muted">No tienes visitas asignadas</p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

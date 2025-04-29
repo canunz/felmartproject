@@ -1,0 +1,78 @@
+<!-- views/calendario/index.ejs -->
+<%- include('../partials/header') %>
+
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Calendario de Visitas</h5>
+        </div>
+        <div class="card-body">
+          <% if (locals.error) { %>
+            <div class="alert alert-danger" role="alert">
+              <%= error %>
+            </div>
+          <% } %>
+          
+          <div id="calendar"></div>
+          
+          <% if (!hayEventos) { %>
+            <div class="text-center mt-4 empty-state">
+              <i class="fas fa-calendar-alt fa-4x text-muted mb-3"></i>
+              <p class="lead text-muted">No tienes visitas programadas en tu calendario</p>
+              <a href="/solicitudes/nueva" class="btn btn-primary mt-2">
+                <i class="fas fa-plus"></i> Solicitar una visita
+              </a>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FullCalendar CSS y JS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales/es.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    try {
+      const calendarEl = document.getElementById('calendar');
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,listMonth'
+        },
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        events: <%- eventos %>,
+        eventClick: function(info) {
+          window.location.href = '/solicitudes/' + info.event.id;
+        },
+        eventTimeFormat: {
+          hour: '2-digit',
+          minute: '2-digit',
+          meridiem: false
+        },
+        businessHours: {
+          daysOfWeek: [1, 2, 3, 4, 5], // Lunes a viernes
+          startTime: '08:00',
+          endTime: '18:00',
+        },
+        height: 'auto'
+      });
+      
+      calendar.render();
+    } catch (error) {
+      console.error('Error al inicializar el calendario:', error);
+      document.getElementById('calendar').innerHTML = 
+        '<div class="alert alert-danger">Error al cargar el calendario. Por favor, recargue la página.</div>';
+    }
+  });
+</script>
+
+<%- include('../partials/footer') %>

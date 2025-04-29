@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error en el servidor - Felmart</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="error-page">
+  <div class="error-container">
+    <div class="error-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="120" height="120" fill="#e74c3c">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+      </svg>
+    </div>
+    <h1>Error en el servidor</h1>
+    <p>Ha ocurrido un error inesperado</p>
+    <% if (locals.error && error.message) { %>
+      <div class="error-details">
+        <p><%= error.message %></p>
+      </div>
+    <% } %>
+    <a href="/" class="btn btn-primary">Volver al inicio</a>
+  </div>
+</body>
+</html>

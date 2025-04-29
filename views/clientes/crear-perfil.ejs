@@ -1,0 +1,45 @@
+<h1>Crear Perfil de Cliente</h1>
+
+<!-- Mensajes de alerta -->
+<% if (error && error.length) { %>
+  <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+    <%= error %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<% if (success && success.length) { %>
+  <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+    <%= success %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<form action="/clientes/crear-perfil" method="POST">
+  <div class="mb-3">
+    <label for="nombre" class="form-label">Nombre</label>
+    <input type="text" class="form-control" id="nombre" name="nombre" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="apellido" class="form-label">Apellido</label>
+    <input type="text" class="form-control" id="apellido" name="apellido" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="email" class="form-label">Correo electrónico</label>
+    <input type="email" class="form-control" id="email" name="email" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="telefono" class="form-label">Teléfono</label>
+    <input type="tel" class="form-control" id="telefono" name="telefono">
+  </div>
+
+  <div class="mb-3">
+    <label for="direccion" class="form-label">Dirección</label>
+    <input type="text" class="form-control" id="direccion" name="direccion">
+  </div>
+
+  <button type="submit" class="btn btn-primary">Crear Perfil</button>
+</form>
