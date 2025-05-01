@@ -4,49 +4,55 @@
 <div class="container-fluid mt-4">
   <!-- Panel de Control Header -->
   <div class="mb-4">
-    <h2 class="text-primary">Panel de Control - Cliente</h2>
-    <p class="text-muted">Bienvenido al sistema de gestión de residuos Felmart</p>
+    <h2 style="font-size: 1.8rem; font-weight: 700; color: #00616e;">Panel de Control - Cliente</h2>
+    <p style="color: #6c757d;">Bienvenido al sistema de gestión de residuos Felmart</p>
   </div>
   
   <!-- Tarjetas de Estadísticas -->
-  <div class="row mb-4">
-    <div class="col-md-4 mb-3">
-      <div class="stat-card solicitudes-card">
-        <div class="stat-card-content">
-          <div class="stat-card-icon">
-            <i class="fas fa-file-alt"></i>
-          </div>
-          <div>
-            <h3 class="stat-card-title">Mis Solicitudes</h3>
-            <p class="stat-card-value"><%= countSolicitudes %></p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="col-md-4 mb-3">
-      <div class="stat-card pendientes-card">
-        <div class="stat-card-content">
-          <div class="stat-card-icon">
-            <i class="fas fa-clock"></i>
-          </div>
-          <div>
-            <h3 class="stat-card-title">Pendientes</h3>
-            <p class="stat-card-value"><%= countPendientes %></p>
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      <div class="card" style="box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); border-radius: 12px; border: none; transition: all 0.3s ease;">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div style="width: 64px; height: 64px; background-color: rgba(0, 97, 110, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+              <i class="fas fa-file-alt" style="font-size: 1.75rem; color: #00616e;"></i>
+            </div>
+            <div>
+              <h5 class="card-title mb-1" style="font-size: 1.1rem; font-weight: 600;">Mis Solicitudes</h5>
+              <h2 class="counter mb-0" style="font-size: 2.5rem; font-weight: 700;"><%= countSolicitudes %></h2>
+            </div>
           </div>
         </div>
       </div>
     </div>
     
-    <div class="col-md-4 mb-3">
-      <div class="stat-card visitas-card">
-        <div class="stat-card-content">
-          <div class="stat-card-icon">
-            <i class="fas fa-calendar-check"></i>
+    <div class="col-md-4 mb-4">
+      <div class="card" style="box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); border-radius: 12px; border: none; transition: all 0.3s ease;">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div style="width: 64px; height: 64px; background-color: rgba(255, 159, 0, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+              <i class="fas fa-clock" style="font-size: 1.75rem; color: #ff9f00;"></i>
+            </div>
+            <div>
+              <h5 class="card-title mb-1" style="font-size: 1.1rem; font-weight: 600;">Pendientes</h5>
+              <h2 class="counter mb-0" style="font-size: 2.5rem; font-weight: 700;"><%= countPendientes %></h2>
+            </div>
           </div>
-          <div>
-            <h3 class="stat-card-title">Próximas Visitas</h3>
-            <p class="stat-card-value"><%= countVisitas %></p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+      <div class="card" style="box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); border-radius: 12px; border: none; transition: all 0.3s ease;">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div style="width: 64px; height: 64px; background-color: rgba(61, 140, 64, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+              <i class="fas fa-calendar-check" style="font-size: 1.75rem; color: #3D8C40;"></i>
+            </div>
+            <div>
+              <h5 class="card-title mb-1" style="font-size: 1.1rem; font-weight: 600;">Próximas Visitas</h5>
+              <h2 class="counter mb-0" style="font-size: 2.5rem; font-weight: 700;"><%= countVisitas %></h2>
+            </div>
           </div>
         </div>
       </div>
@@ -54,29 +60,32 @@
   </div>
   
   <!-- Acciones Rápidas -->
-  <div class="actions-section mb-4">
-    <h3 class="actions-title">Acciones Rápidas</h3>
-    
-    <div class="row mt-3">
-      <div class="col-md-4 mb-3">
-        <a href="/solicitudes/nueva" class="action-button solicitud-button">
-          <i class="fas fa-plus-circle"></i>
-          <span>Nueva Solicitud de Retiro</span>
-        </a>
-      </div>
-      
-      <div class="col-md-4 mb-3">
-        <a href="/calendario" class="action-button calendario-button">
-          <i class="fas fa-calendar-alt"></i>
-          <span>Ver Calendario</span>
-        </a>
-      </div>
-      
-      <div class="col-md-4 mb-3">
-        <a href="/certificados" class="action-button certificados-button">
-          <i class="fas fa-certificate"></i>
-          <span>Mis Certificados</span>
-        </a>
+  <div class="card mb-4" style="box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); border-radius: 12px; border: none;">
+    <div class="card-header" style="background-color: white; border-bottom: 1px solid #e9ecef;">
+      <h5 class="card-title" style="font-size: 1.25rem; font-weight: 600; color: #00616e; margin-bottom: 0;">Acciones Rápidas</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <a href="/solicitudes/nueva" class="btn btn-primary d-flex align-items-center justify-content-center w-100" style="height: 3.5rem; background-color: #0d6efd; border: none; font-weight: 500; padding: 1rem; border-radius: 8px;">
+            <i class="fas fa-plus-circle me-2" style="font-size: 1.25rem;"></i>
+            <span>Nueva Solicitud de Retiro</span>
+          </a>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+          <a href="/calendario" class="btn btn-info text-white d-flex align-items-center justify-content-center w-100" style="height: 3.5rem; background-color: #0dcaf0; border: none; font-weight: 500; padding: 1rem; border-radius: 8px;">
+            <i class="fas fa-calendar-alt me-2" style="font-size: 1.25rem;"></i>
+            <span>Ver Calendario</span>
+          </a>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+          <a href="/certificados" class="btn btn-success d-flex align-items-center justify-content-center w-100" style="height: 3.5rem; background-color: #20c997; border: none; font-weight: 500; padding: 1rem; border-radius: 8px;">
+            <i class="fas fa-certificate me-2" style="font-size: 1.25rem;"></i>
+            <span>Mis Certificados</span>
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -84,9 +93,9 @@
   <!-- Solicitudes recientes -->
   <div class="row">
     <div class="col-md-12">
-      <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-0">Mis Solicitudes Recientes</h5>
+      <div class="card" style="box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); border-radius: 12px; border: none;">
+        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: white; border-bottom: 1px solid #e9ecef;">
+          <h5 class="card-title mb-0" style="font-size: 1.25rem; font-weight: 600; color: #00616e;">Mis Solicitudes Recientes</h5>
           <a href="/solicitudes" class="btn btn-sm btn-outline-primary">Ver todas</a>
         </div>
         <div class="card-body">
@@ -129,8 +138,8 @@
               </table>
             </div>
           <% } else { %>
-            <div class="text-center my-4 empty-state">
-              <i class="fas fa-file-alt fa-4x text-muted mb-3"></i>
+            <div class="text-center my-4">
+              <i class="fas fa-file-alt fa-4x mb-3" style="color: rgba(0, 97, 110, 0.2);"></i>
               <p class="lead text-muted">No tienes solicitudes recientes</p>
               <a href="/solicitudes/nueva" class="btn btn-primary mt-2">
                 <i class="fas fa-plus"></i> Crear una solicitud
