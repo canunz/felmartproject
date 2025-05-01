@@ -15,135 +15,154 @@
 </head>
 <body>
   <div class="container-fluid p-0">
-    <!-- Header con Logo - Color ajustado -->
-    <header class="py-3" style="background-color: #00616e;">
-      <div class="container">
+    <!-- Header con solo logo y botones de autenticación -->
+    <header class="site-header">
+      <div class="container-fluid px-4">
         <div class="d-flex justify-content-between align-items-center">
-          <a href="/" class="navbar-brand">
-            <img src="/img/logo-white.png" alt="Felmart Logo" height="80">
+          <a href="/" class="logo-link">
+            <img src="/img/logo.png" alt="Felmart Logo" class="logo-img">
           </a>
-          <div>
-            <a href="/login" class="btn btn-light me-2">Iniciar sesión</a>
-            <a href="/registro" class="btn btn-outline-light">Registrarse</a>
+          <div class="auth-buttons">
+            <a href="/login" class="btn btn-outline-light btn-sm">Iniciar sesión</a>
+            <a href="/registro" class="btn btn-outline-light btn-sm ms-2">Registrarse</a>
           </div>
         </div>
       </div>
     </header>
 
-<!-- Hero Section con camión -->
-<section class="hero-truck-section">
-  <div class="hero-overlay">
-    <div class="container">
-      <div class="hero-content text-center">
-        <h1 class="hero-title">GESTIÓN PROFESIONAL DE RESIDUOS</h1>
-        <p class="hero-subtitle">Manejo responsable de residuos peligrosos y no peligrosos para proteger nuestro entorno.</p>
-        <a href="/sobre-nosotros" class="btn btn-success">SOBRE NOSOTROS</a>
+    <!-- Carrusel de imágenes -->
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="hero-slide" style="background-image: url('/img/camion1.avif');"></div>
+        </div>
+        <div class="carousel-item">
+          <div class="hero-slide" style="background-image: url('/img/residuos1.avif');"></div>
+        </div>
+        <div class="carousel-item">
+          <div class="hero-slide" style="background-image: url('/img/puerto1.avif');"></div>
+        </div>
+      </div>
+      
+      <!-- Overlay con texto alineado a la izquierda -->
+      <div class="carousel-overlay">
+        <div class="container">
+          <div class="hero-content text-start">
+            <h5 class="hero-subtitle-top">GESTIÓN DE RESIDUOS</h5>
+            <h1 class="hero-title">GESTIÓN PROFESIONAL<br>DE RESIDUOS</h1>
+            <p class="hero-subtitle">Manejo responsable de residuos peligrosos y no peligrosos para proteger nuestro entorno.</p>
+            <a href="/sobre-nosotros" class="btn btn-eco">SOBRE NOSOTROS</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Indicadores discretos -->
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
       </div>
     </div>
-  </div>
-</section>
 
- 
-<!-- Servicios -->
-<section class="teal-bg py-5" id="services">
-  <div class="container py-4">
-    <h2 class="text-center mb-5 section-title text-white">Nuestros Servicios</h2>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="service-box">
-          <div class="service-icon-container">
-            <i class="fas fa-truck-moving service-icon"></i>
+    <!-- Servicios -->
+    <section class="teal-bg py-5" id="services">
+      <div class="container py-4">
+        <h2 class="text-center mb-5 section-title text-white">Nuestros Servicios</h2>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="service-box">
+              <div class="service-icon-wrapper">
+                <i class="fas fa-truck-moving service-icon"></i>
+              </div>
+              <h3 class="service-title">Retiro de Residuos</h3>
+              <p class="service-description">
+                Servicio de retiro y transporte seguro de residuos peligrosos y no peligrosos desde sus instalaciones.
+              </p>
+            </div>
           </div>
-          <h3 class="service-title">Retiro de Residuos</h3>
-          <p class="service-description">
-            Servicio de retiro y transporte seguro de residuos peligrosos y no peligrosos desde sus instalaciones.
-          </p>
+          <div class="col-md-4">
+            <div class="service-box">
+              <div class="service-icon-wrapper">
+                <i class="fas fa-recycle service-icon"></i>
+              </div>
+              <h3 class="service-title">Disposición Final</h3>
+              <p class="service-description">
+                Manejo responsable y conforme a la normativa para la disposición final de residuos.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="service-box">
+              <div class="service-icon-wrapper">
+                <i class="fas fa-certificate service-icon"></i>
+              </div>
+              <h3 class="service-title">Certificación</h3>
+              <p class="service-description">
+                Emisión de certificados de tratamiento y disposición final para sus reportes ambientales.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="service-box">
-          <div class="service-icon-container">
-            <i class="fas fa-recycle service-icon"></i>
-          </div>
-          <h3 class="service-title">Disposición Final</h3>
-          <p class="service-description">
-            Manejo responsable y conforme a la normativa para la disposición final de residuos.
-          </p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="service-box">
-          <div class="service-icon-container">
-            <i class="fas fa-certificate service-icon"></i>
-          </div>
-          <h3 class="service-title">Certificación</h3>
-          <p class="service-description">
-            Emisión de certificados de tratamiento y disposición final para sus reportes ambientales.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
 
     <!-- Industrias -->
-<!-- Industrias -->
-<section class="industries-section py-5" id="industries">
-  <div class="container py-4">
-    <h2 class="section-title text-center">Industrias que Atendemos</h2>
-    <div class="title-separator"></div>
-    
-    <div class="row mt-5 justify-content-center">
-      <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
-        <div class="industry-card">
-          <div class="industry-icon-wrapper">
-            <i class="fas fa-fish industry-icon"></i>
+    <section class="industries-section py-5" id="industries">
+      <div class="container py-4">
+        <h2 class="section-title text-center">Industrias que Atendemos</h2>
+        <div class="title-separator"></div>
+        
+        <div class="row mt-5 justify-content-center">
+          <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+            <div class="industry-card">
+              <div class="industry-icon-wrapper">
+                <i class="fas fa-fish industry-icon"></i>
+              </div>
+              <h3 class="industry-name">Salmonera</h3>
+              <div class="industry-hover-content">
+                <p>Gestión especializada de residuos para la industria acuícola y salmonera.</p>
+              </div>
+            </div>
           </div>
-          <h3 class="industry-name">Salmonera</h3>
-          <div class="industry-hover-content">
-            <p>Gestión especializada de residuos para la industria acuícola y salmonera.</p>
+          
+          <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+            <div class="industry-card">
+              <div class="industry-icon-wrapper">
+                <i class="fas fa-ship industry-icon"></i>
+              </div>
+              <h3 class="industry-name">Naviera</h3>
+              <div class="industry-hover-content">
+                <p>Soluciones de manejo de residuos para el sector marítimo y portuario.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+            <div class="industry-card">
+              <div class="industry-icon-wrapper">
+                <i class="fas fa-tractor industry-icon"></i>
+              </div>
+              <h3 class="industry-name">Agrícola</h3>
+              <div class="industry-hover-content">
+                <p>Tratamiento de residuos agrícolas y agropecuarios con enfoque sustentable.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+            <div class="industry-card">
+              <div class="industry-icon-wrapper">
+                <i class="fas fa-tree industry-icon"></i>
+              </div>
+              <h3 class="industry-name">Forestal</h3>
+              <div class="industry-hover-content">
+                <p>Gestión integral de residuos para el sector forestal y maderero.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      
-      <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
-        <div class="industry-card">
-          <div class="industry-icon-wrapper">
-            <i class="fas fa-ship industry-icon"></i>
-          </div>
-          <h3 class="industry-name">Naviera</h3>
-          <div class="industry-hover-content">
-            <p>Soluciones de manejo de residuos para el sector marítimo y portuario.</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
-        <div class="industry-card">
-          <div class="industry-icon-wrapper">
-            <i class="fas fa-tractor industry-icon"></i>
-          </div>
-          <h3 class="industry-name">Agrícola</h3>
-          <div class="industry-hover-content">
-            <p>Tratamiento de residuos agrícolas y agropecuarios con enfoque sustentable.</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
-        <div class="industry-card">
-          <div class="industry-icon-wrapper">
-            <i class="fas fa-tree industry-icon"></i>
-          </div>
-          <h3 class="industry-name">Forestal</h3>
-          <div class="industry-hover-content">
-            <p>Gestión integral de residuos para el sector forestal y maderero.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
 
     <!-- Banner de Contacto -->
     <section class="contact-banner">
@@ -161,79 +180,79 @@
     </section>
 
     <!-- Contacto -->
-<!-- Sección de Contacto -->
-<section class="contact-section py-5" id="contact">
-  <div class="container">
-    <h2 class="section-title text-center mb-5">Contáctanos</h2>
-    
-    <div class="row justify-content-center mb-5">
-      <!-- Formulario de contacto -->
-      <div class="col-lg-8">
-        <div class="contact-form-card">
-          <form id="contactForm">
-            <div class="mb-3">
-              <label for="nombre" class="form-label">Nombre</label>
-              <input type="text" class="form-control" id="nombre" placeholder="Tu nombre completo">
+    <section class="contact-section py-5" id="contact">
+      <div class="container">
+  
+        
+        <div class="row justify-content-center mb-5">
+          <!-- Formulario de contacto -->
+          <div class="col-lg-8">
+            <div class="contact-form-card">
+              <form id="contactForm">
+                <div class="mb-3">
+                  <label for="nombre" class="form-label">Nombre</label>
+                  <input type="text" class="form-control" id="nombre" placeholder="Tu nombre completo">
+                </div>
+                
+                <div class="mb-3">
+                  <label for="email" class="form-label">Correo electrónico</label>
+                  <input type="email" class="form-control" id="email" placeholder="ejemplo@correo.com">
+                </div>
+                
+                <div class="mb-3">
+                  <label for="telefono" class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" id="telefono" placeholder="+56 9 XXXX XXXX">
+                </div>
+                
+                <div class="mb-3">
+                  <label for="mensaje" class="form-label">Mensaje</label>
+                  <textarea class="form-control" id="mensaje" rows="4" placeholder="Escribe tu mensaje aquí..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Enviar Mensaje</button>
+              </form>
             </div>
-            
-            <div class="mb-3">
-              <label for="email" class="form-label">Correo electrónico</label>
-              <input type="email" class="form-control" id="email" placeholder="ejemplo@correo.com">
-            </div>
-            
-            <div class="mb-3">
-              <label for="telefono" class="form-label">Teléfono</label>
-              <input type="tel" class="form-control" id="telefono" placeholder="+56 9 XXXX XXXX">
-            </div>
-            
-            <div class="mb-3">
-              <label for="mensaje" class="form-label">Mensaje</label>
-              <textarea class="form-control" id="mensaje" rows="4" placeholder="Escribe tu mensaje aquí..."></textarea>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Enviar Mensaje</button>
-          </form>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Información de contacto -->
-    <div class="row contact-info-row mt-5">
-      <div class="col-md-4">
-        <div class="contact-info-box">
-          <div class="contact-info-icon">
-            <i class="fas fa-map-marker-alt"></i>
           </div>
-          <h4>Dirección</h4>
-          <p>Ruta 5 Sur km 1036, sector Trapen</p>
-          <p>Puerto Montt, Chile</p>
         </div>
-      </div>
-      
-      <div class="col-md-4">
-        <div class="contact-info-box">
-          <div class="contact-info-icon">
-            <i class="fas fa-phone"></i>
+        
+        <!-- Información de contacto -->
+        <div class="row contact-info-row mt-5">
+          <div class="col-md-4">
+            <div class="contact-info-box">
+              <div class="contact-info-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <h4>Dirección</h4>
+              <p>Ruta 5 Sur km 1036, sector Trapen</p>
+              <p>Puerto Montt, Chile</p>
+            </div>
           </div>
-          <h4>Teléfono</h4>
-          <p>+56 65 1234567</p>
-          <p>Lunes a Viernes: 8:30 - 18:00</p>
-        </div>
-      </div>
-      
-      <div class="col-md-4">
-        <div class="contact-info-box">
-          <div class="contact-info-icon">
-            <i class="fas fa-envelope"></i>
+          
+          <div class="col-md-4">
+            <div class="contact-info-box">
+              <div class="contact-info-icon">
+                <i class="fas fa-phone"></i>
+              </div>
+              <h4>Teléfono</h4>
+              <p>+56 65 1234567</p>
+              <p>Lunes a Viernes: 8:30 - 18:00</p>
+            </div>
           </div>
-          <h4>Correo</h4>
-          <p>contacto@felmart.cl</p>
-          <p>ventas@felmart.cl</p>
+          
+          <div class="col-md-4">
+            <div class="contact-info-box">
+              <div class="contact-info-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <h4>Correo</h4>
+              <p>contacto@felmart.cl</p>
+              <p>ventas@felmart.cl</p>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
+
     <!-- Footer -->
     <footer class="bg-dark text-white py-5">
       <div class="container">
@@ -263,7 +282,7 @@
         <hr class="my-4 bg-light">
         <div class="row">
           <div class="col-md-6 text-center text-md-start">
-            <p class="mb-0">&copy; <%= new Date().getFullYear() %> Felmart. Todos los derechos reservados.</p>
+            <p class="mb-0">&copy; <script>document.write(new Date().getFullYear())</script> Felmart. Todos los derechos reservados.</p>
           </div>
           <div class="col-md-6 text-center text-md-end">
             <p class="mb-0">Diseñado con <i class="fas fa-heart text-danger"></i> para un planeta más limpio</p>
@@ -284,6 +303,21 @@
         document.querySelector(this.getAttribute('href')).scrollIntoView({
           behavior: 'smooth'
         });
+      });
+    });
+  </script>
+</body>
+</html>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Iniciar el carrusel con transición automática
+    document.addEventListener('DOMContentLoaded', function() {
+      var myCarousel = document.getElementById('heroCarousel');
+      var carousel = new bootstrap.Carousel(myCarousel, {
+        interval: 5000,
+        pause: false
       });
     });
   </script>

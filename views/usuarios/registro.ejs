@@ -1,4 +1,3 @@
-<!-- views/usuarios/registro.ejs -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,85 +16,90 @@
   </div>
   <% } %>
 
-  <a href="/" class="back-to-home">
-    <i class="fas fa-arrow-left"></i> Volver al inicio
-  </a>
-
-  <div class="auth-container">
-    <div class="auth-row">
-      <!-- Columna de información -->
-      <div class="auth-col-info">
-        <h2 class="auth-title">¿Por qué crear una cuenta?</h2>
+  <div class="auth-wrapper">
+    <a href="/" class="back-arrow">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    
+    <div class="auth-container">
+      <!-- Panel izquierdo -->
+      <div class="info-panel">
+        <div class="logo-container">
+          <img src="/img/logo.png" alt="Felmart Logo" class="logo">
+        </div>
         
-        <p class="auth-text">
-          Una cuenta Felmart te permite participar en nuestros 
-          <span class="auth-highlight">programas gratuitos de reciclaje</span>. Puedes utilizar tu 
-          cuenta para reciclar tus residuos, los de tu familia, tus 
-          amigos, tu negocio e incluso tu comunidad.
+        <h2 class="info-title">Gestión profesional de residuos</h2>
+        
+        <p class="info-text">
+          Una cuenta en Felmart te brinda acceso a nuestros servicios
+          <span class="highlight">especializados de gestión de residuos</span>. Controla 
+          y gestiona tus solicitudes de recolección de manera eficiente.
         </p>
         
-        <p class="auth-text">
-          Únete a los programas, obtén etiquetas de envío de 
-          prepago y realiza un seguimiento de tus envíos para 
-          reciclaje y tu impacto a través de tu cuenta.
+        <p class="info-text">
+          Con tu cuenta podrás realizar seguimiento en tiempo real, 
+          obtener certificados de disposición final y acceder a 
+          informes detallados para el cumplimiento normativo.
         </p>
         
-        <div class="auth-important">
-          <strong>IMPORTANTE:</strong> Guarda 
-          <a href="mailto:info@felmart.com" class="auth-link">info@felmart.com</a> 
-          en la lista de contactos de tu cuenta de correo electrónico. De esa forma, 
-          nunca perderás un correo electrónico importante nuestro.
+        <div class="important-box">
+          <span class="important-label">IMPORTANTE:</span>
+          <p>Guarda <span class="highlight-email">felmartoilspa@gmail.com</span> en tu lista de 
+          contactos para recibir notificaciones importantes sobre tus servicios
+          de gestión de residuos.</p>
         </div>
       </div>
       
-      <!-- Columna de formulario -->
-      <div class="auth-col-form">
-        <h2 class="auth-form-title">Registro con Felmart</h2>
+      <!-- Panel derecho (formulario) -->
+      <div class="form-panel">
+        <h1 class="form-title">Registro con Felmart</h1>
         
         <form action="/registro" method="POST">
-          <div class="row">
+          <div class="form-row">
             <div class="form-group">
               <label for="nombre" class="form-label">Nombre*</label>
-              <input type="text" class="form-control" id="nombre" name="nombre" required>
+              <input type="text" id="nombre" name="nombre" class="form-control" required>
             </div>
             
             <div class="form-group">
               <label for="apellido" class="form-label">Apellido*</label>
-              <input type="text" class="form-control" id="apellido" name="apellido" required>
+              <input type="text" id="apellido" name="apellido" class="form-control" required>
             </div>
           </div>
           
           <div class="form-group">
             <label for="email" class="form-label">Correo electrónico*</label>
-            <input type="email" class="form-control" id="email" name="email" required>
+            <input type="email" id="email" name="email" class="form-control" required>
           </div>
           
           <div class="form-group">
             <label for="password" class="form-label">Contraseña*</label>
-            <input type="password" class="form-control" id="password" name="password" required>
-            <small style="display: block; margin-top: 5px; color: #666; font-size: 12px;">
-              Debe tener al menos 6 caracteres
-            </small>
+            <input type="password" id="password" name="password" class="form-control" required>
+            <small class="hint-text">Debe tener al menos 6 caracteres</small>
           </div>
           
           <div class="form-group">
             <label for="confirmarPassword" class="form-label">Confirmar contraseña*</label>
-            <input type="password" class="form-control" id="confirmarPassword" name="confirmarPassword" required>
+            <input type="password" id="confirmarPassword" name="confirmarPassword" class="form-control" required>
           </div>
           
-          <button type="submit" class="btn-submit">Registrarse</button>
+          <button type="submit" class="login-btn">Registrarse</button>
+          
+          <div class="form-footer">
+            <p>¿Ya tienes una cuenta? <a href="/login" class="register-link">Iniciar sesión</a></p>
+          </div>
         </form>
-        
-        <div class="auth-footer">
-          <p>¿Ya tienes una cuenta? <a href="/login" class="auth-link">Iniciar sesión</a></p>
-        </div>
       </div>
     </div>
   </div>
-
+  
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2025 Felmart - Gestión de Residuos</p>
+    </div>
+  </footer>
 
   <script>
-    // Script para cerrar la alerta
     document.addEventListener('DOMContentLoaded', function() {
       const closeBtn = document.querySelector('.close-btn');
       if (closeBtn) {

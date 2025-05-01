@@ -3,50 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sobre Nosotros - Felmart</title>
+  <title>Felmart - Gestión de Residuos</title>
   <!-- Fuentes -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
-  <!-- AOS - Animate On Scroll -->
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <!-- Estilos personalizados -->
-  <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/about.css">
 </head>
 <body>
-  <!-- Header con Logo -->
-  <header class="py-3" style="background-color: #00616e;">
-    <div class="container">
-      <div class="d-flex justify-content-between align-items-center">
-        <a href="/" class="navbar-brand">
-          <img src="/img/logo-white.png" alt="Felmart Logo" height="80">
-        </a>
-        <div>
-          <a href="/login" class="btn btn-light me-2">Iniciar sesión</a>
-          <a href="/registro" class="btn btn-outline-light">Registrarse</a>
+  <div class="container-fluid p-0">
+    <!-- Header con solo logo y botones de autenticación -->
+    <header class="site-header">
+      <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <a href="/" class="logo-link">
+            <img src="/img/logo.png" alt="Felmart Logo" class="logo-img">
+          </a>
+          <div class="auth-buttons">
+            <a href="/login" class="btn btn-outline-light btn-sm">Iniciar sesión</a>
+            <a href="/registro" class="btn btn-outline-light btn-sm ms-2">Registrarse</a>
+          </div>
         </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- Banner de Sobre Nosotros -->
-  <div class="about-banner">
+
+<!-- Banner de Sobre Nosotros con Imagen de Fondo -->
+<div class="about-hero" style="background-image: url('/img/trucks-background.jpg');">
+  <div class="about-hero-overlay">
     <div class="container">
-      <h1>Sobre Nosotros</h1>
+      <h6 class="hero-subtitle-top">GESTIÓN DE RESIDUOS</h6>
+      <h1 class="about-hero-title">SOBRE NOSOTROS</h1>
     </div>
   </div>
+</div>
 
   <!-- Sección Quiénes Somos -->
   <section class="about-section py-5">
     <div class="container">
       <div class="row align-items-center">
-        <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
-          <img src="/img/about-company.jpg" alt="Felmart Empresa" class="img-fluid rounded shadow">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+          <!-- Placeholder en lugar de la imagen -->
+          <div class="about-image-placeholder">
+            <span>Imagen de la empresa</span>
+          </div>
         </div>
-        <div class="col-lg-6" data-aos="fade-left">
+        <div class="col-lg-6">
           <h2 class="section-title">Quiénes Somos</h2>
           <div class="section-divider"></div>
           <p class="lead mb-4">Felmart es una empresa chilena dedicada a la gestión y manejo de residuos peligrosos y no peligrosos, atendiendo a los sectores salmonero, naviero, agrícola y forestal.</p>
@@ -57,136 +62,33 @@
     </div>
   </section>
 
-  <!-- Sección Nuestra Historia -->
-  <section class="history-section py-5 bg-light">
-    <div class="container">
-      <div class="text-center mb-5" data-aos="fade-up">
-        <h2 class="section-title">Nuestra Historia</h2>
-        <div class="section-divider mx-auto"></div>
-      </div>
-      
-      <div class="timeline" data-aos="fade-up">
-        <div class="timeline-item">
-          <div class="timeline-badge">
-            <i class="fas fa-flag"></i>
-          </div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <h4 class="timeline-title">2018</h4>
-              <p>Fundación de Felmart</p>
-            </div>
-            <div class="timeline-body">
-              <p>Ángel y Pablo fundan Felmart en Puerto Montt, con el objetivo de ofrecer soluciones de gestión de residuos responsables y eficientes para la región.</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="timeline-item">
-          <div class="timeline-badge">
-            <i class="fas fa-certificate"></i>
-          </div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <h4 class="timeline-title">2019</h4>
-              <p>Primeras Certificaciones</p>
-            </div>
-            <div class="timeline-body">
-              <p>Obtenemos nuestras primeras certificaciones ambientales y comenzamos a trabajar con importantes empresas del sector salmonero.</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="timeline-item">
-          <div class="timeline-badge">
-            <i class="fas fa-expand-alt"></i>
-          </div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <h4 class="timeline-title">2020</h4>
-              <p>Expansión de Servicios</p>
-            </div>
-            <div class="timeline-body">
-              <p>Ampliamos nuestra flota de vehículos y comenzamos a ofrecer servicios a los sectores naviero, agrícola y forestal.</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="timeline-item">
-          <div class="timeline-badge">
-            <i class="fas fa-award"></i>
-          </div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <h4 class="timeline-title">2022</h4>
-              <p>Reconocimiento Regional</p>
-            </div>
-            <div class="timeline-body">
-              <p>Recibimos reconocimiento por nuestra contribución a la gestión ambiental sustentable en la región de Los Lagos.</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="timeline-item">
-          <div class="timeline-badge">
-            <i class="fas fa-laptop"></i>
-          </div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <h4 class="timeline-title">2023</h4>
-              <p>Digitalización</p>
-            </div>
-            <div class="timeline-body">
-              <p>Implementamos nuestra plataforma digital para mejorar la experiencia de nuestros clientes y optimizar nuestros procesos operativos.</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="timeline-item">
-          <div class="timeline-badge">
-            <i class="fas fa-leaf"></i>
-          </div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <h4 class="timeline-title">Hoy</h4>
-              <p>Compromiso Continuo</p>
-            </div>
-            <div class="timeline-body">
-              <p>Continuamos creciendo y mejorando, siempre comprometidos con la excelencia en el servicio y la protección del medio ambiente.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- Sección Nuestra Misión y Visión -->
   <section class="mission-vision-section py-5">
     <div class="container">
       <div class="row">
-        <div class="col-lg-6 mb-4 mb-lg-0">
-          <div class="mission-card h-100" data-aos="flip-left">
-            <div class="card-icon">
+        <div class="col-md-6 mb-4 mb-md-0">
+          <div class="mission-vision-card">
+            <div class="mission-vision-icon">
               <i class="fas fa-bullseye"></i>
             </div>
-            <h3>Nuestra Misión</h3>
-            <div class="section-divider"></div>
+            <h3 class="mission-vision-title">Nuestra Misión</h3>
+            <div class="mission-vision-divider"></div>
             <p>Proveer soluciones integrales y sustentables para la gestión de residuos, contribuyendo activamente a la protección del medio ambiente y al desarrollo sostenible de las comunidades donde operamos.</p>
-            <ul class="check-list">
+            <ul class="mission-vision-list">
               <li>Gestión responsable y segura de residuos</li>
               <li>Cumplimiento de normativas ambientales</li>
               <li>Compromiso con la sustentabilidad</li>
-              <li>Servicio de excelencia a nuestros clientes</li>
             </ul>
           </div>
         </div>
         
-        <div class="col-lg-6">
-          <div class="vision-card h-100" data-aos="flip-right">
-            <div class="card-icon">
+        <div class="col-md-6">
+          <div class="mission-vision-card">
+            <div class="mission-vision-icon">
               <i class="fas fa-eye"></i>
             </div>
-            <h3>Nuestra Visión</h3>
-            <div class="section-divider"></div>
+            <h3 class="mission-vision-title">Nuestra Visión</h3>
+            <div class="mission-vision-divider"></div>
             <p>Ser reconocidos como líderes en la gestión integral de residuos en el sur de Chile, destacándonos por nuestra innovación, eficiencia y compromiso con el cuidado del medio ambiente.</p>
             <p>Aspiramos a transformar la forma en que las empresas y comunidades manejan sus residuos, promoviendo una cultura de responsabilidad ambiental y desarrollo sostenible.</p>
           </div>
@@ -195,97 +97,47 @@
     </div>
   </section>
 
-  <!-- Nuestros Valores -->
-  <section class="values-section py-5 bg-light">
+  <!-- Sección de Fundadores -->
+  <section class="founders-section py-5">
     <div class="container">
-      <div class="text-center mb-5" data-aos="fade-up">
-        <h2 class="section-title">Nuestros Valores</h2>
-        <div class="section-divider mx-auto"></div>
-      </div>
-      
-      <div class="row">
-        <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="100">
-          <div class="value-box">
-            <div class="value-icon">
-              <i class="fas fa-leaf"></i>
-            </div>
-            <h4>Compromiso Ambiental</h4>
-            <p>Priorizamos la protección del medio ambiente en todas nuestras operaciones.</p>
-          </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="200">
-          <div class="value-box">
-            <div class="value-icon">
-              <i class="fas fa-handshake"></i>
-            </div>
-            <h4>Integridad</h4>
-            <p>Actuamos con honestidad, transparencia y ética en todas nuestras relaciones.</p>
-          </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="300">
-          <div class="value-box">
-            <div class="value-icon">
-              <i class="fas fa-star"></i>
-            </div>
-            <h4>Excelencia</h4>
-            <p>Buscamos constantemente la mejora continua y la calidad en nuestros servicios.</p>
-          </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="400">
-          <div class="value-box">
-            <div class="value-icon">
-              <i class="fas fa-lightbulb"></i>
-            </div>
-            <h4>Innovación</h4>
-            <p>Desarrollamos soluciones creativas para los desafíos de gestión de residuos.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Nuestro Equipo -->
-  <section class="team-section py-5">
-    <div class="container">
-      <div class="text-center mb-5" data-aos="fade-up">
+      <div class="text-center mb-5">
         <h2 class="section-title">Nuestros Fundadores</h2>
         <div class="section-divider mx-auto"></div>
       </div>
       
       <div class="row justify-content-center">
-        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-          <div class="team-member">
-            <div class="member-photo">
-              <img src="/img/founder1.jpg" alt="Ángel" class="img-fluid">
-              <div class="member-social">
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-              </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="founder-card">
+            <!-- Placeholder en lugar de la imagen -->
+            <div class="founder-image-placeholder">
+              <span>Foto de Ángel</span>
             </div>
-            <div class="member-info">
-              <h4>Ángel</h4>
-              <p class="position">Director de Operaciones</p>
-              <p class="description">Especialista en logística y operaciones en terreno, con amplia experiencia en el sector de gestión de residuos.</p>
+            <div class="founder-social">
+              <a href="#" class="social-link linkedin"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#" class="social-link twitter"><i class="fab fa-twitter"></i></a>
+            </div>
+            <div class="founder-info">
+              <h3>Ángel</h3>
+              <p class="founder-position">Director de Operaciones</p>
+              <p class="founder-description">Especialista en logística y operaciones en terreno, con amplia experiencia en el sector de gestión de residuos.</p>
             </div>
           </div>
         </div>
         
-        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-          <div class="team-member">
-            <div class="member-photo">
-              <img src="/img/founder2.jpg" alt="Pablo" class="img-fluid">
-              <div class="member-social">
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-              </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="founder-card">
+            <!-- Placeholder en lugar de la imagen -->
+            <div class="founder-image-placeholder">
+              <span>Foto de Pablo</span>
             </div>
-            <div class="member-info">
-              <h4>Pablo</h4>
-              <p class="position">Director Administrativo y Comercial</p>
-              <p class="description">Experto en administración y desarrollo de negocios, encargado de la gestión comercial y estratégica de la empresa.</p>
+            <div class="founder-social">
+              <a href="#" class="social-link linkedin"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#" class="social-link twitter"><i class="fab fa-twitter"></i></a>
+            </div>
+            <div class="founder-info">
+              <h3>Pablo</h3>
+              <p class="founder-position">Director Administrativo y Comercial</p>
+              <p class="founder-description">Experto en administración y desarrollo de negocios, encargado de la gestión comercial y estratégica de la empresa.</p>
             </div>
           </div>
         </div>
@@ -293,63 +145,72 @@
     </div>
   </section>
 
-  <!-- CTA Section -->
-  <section class="cta-section py-5">
-    <div class="container text-center" data-aos="zoom-in">
-      <h2 class="mb-4">¿Listo para una gestión de residuos responsable?</h2>
-      <p class="lead mb-4">Contáctanos hoy para conocer cómo podemos ayudarte con tus necesidades específicas.</p>
-      <a href="/contacto" class="btn btn-light btn-lg px-5 py-3">Contáctanos</a>
-    </div>
-  </section>
 
-  <!-- Footer -->
-  <footer class="bg-dark text-white py-5">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-4 mb-4 mb-md-0">
-          <img src="/img/logo-white.png" alt="Felmart Logo" class="img-fluid mb-4" style="max-height: 80px;">
-          <p>Gestión y manejo profesional de residuos peligrosos y no peligrosos, comprometidos con el medio ambiente y la sostenibilidad.</p>
-        </div>
-        <div class="col-md-4 mb-4 mb-md-0">
-          <h5 class="mb-4">Enlaces Rápidos</h5>
-          <ul class="list-unstyled">
-            <li class="mb-2"><a href="/" class="text-white text-decoration-none">Inicio</a></li>
-            <li class="mb-2"><a href="/sobre-nosotros" class="text-white text-decoration-none">Sobre Nosotros</a></li>
-            <li class="mb-2"><a href="/#services" class="text-white text-decoration-none">Servicios</a></li>
-            <li class="mb-2"><a href="/contacto" class="text-white text-decoration-none">Contacto</a></li>
-          </ul>
-        </div>
-        <div class="col-md-4">
-          <h5 class="mb-4">Síguenos</h5>
-          <div class="d-flex">
-            <a href="#" class="text-white me-3 fs-4"><i class="fab fa-facebook"></i></a>
-            <a href="#" class="text-white me-3 fs-4"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="text-white me-3 fs-4"><i class="fab fa-linkedin"></i></a>
-          </div>
-        </div>
+  
+<!-- Sección de ubicación con OpenStreetMap -->
+<section class="location-section py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-5 mb-4 mb-lg-0">
+        <h2 class="section-title">Dónde Estamos Ubicados</h2>
+        <div class="section-divider"></div>
+        <p class="location-address">
+          <i class="fas fa-map-marker-alt location-icon"></i>
+          Ruta 5 Sur Km 23 lote #3 Sector Trapen<br>
+          Comuna Puerto Montt, Región de Los Lagos
+        </p>
+        <p class="contact-info">
+          <i class="fas fa-phone-alt contact-icon"></i> Logística: +56 987163342<br>
+          <i class="fas fa-phone-alt contact-icon"></i> Administración: +56 982944826<br>
+          <i class="fas fa-envelope contact-icon"></i> felmartoilspa@gmail.com
+        </p>
+        <p class="mt-4">¿Listo para una gestión de residuos responsable? Contáctanos hoy para conocer cómo podemos ayudarte con tus necesidades específicas.</p>
       </div>
-      <hr class="my-4 bg-light">
-      <div class="row">
-        <div class="col-md-6 text-center text-md-start">
-          <p class="mb-0">&copy; <%= new Date().getFullYear() %> Felmart. Todos los derechos reservados.</p>
-        </div>
-        <div class="col-md-6 text-center text-md-end">
-          <p class="mb-0">Diseñado con <i class="fas fa-heart text-danger"></i> para un planeta más limpio</p>
+      
+      <div class="col-lg-7">
+        <div class="map-container">
+          <!-- OpenStreetMap iframe -->
+          <iframe width="100%" height="450" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
+                 src="https://www.openstreetmap.org/export/embed.html?bbox=-73.12519073486328%2C-41.42578293888413%2C-73.09383392333986%2C-41.405761885188224&amp;layer=mapnik&amp;marker=-41.41578471193693%2C-73.10951232910156" 
+                 style="border: 1px solid #ddd; border-radius: 8px;"></iframe>
+          <p class="text-center mt-2">
+            <a href="https://maps.app.goo.gl/ovvaF9bnj4BzEBHR9" target="_blank">Ver en Google Maps</a>
+          </p>
         </div>
       </div>
     </div>
-  </footer>
+  </div>
+</section>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>
-    // Inicializar AOS (Animate On Scroll)
-    AOS.init({
-      duration: 800,
-      easing: 'ease',
-      once: true
-    });
-  </script>
-</body>
-</html>
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4 mb-lg-0">
+        <img src="/img/logo-white.png" alt="Felmart Logo" class="footer-logo mb-3">
+        <p class="footer-description">
+          Gestión y manejo profesional de residuos peligrosos y no peligrosos, comprometidos con el medio ambiente y la sostenibilidad.
+        </p>
+      </div>
+      
+      <div class="col-lg-4 mb-4 mb-lg-0">
+        <h5 class="footer-heading">Enlaces Rápidos</h5>
+        <ul class="footer-links">
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/servicios">Servicios</a></li>
+          <li><a href="/sobre-nosotros">Sobre Nosotros</a></li>
+          <li><a href="/contacto">Contacto</a></li>
+        </ul>
+      </div>
+      
+      <div class="col-lg-4">
+        <h5 class="footer-heading">Síguenos</h5>
+        <div class="social-icons">
+          <a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-icon linkedin"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
