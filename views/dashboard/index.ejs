@@ -2,65 +2,81 @@
 <%- include('../partials/header') %>
 
 <div class="container-fluid mt-4">
-  <div class="row">
-    <!-- Tarjetas informativas -->
-    <div class="col-md-4">
-      <div class="card mb-4">
-        <div class="card-body text-center">
-          <div class="dashboard-icon bg-primary">
+  <!-- Panel de Control Header -->
+  <div class="mb-4">
+    <h2 class="text-primary">Panel de Control - Cliente</h2>
+    <p class="text-muted">Bienvenido al sistema de gestión de residuos Felmart</p>
+  </div>
+  
+  <!-- Tarjetas de Estadísticas -->
+  <div class="row mb-4">
+    <div class="col-md-4 mb-3">
+      <div class="stat-card solicitudes-card">
+        <div class="stat-card-content">
+          <div class="stat-card-icon">
             <i class="fas fa-file-alt"></i>
           </div>
-          <h5 class="card-title mt-3">Mis Solicitudes</h5>
-          <h2 class="counter"><%= countSolicitudes %></h2>
+          <div>
+            <h3 class="stat-card-title">Mis Solicitudes</h3>
+            <p class="stat-card-value"><%= countSolicitudes %></p>
+          </div>
         </div>
       </div>
     </div>
     
-    <div class="col-md-4">
-      <div class="card mb-4">
-        <div class="card-body text-center">
-          <div class="dashboard-icon bg-warning">
+    <div class="col-md-4 mb-3">
+      <div class="stat-card pendientes-card">
+        <div class="stat-card-content">
+          <div class="stat-card-icon">
             <i class="fas fa-clock"></i>
           </div>
-          <h5 class="card-title mt-3">Pendientes</h5>
-          <h2 class="counter"><%= countPendientes %></h2>
+          <div>
+            <h3 class="stat-card-title">Pendientes</h3>
+            <p class="stat-card-value"><%= countPendientes %></p>
+          </div>
         </div>
       </div>
     </div>
     
-    <div class="col-md-4">
-      <div class="card mb-4">
-        <div class="card-body text-center">
-          <div class="dashboard-icon bg-info">
+    <div class="col-md-4 mb-3">
+      <div class="stat-card visitas-card">
+        <div class="stat-card-content">
+          <div class="stat-card-icon">
             <i class="fas fa-calendar-check"></i>
           </div>
-          <h5 class="card-title mt-3">Próximas Visitas</h5>
-          <h2 class="counter"><%= countVisitas %></h2>
+          <div>
+            <h3 class="stat-card-title">Próximas Visitas</h3>
+            <p class="stat-card-value"><%= countVisitas %></p>
+          </div>
         </div>
       </div>
     </div>
   </div>
   
-  <!-- Acciones rápidas -->
-  <div class="row">
-    <div class="col-md-12">
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="card-title">Acciones Rápidas</h5>
-        </div>
-        <div class="card-body">
-          <div class="d-flex flex-wrap gap-2">
-            <a href="/solicitudes/nueva" class="btn btn-primary">
-              <i class="fas fa-plus"></i> Nueva Solicitud de Retiro
-            </a>
-            <a href="/calendario" class="btn btn-info text-white">
-              <i class="fas fa-calendar"></i> Ver Calendario
-            </a>
-            <a href="/certificados" class="btn btn-success">
-              <i class="fas fa-certificate"></i> Mis Certificados
-            </a>
-          </div>
-        </div>
+  <!-- Acciones Rápidas -->
+  <div class="actions-section mb-4">
+    <h3 class="actions-title">Acciones Rápidas</h3>
+    
+    <div class="row mt-3">
+      <div class="col-md-4 mb-3">
+        <a href="/solicitudes/nueva" class="action-button solicitud-button">
+          <i class="fas fa-plus-circle"></i>
+          <span>Nueva Solicitud de Retiro</span>
+        </a>
+      </div>
+      
+      <div class="col-md-4 mb-3">
+        <a href="/calendario" class="action-button calendario-button">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Ver Calendario</span>
+        </a>
+      </div>
+      
+      <div class="col-md-4 mb-3">
+        <a href="/certificados" class="action-button certificados-button">
+          <i class="fas fa-certificate"></i>
+          <span>Mis Certificados</span>
+        </a>
       </div>
     </div>
   </div>
