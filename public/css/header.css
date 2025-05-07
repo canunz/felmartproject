@@ -1,0 +1,226 @@
+/* General styles for header and navigation */
+.main-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    transition: all 0.3s ease;
+  }
+  
+  /* Styles for dashboard (logged in) */
+  body.dashboard .main-header {
+    background-color: #00616e;
+    color: white;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  /* Styles for public site */
+  body.public-site .main-header {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .logo-img {
+    height: 40px;
+    max-width: 100%;
+  }
+  
+  /* Navbar styles */
+  .navbar {
+    padding: 0;
+  }
+  
+  .navbar-brand {
+    padding: 0;
+    margin-right: 2rem;
+  }
+  
+  .navbar-toggler {
+    color: white;
+    border-color: rgba(255,255,255,0.2);
+    background-color: rgba(255,255,255,0.05);
+    padding: 0.5rem;
+  }
+  
+  .navbar-toggler:focus {
+    box-shadow: 0 0 0 0.15rem rgba(255,255,255,0.3);
+  }
+  
+  /* Navigation links */
+  .navbar-nav .nav-link {
+    color: rgba(255,255,255,0.85);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 400;
+    transition: all 0.2s ease;
+  }
+  
+  .navbar-nav .nav-link:hover,
+  .navbar-nav .nav-link.active {
+    color: white;
+    background-color: rgba(255,255,255,0.1);
+  }
+  
+  .navbar-nav .nav-link i {
+    font-size: 0.875rem;
+    width: 20px;
+    text-align: center;
+  }
+  
+  /* Dropdown menus */
+  .dropdown-menu {
+    background-color: white;
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+  }
+  
+  .dropdown-item {
+    color: #495057;
+    padding: 0.6rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .dropdown-item i {
+    color: #00616e;
+    width: 16px;
+    text-align: center;
+  }
+  
+  .dropdown-item:hover,
+  .dropdown-item.active {
+    background-color: #f8f9fa;
+    color: #212529;
+  }
+  
+  .dropdown-item.text-danger i {
+    color: #dc3545;
+  }
+  
+  /* User menu */
+  .user-menu {
+    margin-left: 1rem;
+  }
+  
+  .notification-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: all 0.3s ease;
+  }
+  
+  .notification-btn:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  
+  .user-dropdown-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 25px;
+    padding: 0.25rem 1rem 0.25rem 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    transition: all 0.3s ease;
+  }
+  
+  .user-dropdown-btn:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .user-info {
+    text-align: left;
+  }
+  
+  .user-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  
+  .user-role {
+    font-size: 0.7rem;
+    opacity: 0.7;
+  }
+  
+  /* Auth buttons */
+  .auth-buttons .btn {
+    font-size: 0.875rem;
+    padding: 0.375rem 1rem;
+    background-color: transparent;
+    border-color: rgba(255,255,255,0.5);
+    color: white;
+    transition: all 0.2s ease;
+  }
+  
+  .auth-buttons .btn:hover {
+    background-color: rgba(255,255,255,0.1);
+    border-color: white;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 991.98px) {
+    .navbar-collapse {
+      padding: 1rem 0;
+      background-color: #00616e;
+      margin: 0 -1rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 0.5rem;
+    }
+    
+    body.public-site .navbar-collapse {
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+    
+    .navbar-nav {
+      margin-bottom: 1rem;
+    }
+    
+    .user-menu {
+      margin-left: 0;
+      justify-content: flex-start;
+      width: 100%;
+    }
+    
+    .notification-btn {
+      margin-right: 1rem;
+    }
+    
+    .auth-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 100%;
+    }
+    
+    .auth-buttons .btn {
+      width: 100%;
+      margin: 0 !important;
+    }
+  }

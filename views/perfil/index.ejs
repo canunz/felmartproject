@@ -6,18 +6,32 @@
     <div class="col-md-4">
       <div class="card mb-4">
         <div class="card-body text-center">
-          <div class="avatar-circle mb-3">
-            <i class="fas fa-user fa-4x"></i>
+          <!-- Imagen de perfil con opción de actualizar -->
+          <div class="position-relative mb-3">
+            <% if (perfilUsuario.imagen_perfil) { %>
+              <img src="/uploads/perfiles/<%= perfilUsuario.imagen_perfil %>" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;" alt="Foto de perfil">
+            <% } else { %>
+              <div class="avatar-circle">
+                <i class="fas fa-user fa-4x"></i>
+              </div>
+            <% } %>
+            <button type="button" class="btn btn-sm btn-primary position-absolute bottom-0 end-0" data-bs-toggle="modal" data-bs-target="#imagenPerfilModal">
+              <i class="fas fa-camera"></i>
+            </button>
           </div>
+          
           <h5 class="card-title"><%= perfilUsuario.nombre %></h5>
           <p class="card-text text-muted">
-            <i class="fas fa-building mr-2"></i> <%= perfilUsuario.empresa || 'No especificada' %>
+            <i class="fas fa-building me-2"></i> <%= perfilUsuario.nombre_empresa || 'No especificada' %>
           </p>
           <p class="card-text">
-            <i class="fas fa-envelope mr-2"></i> <%= perfilUsuario.email %>
+            <i class="fas fa-envelope me-2"></i> <%= perfilUsuario.email %>
           </p>
           <p class="card-text">
-            <i class="fas fa-phone mr-2"></i> <%= perfilUsuario.telefono || 'No especificado' %>
+            <i class="fas fa-phone me-2"></i> <%= perfilUsuario.telefono || 'No especificado' %>
+          </p>
+          <p class="card-text">
+            <i class="fas fa-map-marker-alt me-2"></i> <%= perfilUsuario.comuna || 'Sin especificar' %>, <%= perfilUsuario.ciudad || 'Sin especificar' %>
           </p>
         </div>
       </div>
@@ -30,6 +44,9 @@
         </div>
         <div class="card-body">
           <form action="/perfil/actualizar" method="POST">
+            <!-- Campo oculto para RUT -->
+            <input type="hidden" name="rut" value="<%= perfilUsuario.rut || '11111111-1' %>">
+            
             <div class="mb-3">
               <label for="nombre" class="form-label">Nombre completo</label>
               <input type="text" class="form-control" id="nombre" name="nombre" 
@@ -49,9 +66,44 @@
             </div>
             
             <div class="mb-3">
-              <label for="empresa" class="form-label">Empresa</label>
-              <input type="text" class="form-control" id="empresa" name="empresa" 
-                value="<%= perfilUsuario.empresa || '' %>">
+              <label for="nombre_empresa" class="form-label">Empresa</label>
+              <input type="text" class="form-control" id="nombre_empresa" name="nombre_empresa" 
+                value="<%= perfilUsuario.nombre_empresa || '' %>">
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="comuna" class="form-label">Comuna</label>
+                <select class="form-select" id="comuna" name="comuna">
+                  <option value="">Selecciona una comuna</option>
+                  <option value="Ancud" <%= perfilUsuario.comuna === 'Ancud' ? 'selected' : '' %>>Ancud</option>
+                  <option value="Castro" <%= perfilUsuario.comuna === 'Castro' ? 'selected' : '' %>>Castro</option>
+                  <option value="Chonchi" <%= perfilUsuario.comuna === 'Chonchi' ? 'selected' : '' %>>Chonchi</option>
+                  <option value="Concepción" <%= perfilUsuario.comuna === 'Concepción' ? 'selected' : '' %>>Concepción</option>
+                  <option value="Puerto Montt" <%= perfilUsuario.comuna === 'Puerto Montt' ? 'selected' : '' %>>Puerto Montt</option>
+                  <option value="Puerto Varas" <%= perfilUsuario.comuna === 'Puerto Varas' ? 'selected' : '' %>>Puerto Varas</option>
+                  <option value="Quellón" <%= perfilUsuario.comuna === 'Quellón' ? 'selected' : '' %>>Quellón</option>
+                  <option value="Talcahuano" <%= perfilUsuario.comuna === 'Talcahuano' ? 'selected' : '' %>>Talcahuano</option>
+                  <option value="Temuco" <%= perfilUsuario.comuna === 'Temuco' ? 'selected' : '' %>>Temuco</option>
+                  <option value="Valdivia" <%= perfilUsuario.comuna === 'Valdivia' ? 'selected' : '' %>>Valdivia</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="ciudad" class="form-label">Ciudad</label>
+                <select class="form-select" id="ciudad" name="ciudad">
+                  <option value="">Selecciona una ciudad</option>
+                  <option value="Ancud" <%= perfilUsuario.ciudad === 'Ancud' ? 'selected' : '' %>>Ancud</option>
+                  <option value="Castro" <%= perfilUsuario.ciudad === 'Castro' ? 'selected' : '' %>>Castro</option>
+                  <option value="Chonchi" <%= perfilUsuario.ciudad === 'Chonchi' ? 'selected' : '' %>>Chonchi</option>
+                  <option value="Concepción" <%= perfilUsuario.ciudad === 'Concepción' ? 'selected' : '' %>>Concepción</option>
+                  <option value="Puerto Montt" <%= perfilUsuario.ciudad === 'Puerto Montt' ? 'selected' : '' %>>Puerto Montt</option>
+                  <option value="Puerto Varas" <%= perfilUsuario.ciudad === 'Puerto Varas' ? 'selected' : '' %>>Puerto Varas</option>
+                  <option value="Quellón" <%= perfilUsuario.ciudad === 'Quellón' ? 'selected' : '' %>>Quellón</option>
+                  <option value="Talcahuano" <%= perfilUsuario.ciudad === 'Talcahuano' ? 'selected' : '' %>>Talcahuano</option>
+                  <option value="Temuco" <%= perfilUsuario.ciudad === 'Temuco' ? 'selected' : '' %>>Temuco</option>
+                  <option value="Valdivia" <%= perfilUsuario.ciudad === 'Valdivia' ? 'selected' : '' %>>Valdivia</option>
+                </select>
+              </div>
             </div>
             
             <div class="mb-3">
@@ -59,8 +111,14 @@
               <textarea class="form-control" id="direccion" name="direccion" rows="2"><%= perfilUsuario.direccion || '' %></textarea>
             </div>
             
+            <div class="mb-3">
+              <label for="contacto_principal" class="form-label">Contacto Principal</label>
+              <input type="text" class="form-control" id="contacto_principal" name="contacto_principal" 
+                value="<%= perfilUsuario.contacto_principal || '' %>">
+            </div>
+            
             <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save mr-1"></i> Guardar cambios
+              <i class="fas fa-save me-1"></i> Guardar cambios
             </button>
           </form>
         </div>
@@ -88,7 +146,7 @@
             </div>
             
             <button type="submit" class="btn btn-primary">
-              <i class="fas fa-key mr-1"></i> Cambiar contraseña
+              <i class="fas fa-key me-1"></i> Cambiar contraseña
             </button>
           </form>
         </div>
@@ -96,5 +154,52 @@
     </div>
   </div>
 </div>
+
+<!-- Modal para subir imagen de perfil -->
+<div class="modal fade" id="imagenPerfilModal" tabindex="-1" aria-labelledby="imagenPerfilModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imagenPerfilModalLabel">Cambiar imagen de perfil</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/perfil/actualizar-imagen" method="POST" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label for="imagenPerfil" class="form-label">Selecciona una imagen</label>
+            <input type="file" class="form-control" id="imagenPerfil" name="imagenPerfil" accept="image/*" required>
+            <div class="form-text text-muted">
+              La imagen debe ser en formato JPG, PNG o GIF y tener un tamaño máximo de 2MB.
+            </div>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Subir imagen</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Sincronizar los selectores de comuna y ciudad
+  document.addEventListener('DOMContentLoaded', function() {
+    const comunaSelect = document.getElementById('comuna');
+    const ciudadSelect = document.getElementById('ciudad');
+    
+    if (comunaSelect && ciudadSelect) {
+      // Cuando cambia la comuna, actualizar la ciudad
+      comunaSelect.addEventListener('change', function() {
+        ciudadSelect.value = comunaSelect.value;
+      });
+      
+      // Cuando cambia la ciudad, actualizar la comuna
+      ciudadSelect.addEventListener('change', function() {
+        comunaSelect.value = ciudadSelect.value;
+      });
+    }
+  });
+</script>
 
 <%- include('../partials/footer') %>

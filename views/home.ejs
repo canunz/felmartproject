@@ -15,17 +15,59 @@
 </head>
 <body>
   <div class="container-fluid p-0">
-    <!-- Header con solo logo y botones de autenticación -->
+    <!-- Header dinámico que cambia según estado de sesión -->
     <header class="site-header">
       <div class="container-fluid px-4">
         <div class="d-flex justify-content-between align-items-center">
           <a href="/" class="logo-link">
             <img src="/img/logo.png" alt="Felmart Logo" class="logo-img">
           </a>
-          <div class="auth-buttons">
-            <a href="/login" class="btn btn-outline-light btn-sm">Iniciar sesión</a>
-            <a href="/registro" class="btn btn-outline-light btn-sm ms-2">Registrarse</a>
-          </div>
+          
+          <% if (!locals.usuario) { %>
+            <!-- Mostrar botones de iniciar sesión/registro cuando NO hay sesión -->
+            <div class="auth-buttons">
+              <a href="/login" class="btn btn-outline-light btn-sm">Iniciar sesión</a>
+              <a href="/registro" class="btn btn-outline-light btn-sm ms-2">Registrarse</a>
+            </div>
+          <% } else { %>
+            <!-- Mostrar información del usuario cuando hay sesión activa -->
+            <div class="user-info-container">
+              <div class="dropdown">
+                <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown"
+                        style="background: none; border: none; padding: 5px 10px;">
+                  <div class="user-avatar" style="width: 36px; height: 36px; border-radius: 50%; background: #00616e; display: flex; align-items: center; justify-content: center; margin-right: 8px;">
+                    <i class="fas fa-user" style="color: white; font-size: 16px;"></i>
+                  </div>
+                  <div style="text-align: left; margin-right: 5px;">
+                    <div style="font-size: 14px; font-weight: 600; color: #ffffff;">
+                      <span><%= usuario.nombre || 'Usuario' %></span>
+                    </div>
+                    <div style="font-size: 11px; color: #f0f0f0;">
+                      <span><%= usuario.rol || 'cliente' %></span>
+                    </div>
+                  </div>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" style="border: none; box-shadow: 0 5px 25px rgba(0,0,0,0.1); border-radius: 10px; min-width: 200px;">
+                  <li>
+                    <a class="dropdown-item" href="/dashboard" style="padding: 10px 20px; display: flex; align-items: center; color: #495057;">
+                      <i class="fas fa-tachometer-alt me-3" style="color: #00616e; width: 16px;"></i>Panel Principal
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="/perfil" style="padding: 10px 20px; display: flex; align-items: center; color: #495057;">
+                      <i class="fas fa-user-circle me-3" style="color: #00616e; width: 16px;"></i>Mi Perfil
+                    </a>
+                  </li>
+                  <li><hr class="dropdown-divider" style="margin: 5px 0;"></li>
+                  <li>
+                    <a class="dropdown-item" href="/logout" style="padding: 10px 20px; display: flex; align-items: center; color: #dc3545;">
+                      <i class="fas fa-sign-out-alt me-3" style="width: 16px;"></i>Cerrar sesión
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          <% } %>
         </div>
       </div>
     </header>
@@ -182,8 +224,6 @@
     <!-- Contacto -->
     <section class="contact-section py-5" id="contact">
       <div class="container">
-  
-        
         <div class="row justify-content-center mb-5">
           <!-- Formulario de contacto -->
           <div class="col-lg-8">
@@ -295,30 +335,36 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Scroll suave para enlaces internos
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-          behavior: 'smooth'
-        });
-      });
-    });
-  </script>
-</body>
-</html>
-
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
     // Iniciar el carrusel con transición automática
     document.addEventListener('DOMContentLoaded', function() {
+      // Carrusel
       var myCarousel = document.getElementById('heroCarousel');
       var carousel = new bootstrap.Carousel(myCarousel, {
         interval: 5000,
         pause: false
       });
+      
+      // Scroll suave para enlaces internos
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          
+          document.querySelector(this.getAttribute('href')).scrollIntoTo({
+            behavior: 'smooth'
+          });
+        });
+      });
+      
+      // Formulario de contacto
+      const contactForm = document.getElementById('contactForm');
+      if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          // Aquí iría la lógica para enviar el formulario
+          alert('Gracias por contactarnos. Te responderemos a la brevedad.');
+          this.reset();
+        });
+      }
     });
   </script>
 </body>

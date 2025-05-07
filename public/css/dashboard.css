@@ -135,3 +135,26 @@
     color: #4a7c59 !important;
     border-color: #4a7c59 !important;
   }
+
+  .navbar a,
+.navbar a:visited {
+  color: #0b1416; /* color oscuro neutro */
+  text-decoration: none;
+  font-weight: 500;
+  margin-right: 15px;
+}
+
+.navbar a:hover {
+  color: #ff6f8d; /* tu color primario */
+  text-decoration: underline;
+}
+
+.dashboard-header {
+  margin-top: 20px;
+}
+
+.dashboard-card {
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}

@@ -1,0 +1,199 @@
+<!-- views/cotizaciones/index.ejs -->
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+    <div class="mb-6 flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Mis Cotizaciones</h2>
+            <p class="text-gray-600">Gestiona tus cotizaciones recibidas</p>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-white rounded-lg shadow p-4 mb-4">
+        <form id="filtrosForm" action="/cotizaciones" method="GET" class="flex flex-wrap items-center gap-3">
+            <div class="flex-1 min-w-[200px]">
+                <label for="estado" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                <select id="estado" name="estado" class="form-select w-full rounded-md border-gray-300">
+                    <option value="todos" <%= estado === 'todos' ? 'selected' : '' %>>Todos</option>
+                    <option value="Pendiente" <%= estado === 'Pendiente' ? 'selected' : '' %>>Pendiente</option>
+                    <option value="Aceptada" <%= estado === 'Aceptada' ? 'selected' : '' %>>Aceptada</option>
+                    <option value="Rechazada" <%= estado === 'Rechazada' ? 'selected' : '' %>>Rechazada</option>
+                </select>
+            </div>
+            <div class="flex-1 min-w-[200px]">
+                <label for="fechaDesde" class="block text-sm font-medium text-gray-700 mb-1">Desde</label>
+                <input type="date" id="fechaDesde" name="fechaDesde" value="<%= fechaDesde %>" class="form-input w-full rounded-md border-gray-300">
+            </div>
+            <div class="flex-1 min-w-[200px]">
+                <label for="fechaHasta" class="block text-sm font-medium text-gray-700 mb-1">Hasta</label>
+                <input type="date" id="fechaHasta" name="fechaHasta" value="<%= fechaHasta %>" class="form-input w-full rounded-md border-gray-300">
+            </div>
+            <div class="flex items-end pt-5">
+                <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-md transition-colors">
+                    <i class="fas fa-filter mr-2"></i>Filtrar
+                </button>
+                <a href="/cotizaciones" class="ml-2 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-md transition-colors">
+                    <i class="fas fa-times mr-2"></i>Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Lista de cotizaciones -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <% if (cotizaciones.length === 0) { %>
+            <div class="p-6 text-center">
+                <div class="mb-4">
+                    <i class="fas fa-file-invoice-dollar text-gray-300 text-6xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-1">No hay cotizaciones disponibles</h3>
+                <p class="text-gray-500">No se encontraron cotizaciones con los filtros seleccionados.</p>
+            </div>
+        <% } else { %>
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Emisión</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Válida Hasta</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Total</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <% cotizaciones.forEach(function(cotizacion) { %>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900"><%= cotizacion.codigo %></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500"><%= cotizacion.fechaEmision %></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500"><%= cotizacion.fechaValidez %></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">$<%= cotizacion.monto.toLocaleString('es-CL') %></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    <%= cotizacion.estado === 'Aceptada' ? 'bg-green-100 text-green-800' : 
+                                       cotizacion.estado === 'Rechazada' ? 'bg-red-100 text-red-800' : 
+                                       'bg-yellow-100 text-yellow-800' %>">
+                                    <%= cotizacion.estado %>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="/cotizaciones/<%= cotizacion.id %>" class="text-teal-600 hover:text-teal-900 mr-3">
+                                    <i class="fas fa-eye mr-1"></i>Ver
+                                </a>
+                                <a href="/cotizaciones/<%= cotizacion.id %>/pdf" class="text-indigo-600 hover:text-indigo-900">
+                                    <i class="fas fa-download mr-1"></i>PDF
+                                </a>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            
+            <!-- Paginación -->
+            <% if (totalPaginas > 1) { %>
+                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <% if (paginaActual > 1) { %>
+                            <a href="/cotizaciones?pagina=<%= paginaActual - 1 %>&estado=<%= estado %>&fechaDesde=<%= fechaDesde %>&fechaHasta=<%= fechaHasta %>" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                Anterior
+                            </a>
+                        <% } else { %>
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-300 bg-gray-100 cursor-not-allowed">
+                                Anterior
+                            </span>
+                        <% } %>
+                        <% if (paginaActual < totalPaginas) { %>
+                            <a href="/cotizaciones?pagina=<%= paginaActual + 1 %>&estado=<%= estado %>&fechaDesde=<%= fechaDesde %>&fechaHasta=<%= fechaHasta %>" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                Siguiente
+                            </a>
+                        <% } else { %>
+                            <span class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-300 bg-gray-100 cursor-not-allowed">
+                                Siguiente
+                            </span>
+                        <% } %>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                Mostrando <span class="font-medium"><%= ((paginaActual - 1) * porPagina) + 1 %></span> a <span class="font-medium"><%= Math.min(paginaActual * porPagina, totalCotizaciones) %></span> de <span class="font-medium"><%= totalCotizaciones %></span> resultados
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <% if (paginaActual > 1) { %>
+                                    <a href="/cotizaciones?pagina=<%= paginaActual - 1 %>&estado=<%= estado %>&fechaDesde=<%= fechaDesde %>&fechaHasta=<%= fechaHasta %>" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <span class="sr-only">Anterior</span>
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                <% } else { %>
+                                    <span class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-300 cursor-not-allowed">
+                                        <span class="sr-only">Anterior</span>
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                <% } %>
+                                
+                                <% for(let i = 1; i <= totalPaginas; i++) { %>
+                                    <% if (i === paginaActual) { %>
+                                        <span aria-current="page" class="z-10 bg-teal-50 border-teal-500 text-teal-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                            <%= i %>
+                                        </span>
+                                    <% } else { %>
+                                        <a href="/cotizaciones?pagina=<%= i %>&estado=<%= estado %>&fechaDesde=<%= fechaDesde %>&fechaHasta=<%= fechaHasta %>" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                            <%= i %>
+                                        </a>
+                                    <% } %>
+                                <% } %>
+                                
+                                <% if (paginaActual < totalPaginas) { %>
+                                    <a href="/cotizaciones?pagina=<%= paginaActual + 1 %>&estado=<%= estado %>&fechaDesde=<%= fechaDesde %>&fechaHasta=<%= fechaHasta %>" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <span class="sr-only">Siguiente</span>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                <% } else { %>
+                                    <span class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-300 cursor-not-allowed">
+                                        <span class="sr-only">Siguiente</span>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                <% } %>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Asignar event listeners a los botones
+      document.querySelectorAll('form[action$="/aceptar"]').forEach(form => {
+        form.querySelector('button[type="submit"]').addEventListener('click', function(e) {
+          e.preventDefault();
+          if (confirm('¿Estás seguro de que deseas aceptar esta cotización?')) {
+            form.submit();
+          }
+        });
+      });
+      
+      document.querySelectorAll('form[action$="/rechazar"]').forEach(form => {
+        form.querySelector('button[type="submit"]').addEventListener('click', function(e) {
+          e.preventDefault();
+          if (confirm('¿Estás seguro de que deseas rechazar esta cotización?')) {
+            form.submit();
+          }
+        });
+      });
+      
+      // Resto del código JavaScript...
+    });
+    </script>

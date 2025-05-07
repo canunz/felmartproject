@@ -1,41 +1,302 @@
 <!-- views/partials/header.ejs -->
-
-<!-- Agrega esta línea después de tus otros enlaces CSS -->
-<link rel="stylesheet" href="/css/dashboard.css">
-
-<header class="header">
-  <div class="d-flex align-items-center">
-    <button class="btn d-lg-none me-2 toggle-sidebar">
-      <i class="fas fa-bars"></i>
-    </button>
-    <h4 class="page-title m-0"><%= titulo %></h4>
-  </div>
-  
-  <div class="user-menu">
-    <!-- Notificaciones -->
-    <div class="dropdown">
-      <button class="btn position-relative" type="button" data-bs-toggle="modal" data-bs-target="#notificacionesModal">
-        <i class="fas fa-bell"></i>
-        <span id="contador-notificaciones" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
-          0
-        </span>
-      </button>
+<header class="header-main" style="background: #f8f9fa; border-bottom: 1px solid #dee2e6; width: 100%; margin: 0; padding: 0; position: fixed; top: 0; left: 0; right: 0; z-index: 1030;">
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; width: 100%;">
+    <!-- Logo y enlaces -->
+    <div style="display: flex; align-items: center; flex: 1;">
+      <!-- Logo -->
+      <a href="/dashboard" style="display: inline-block; margin-right: 20px;">
+        <img src="/img/logo.png" alt="Felmart Logo" style="height: 40px; width: auto;">
+      </a>
+      
+      <!-- Enlaces de navegación -->
+      <div class="nav-links" style="display: flex; gap: 20px;">
+        <a href="/perfil" class="<%= titulo && titulo.includes('Perfil') ? 'active-nav' : '' %>" style="color: #00616e; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 4px; transition: all 0.2s ease;">
+          <i class="fas fa-user"></i>
+          <span>Mi Perfil</span>
+        </a>
+        <a href="/solicitudes" class="<%= titulo && titulo.includes('Solicitud') ? 'active-nav' : '' %>" style="color: #00616e; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 4px; transition: all 0.2s ease;">
+          <i class="fas fa-file-alt"></i>
+          <span>Solicitudes</span>
+        </a>
+        <a href="/cotizaciones" class="<%= titulo && titulo.includes('Cotizaci') ? 'active-nav' : '' %>" style="color: #00616e; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 4px; transition: all 0.2s ease;">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <span>Cotizaciones</span>
+        </a>
+        <a href="/calendario" class="<%= titulo && titulo.includes('Calendario') ? 'active-nav' : '' %>" style="color: #00616e; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 4px; transition: all 0.2s ease;">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Calendario</span>
+        </a>
+        <a href="/certificados" class="<%= titulo && titulo.includes('Certificado') ? 'active-nav' : '' %>" style="color: #00616e; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 4px; transition: all 0.2s ease;">
+          <i class="fas fa-certificate"></i>
+          <span>Certificados</span>
+        </a>
+      </div>
     </div>
     
-    <!-- Usuario -->
-    <div class="dropdown ms-3">
-      <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
-        <div class="d-none d-md-block me-2"><%= usuario.nombre %></div>
-        <div class="avatar">
-          <i class="fas fa-user-circle fa-lg"></i>
-        </div>
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><span class="dropdown-item-text text-muted"><i class="fas fa-user-tag me-2"></i><%= usuario.rol %></span></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="/usuarios/cambiar-password"><i class="fas fa-key me-2"></i>Cambiar contraseña</a></li>
-        <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión</a></li>
-      </ul>
+    <!-- Notificaciones y perfil usuario -->
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <!-- Notificaciones -->
+      <div class="dropdown">
+        <button class="btn position-relative" type="button" data-bs-toggle="modal" data-bs-target="#notificacionesModal"
+                style="background: none; border: none; width: 40px; height: 40px; position: relative; display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-bell" style="color: #6c757d; font-size: 18px;"></i>
+          <span id="contador-notificaciones" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
+                style="font-size: 10px; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
+            0
+          </span>
+        </button>
+      </div>
+      
+      <!-- Usuario -->
+      <div class="dropdown">
+        <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown"
+                style="background: none; border: none; padding: 5px 10px;">
+          <div class="user-avatar" style="width: 36px; height: 36px; border-radius: 50%; background: #00616e; display: flex; align-items: center; justify-content: center; margin-right: 8px;">
+            <i class="fas fa-user" style="color: white; font-size: 16px;"></i>
+          </div>
+          <div style="text-align: left; margin-right: 5px;">
+            <div style="font-size: 14px; font-weight: 600; color: #212529;">
+              <span class="d-none d-md-inline"><%= usuario.nombre || 'Usuario' %></span>
+            </div>
+            <div style="font-size: 11px; color: #6c757d;">
+              <span class="d-none d-md-inline"><%= usuario.rol || 'cliente' %></span>
+            </div>
+          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" style="border: none; box-shadow: 0 5px 25px rgba(0,0,0,0.1); border-radius: 10px; min-width: 200px;">
+          <li>
+            <a class="dropdown-item" href="/perfil" style="padding: 10px 20px; display: flex; align-items: center; color: #495057;">
+              <i class="fas fa-user-circle me-3" style="color: #00616e; width: 16px;"></i>Mi Perfil
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="/usuarios/cambiar-password" style="padding: 10px 20px; display: flex; align-items: center; color: #495057;">
+              <i class="fas fa-key me-3" style="color: #00616e; width: 16px;"></i>Cambiar contraseña
+            </a>
+          </li>
+          <li><hr class="dropdown-divider" style="margin: 5px 0;"></li>
+          <li>
+            <a class="dropdown-item" href="/logout" style="padding: 10px 20px; display: flex; align-items: center; color: #dc3545;">
+              <i class="fas fa-sign-out-alt me-3" style="width: 16px;"></i>Cerrar sesión
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </header>
+
+<!-- Espacio para compensar el header fijo -->
+<div style="height: 56px;"></div>
+
+<!-- Manejo de mensajes de error/éxito de Flash -->
+<% if (locals.messages && messages.error) { %>
+  <div class="container mt-3">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-circle me-2"></i> <%= messages.error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  </div>
+<% } %>
+
+<% if (locals.messages && messages.success) { %>
+  <div class="container mt-3">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle me-2"></i> <%= messages.success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  </div>
+<% } %>
+
+<style>
+/* Eliminar márgenes y asegurar ancho completo */
+body, html {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* Estilo para enlace activo */
+.active-nav {
+  background-color: rgba(0, 97, 110, 0.1);
+  font-weight: 600 !important;
+}
+
+/* Mejoras de hover */
+.nav-links a:hover {
+  background-color: rgba(0, 97, 110, 0.05);
+}
+
+/* Estilos responsivos */
+@media (max-width: 991px) {
+  .nav-links {
+    display: none !important;
+  }
+  
+  .header-main button.btn.dropdown-toggle span.d-none.d-md-inline {
+    display: none !important;
+  }
+}
+
+/* Ocultar navegación duplicada */
+nav.navbar:not(.header-main nav.navbar),
+.sidebar,
+aside.sidebar,
+#sidebar,
+.sidebar-menu,
+.sidebar-wrapper,
+.side-menu {
+  display: none !important;
+}
+
+/* Ajustar contenido principal */
+.content-wrapper,
+.main-content,
+.content,
+main,
+.wrapper,
+.page-content,
+.dashboard-content {
+  margin-left: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-top: 15px !important;
+}
+
+/* Eliminar el panel de control duplicado */
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+}
+
+/* Estilos para mensajes de error/alerta */
+.error-alert {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px 20px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border-left: 4px solid #f5c6cb;
+  display: flex;
+  align-items: center;
+}
+
+.error-alert i {
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+/* Avatar para la página de perfil */
+.avatar-circle {
+  width: 100px;
+  height: 100px;
+  background-color: #00616e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  color: white;
+}
+
+/* Estilos para tarjetas y formularios */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border: none;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eaecef;
+  padding: 12px 20px;
+}
+
+.card-header .card-title {
+  margin-bottom: 0;
+  font-weight: 600;
+  color: #00616e;
+}
+
+.btn-primary {
+  background-color: #00616e;
+  border-color: #00616e;
+}
+
+.btn-primary:hover {
+  background-color: #004e5a;
+  border-color: #004e5a;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Eliminar navegación duplicada
+  removeDuplicateNavigation();
+  
+  // Verificar la sesión de usuario
+  checkUserSession();
+  
+  // Manejo de errores en la página de perfil
+  handleProfileErrors();
+  
+  // Funciones
+  function removeDuplicateNavigation() {
+    // Eliminar sidebars y navbars duplicadas
+    const sidebarSelectors = ['.sidebar', '#sidebar', '.sidebar-menu', '.sidebar-wrapper', '.side-menu', 'aside.sidebar'];
+    sidebarSelectors.forEach(selector => {
+      document.querySelectorAll(selector).forEach(el => el.remove());
+    });
+    
+    // Eliminar navbars duplicados
+    document.querySelectorAll('nav.navbar:not(.header-main nav.navbar)').forEach(el => el.remove());
+    
+    // Ocultar el "Panel de Control - Cliente" duplicado
+    document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(title => {
+      if (title.textContent.includes('Panel de Control')) {
+        title.style.display = 'none';
+      }
+    });
+    
+    // Ajustar el contenido principal
+    const mainContentSelectors = ['.content-wrapper', '.main-content', '.content', 'main', '.wrapper', '.page-content', '.dashboard-content'];
+    mainContentSelectors.forEach(selector => {
+      document.querySelectorAll(selector).forEach(el => {
+        el.style.marginLeft = '0';
+        el.style.width = '100%';
+        el.style.maxWidth = '100%';
+      });
+    });
+  }
+  
+  function checkUserSession() {
+    // Verificar que el objeto usuario exista y tenga id
+    if (typeof usuario === 'undefined' || !usuario.id) {
+      console.warn('Advertencia: La sesión de usuario no está completa');
+      
+      // No redirigir aquí, solo registrar la advertencia
+    }
+  }
+  
+  function handleProfileErrors() {
+    // Si estamos en la página de perfil y hay un error visible
+    if (window.location.pathname === '/perfil') {
+      if (document.body.textContent.includes('Error al cargar la información del perfil')) {
+        // Mostrar mensaje de error más amigable si no hay alertas flash ya presentes
+        if (!document.querySelector('.alert-danger')) {
+          const container = document.querySelector('.container');
+          if (container) {
+            const errorAlert = document.createElement('div');
+            errorAlert.className = 'alert alert-danger alert-dismissible fade show';
+            errorAlert.role = 'alert';
+            errorAlert.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i> ' +
+                                  'Error al cargar la información del perfil. Estamos trabajando para solucionarlo. ' +
+                                  '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+            container.insertBefore(errorAlert, container.firstChild);
+          }
+        }
+      }
+    }
+  }
+});
+</script>
