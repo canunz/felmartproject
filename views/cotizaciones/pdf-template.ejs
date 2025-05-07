@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Cotización <%= cotizacion.numeroCotizacion %></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            max-width: 200px;
+            margin-bottom: 10px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+        .info-section {
+            margin-bottom: 20px;
+        }
+        .info-section h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #444;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .info-item {
+            margin-bottom: 5px;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        .totals {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .total-row {
+            margin: 5px 0;
+        }
+        .grand-total {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+        }
+        .terms {
+            margin-top: 30px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="<%= process.env.LOGO_URL || 'https://felmart.com/logo.png' %>" alt="Felmart Logo" class="logo">
+        <div class="title">COTIZACIÓN</div>
+        <div class="subtitle"><%= cotizacion.numeroCotizacion %></div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-grid">
+            <div>
+                <h3>Información del Cliente</h3>
+                <div class="info-item">
+                    <span class="info-label">Cliente:</span>
+                    <%= cotizacion.SolicitudRetiro.Cliente.nombre %>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">RUC:</span>
+                    <%= cotizacion.SolicitudRetiro.Cliente.ruc %>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Dirección:</span>
+                    <%= cotizacion.SolicitudRetiro.Cliente.direccion %>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Teléfono:</span>
+                    <%= cotizacion.SolicitudRetiro.Cliente.telefono %>
+                </div>
+            </div>
+            <div>
+                <h3>Información de la Cotización</h3>
+                <div class="info-item">
+                    <span class="info-label">Fecha:</span>
+                    <%= moment(cotizacion.fechaCotizacion).format('DD/MM/YYYY') %>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Válido hasta:</span>
+                    <%= moment(cotizacion.validezCotizacion).format('DD/MM/YYYY') %>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Estado:</span>
+                    <%= cotizacion.estado.toUpperCase() %>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Solicitud:</span>
+                    <%= cotizacion.SolicitudRetiro.numeroSolicitud %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Residuo</th>
+                <th>Descripción</th>
+                <th>Cantidad</th>
+                <th>Precio Unit.</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% cotizacion.DetalleCotizacions.forEach(detalle => { %>
+                <tr>
+                    <td><%= detalle.Residuo.nombre %></td>
+                    <td><%= detalle.descripcion %></td>
+                    <td><%= detalle.cantidad %> <%= detalle.Residuo.unidad %></td>
+                    <td>S/ <%= detalle.precioUnitario.toFixed(2) %></td>
+                    <td>S/ <%= detalle.subtotal.toFixed(2) %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <div class="total-row">
+            <span class="info-label">Subtotal:</span>
+            S/ <%= cotizacion.subtotal.toFixed(2) %>
+        </div>
+        <div class="total-row">
+            <span class="info-label">IGV (18%):</span>
+            S/ <%= cotizacion.iva.toFixed(2) %>
+        </div>
+        <div class="total-row grand-total">
+            <span class="info-label">Total:</span>
+            S/ <%= cotizacion.total.toFixed(2) %>
+        </div>
+    </div>
+
+    <% if (cotizacion.observaciones) { %>
+        <div class="terms">
+            <h3>Observaciones</h3>
+            <p><%= cotizacion.observaciones %></p>
+        </div>
+    <% } %>
+
+    <div class="footer">
+        <p>Felmart - Gestión Integral de Residuos</p>
+        <p>Av. Principal 123, Lima, Perú | Tel: (01) 123-4567</p>
+        <p>www.felmart.com | info@felmart.com</p>
+    </div>
+</body>
+</html> 

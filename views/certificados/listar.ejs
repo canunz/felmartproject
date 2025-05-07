@@ -1,0 +1,53 @@
+<%- include('../partials/header') %>
+<style>
+  .list-card {background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(0,97,110,0.08), 0 1.5px 4px rgba(0,97,110,0.08); padding: 2.5rem 2rem 2rem 2rem; margin-top: 2.5rem; margin-bottom: 2rem; max-width: 950px; margin-left: auto; margin-right: auto;}
+  .list-title {font-size: 2rem; font-weight: 700; color: #00616e; display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.5rem;}
+  .list-title i {font-size: 2.2rem; color: #00b4d8;}
+  .list-table th, .list-table td {vertical-align: middle !important;}
+  .list-table tbody tr:hover {background: #f1f8fa; transition: background 0.2s;}
+  .list-table th {background: #eaf6f8; color: #00616e; font-weight: 600;}
+  .list-table {border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,97,110,0.06);}
+  @media (max-width: 767px) {.list-card { padding: 1.2rem 0.5rem; } .list-title { font-size: 1.3rem; }}
+</style>
+<div class="list-card">
+  <div class="list-title">
+    <i class="fas fa-certificate"></i> Listado de Certificados
+  </div>
+  <form class="row mb-3">
+    <div class="col-md-5 mb-2">
+      <input type="text" class="form-control" placeholder="Buscar certificado...">
+    </div>
+    <div class="col-md-2 mb-2">
+      <button class="btn btn-primary w-100"><i class="fas fa-search"></i> Buscar</button>
+    </div>
+  </form>
+  <div class="table-responsive">
+    <table class="table list-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>N° Certificado</th>
+          <th>Cliente</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>CERT-2024-001</td>
+          <td>Empresa Ejemplo</td>
+          <td>2024-06-01</td>
+          <td><span class="badge bg-success">Emitido</span></td>
+          <td>
+            <a href="#" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
+            <a href="#" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+            <a href="#" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<%- include('../partials/footer') %> 

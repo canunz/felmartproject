@@ -1,0 +1,213 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Detalles de Cotización</h3>
+                    <div class="card-tools">
+                        <a href="/cotizaciones" class="btn btn-default btn-sm">
+                            <i class="fas fa-arrow-left"></i> Volver
+                        </a>
+                        <a href="/cotizaciones/<%= cotizacion.id %>/pdf" 
+                           class="btn btn-secondary btn-sm" 
+                           target="_blank">
+                            <i class="fas fa-file-pdf"></i> Descargar PDF
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Información General -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Información de la Cotización</h4>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th style="width: 40%">Número de Cotización</th>
+                                            <td><%= cotizacion.numeroCotizacion %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Fecha de Emisión</th>
+                                            <td><%= moment(cotizacion.fechaCotizacion).format('DD/MM/YYYY') %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Válido hasta</th>
+                                            <td><%= moment(cotizacion.validezCotizacion).format('DD/MM/YYYY') %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Estado</th>
+                                            <td>
+                                                <span class="badge badge-<%= 
+                                                    cotizacion.estado === 'pendiente' ? 'warning' :
+                                                    cotizacion.estado === 'aceptada' ? 'success' :
+                                                    'danger'
+                                                %>">
+                                                    <%= cotizacion.estado.toUpperCase() %>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Información del Cliente</h4>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th style="width: 40%">Cliente</th>
+                                            <td><%= cotizacion.SolicitudRetiro.Cliente.nombre %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>RUC</th>
+                                            <td><%= cotizacion.SolicitudRetiro.Cliente.ruc %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Dirección</th>
+                                            <td><%= cotizacion.SolicitudRetiro.Cliente.direccion %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Teléfono</th>
+                                            <td><%= cotizacion.SolicitudRetiro.Cliente.telefono %></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detalles de la Cotización -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h4 class="card-title">Detalles de la Cotización</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Residuo</th>
+                                            <th>Descripción</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio Unit.</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% cotizacion.DetalleCotizacions.forEach(detalle => { %>
+                                            <tr>
+                                                <td><%= detalle.Residuo.nombre %></td>
+                                                <td><%= detalle.descripcion %></td>
+                                                <td><%= detalle.cantidad %> <%= detalle.Residuo.unidad %></td>
+                                                <td>S/ <%= detalle.precioUnitario.toFixed(2) %></td>
+                                                <td>S/ <%= detalle.subtotal.toFixed(2) %></td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="4" class="text-right">Subtotal:</th>
+                                            <td>S/ <%= cotizacion.subtotal.toFixed(2) %></td>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="4" class="text-right">IGV (18%):</th>
+                                            <td>S/ <%= cotizacion.iva.toFixed(2) %></td>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="4" class="text-right">Total:</th>
+                                            <td><strong>S/ <%= cotizacion.total.toFixed(2) %></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <% if (cotizacion.observaciones) { %>
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h4 class="card-title">Observaciones</h4>
+                            </div>
+                            <div class="card-body">
+                                <p><%= cotizacion.observaciones %></p>
+                            </div>
+                        </div>
+                    <% } %>
+
+                    <!-- Acciones -->
+                    <% if (usuario.rol === 'cliente' && cotizacion.estado === 'pendiente') { %>
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h4 class="card-title">Acciones</h4>
+                            </div>
+                            <div class="card-body">
+                                <button type="button" 
+                                        class="btn btn-success" 
+                                        onclick="actualizarEstado('<%= cotizacion.id %>', 'aceptada')">
+                                    <i class="fas fa-check"></i> Aceptar Cotización
+                                </button>
+                                <button type="button" 
+                                        class="btn btn-danger" 
+                                        onclick="actualizarEstado('<%= cotizacion.id %>', 'rechazada')">
+                                    <i class="fas fa-times"></i> Rechazar Cotización
+                                </button>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para actualizar estado -->
+<div class="modal fade" id="estadoModal" tabindex="-1" role="dialog" aria-labelledby="estadoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="estadoModalLabel">Actualizar Estado</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="estadoForm" method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="estado">Nuevo Estado</label>
+                        <select name="estado" id="estado" class="form-control" required>
+                            <option value="aceptada">Aceptada</option>
+                            <option value="rechazada">Rechazada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function actualizarEstado(id, estado) {
+    const form = document.getElementById('estadoForm');
+    form.action = `/cotizaciones/${id}/estado`;
+    
+    const estadoSelect = form.querySelector('#estado');
+    estadoSelect.value = estado;
+    
+    $('#estadoModal').modal('show');
+}
+</script>
+
+<%- include('../partials/footer') %> 

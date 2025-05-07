@@ -1,64 +1,59 @@
 // routes/cotizacionRoutes.js
-// routes/cotizacionRoutes.js
 const express = require('express');
 const router = express.Router();
-const { isAuthenticated } = require('../middlewares/auth');
-const pool = require('../config/database');
+const { check } = require('express-validator');
+const { validarCampos } = require('../middlewares/validar-campos');
+const { validarJWT } = require('../middlewares/validar-jwt');
+const { validarRol } = require('../middlewares/validar-rol');
+const cotizacionController = require('../controllers/cotizacionController');
 
-// Listar cotizaciones (simplificado)
-router.get('/', isAuthenticated, async (req, res) => {
+// Middleware para verificar que las tablas necesarias existan
+const verificarTablas = async (req, res, next) => {
   try {
-    // Verificar si las tablas existen antes de hacer consultas
-    const [tables] = await pool.query(`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = DATABASE()
-    `);
-    
-    const tableNames = tables.map(t => t.table_name.toLowerCase());
-    const hasCotizaciones = tableNames.includes('cotizaciones');
-    const hasSolicitudes = tableNames.includes('solicitudes');
-    
-    // Variables para la vista
-    const estado = req.query.estado || 'todos';
-    const fechaDesde = req.query.fechaDesde || '';
-    const fechaHasta = req.query.fechaHasta || '';
-    const pagina = parseInt(req.query.pagina) || 1;
-    const porPagina = 10;
-    const cotizaciones = [];
-    const totalCotizaciones = 0;
-    const totalPaginas = 1;
-    
-    // Si las tablas necesarias existen, intentar obtener datos
-    if (hasCotizaciones && hasSolicitudes) {
-      // Aquí iría el código original para cargar cotizaciones
-      // Por ahora omitimos este código ya que la tabla no existe
-    } else {
-      console.log('Algunas tablas no existen:', {
-        cotizaciones: hasCotizaciones,
-        solicitudes: hasSolicitudes
-      });
-    }
-    
-    // Renderizar la vista con datos vacíos o reales
-    res.render('cotizaciones/index', {
-      titulo: 'Cotizaciones',
-      cotizaciones: cotizaciones,
-      estado,
-      fechaDesde,
-      fechaHasta,
-      paginaActual: pagina,
-      totalPaginas,
-      totalCotizaciones,
-      porPagina
-    });
+    const { Cotizacion, SolicitudRetiro, Cliente } = require('../models');
+    await Promise.all([
+      Cotizacion.describe(),
+      SolicitudRetiro.describe(),
+      Cliente.describe()
+    ]);
+    next();
   } catch (error) {
-    console.error('Error al cargar cotizaciones:', error);
-    req.flash('error', 'Error al cargar las cotizaciones');
+    console.error('Error al verificar tablas:', error);
+    req.flash('error', 'Error al cargar los datos. Por favor, intente más tarde.');
     res.redirect('/dashboard');
   }
-});
+};
 
-// Otras rutas...
+// Validaciones para crear/actualizar cotización
+const validarCotizacion = [
+  check('solicitudId', 'La solicitud es obligatoria').not().isEmpty(),
+  check('numeroCotizacion', 'El número de cotización es obligatorio').not().isEmpty(),
+  check('subtotal', 'El subtotal es obligatorio').isNumeric(),
+  check('iva', 'El IVA es obligatorio').isNumeric(),
+  check('total', 'El total es obligatorio').isNumeric(),
+  check('validezCotizacion', 'La fecha de validez es obligatoria').not().isEmpty(),
+  check('residuoIds', 'Debe seleccionar al menos un residuo').isArray({ min: 1 }),
+  check('cantidades', 'Las cantidades son obligatorias').isArray({ min: 1 }),
+  check('preciosUnitarios', 'Los precios unitarios son obligatorios').isArray({ min: 1 }),
+  check('subtotales', 'Los subtotales son obligatorios').isArray({ min: 1 }),
+  validarCampos
+];
+
+// Rutas
+router.get('/', [validarJWT, verificarTablas], cotizacionController.listar);
+
+router.get('/detalles/:id', [validarJWT, verificarTablas], cotizacionController.detalles);
+
+router.get('/crear', [validarJWT, verificarTablas], cotizacionController.mostrarCrear);
+
+router.post('/crear', [
+  validarJWT,
+  validarRol('administrador', 'operador'),
+  validarCotizacion
+], cotizacionController.crear);
+
+router.put('/:id/estado', [validarJWT], cotizacionController.actualizarEstado);
+
+router.get('/:id/pdf', [validarJWT], cotizacionController.generarPDF);
 
 module.exports = router;

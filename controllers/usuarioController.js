@@ -237,7 +237,38 @@ const usuarioController = {
   // 4) Dashboard & administración de usuarios ---------------------
 
   dashboard: async (req, res) => {
-    // tu lógica existente
+    try {
+      const { usuario } = req.session;
+      if (usuario.rol === 'administrador' || usuario.rol === 'operador') {
+        // Ejemplo: obtener algunos datos generales
+        const totalUsuarios = await Usuario.count();
+        const totalClientes = await Cliente.count();
+        const totalSolicitudes = await SolicitudRetiro.count();
+        const totalVisitas = await VisitaRetiro.count();
+        res.render('dashboard', {
+          titulo: 'Panel de Administración',
+          usuario,
+          totalUsuarios,
+          totalClientes,
+          totalSolicitudes,
+          totalVisitas,
+          error: req.flash('error'),
+          success: req.flash('success')
+        });
+      } else {
+        // Si es cliente, puedes redirigir a su propio dashboard o mostrar menos datos
+        res.render('dashboard', {
+          titulo: 'Mi Panel',
+          usuario,
+          error: req.flash('error'),
+          success: req.flash('success')
+        });
+      }
+    } catch (error) {
+      console.error('Error en dashboard:', error);
+      req.flash('error', 'Error al cargar el panel');
+      res.redirect('/');
+    }
   },
 
   listarUsuarios: async (req, res) => {
