@@ -5,7 +5,6 @@ const Residuo = require('./Residuo');
 const SolicitudRetiro = require('./SolicitudRetiro');
 const DetalleResiduo = require('./DetalleResiduo');
 const Cotizacion = require('./Cotizacion');
-const DetalleCotizacion = require('./DetalleCotizacion');
 const VisitaRetiro = require('./VisitaRetiro');
 const Certificado = require('./Certificado');
 const Notificacion = require('./Notificacion');
@@ -32,14 +31,6 @@ DetalleResiduo.belongsTo(Residuo, { foreignKey: 'residuoId' });
 SolicitudRetiro.hasMany(Cotizacion, { foreignKey: 'solicitudRetiroId' });
 Cotizacion.belongsTo(SolicitudRetiro, { foreignKey: 'solicitudRetiroId' });
 
-// Cotizacion - DetalleCotizacion
-Cotizacion.hasMany(DetalleCotizacion, { foreignKey: 'cotizacionId' });
-DetalleCotizacion.belongsTo(Cotizacion, { foreignKey: 'cotizacionId' });
-
-// Residuo - DetalleCotizacion
-Residuo.hasMany(DetalleCotizacion, { foreignKey: 'residuoId' });
-DetalleCotizacion.belongsTo(Residuo, { foreignKey: 'residuoId' });
-
 // SolicitudRetiro - VisitaRetiro
 SolicitudRetiro.hasMany(VisitaRetiro, { foreignKey: 'solicitudRetiroId' });
 VisitaRetiro.belongsTo(SolicitudRetiro, { foreignKey: 'solicitudRetiroId' });
@@ -63,7 +54,6 @@ module.exports = {
   SolicitudRetiro,
   DetalleResiduo,
   Cotizacion,
-  DetalleCotizacion,
   VisitaRetiro,
   Certificado,
   Notificacion

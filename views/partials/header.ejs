@@ -9,6 +9,7 @@
   
   <div class="user-menu">
     <!-- Notificaciones -->
+    <% if (usuario) { %>
     <div class="dropdown">
       <button class="btn position-relative" type="button" data-bs-toggle="modal" data-bs-target="#notificacionesModal">
         <i class="fas fa-bell"></i>
@@ -33,5 +34,8 @@
         <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión</a></li>
       </ul>
     </div>
+    <% } else { %>
+      <a href="/login" class="btn btn-outline-primary">Iniciar sesión</a>
+    <% } %>
   </div>
 </header>

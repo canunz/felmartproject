@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const residuoController = require('../controllers/residuoController');
-const auth = require('../middlewares/auth');
+const auth = require('../middlewares/auth'); // Descomentado para restaurar protección
 
 // Todas las rutas requieren rol de administrador
 router.get('/', auth.hasRole(['administrador']), residuoController.listar);

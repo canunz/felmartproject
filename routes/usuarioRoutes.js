@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const usuarioController = require('../controllers/usuarioController');
-const auth = require('../middlewares/auth');
+// const auth = require('../middlewares/auth'); // Comentado para quitar protección
 
 // Rutas públicas
 router.get('/registro', usuarioController.mostrarRegistro);
@@ -17,16 +17,15 @@ router.post('/olvide-password', usuarioController.enviarResetPassword);
 router.get('/reset-password/:token', usuarioController.mostrarResetPassword);
 router.post('/reset-password/:token', usuarioController.resetPassword);
 
-// Rutas protegidas
-router.get('/cambiar-password', auth.isAuthenticated, usuarioController.mostrarCambiarPassword);
-router.post('/cambiar-password', auth.isAuthenticated, usuarioController.cambiarPassword);
+// Rutas que antes requerían autenticación o roles específicos (ahora abiertas)
+router.get('/cambiar-password', /* auth.isAuthenticated, */ usuarioController.mostrarCambiarPassword);
+router.post('/cambiar-password', /* auth.isAuthenticated, */ usuarioController.cambiarPassword);
 
-// Rutas de administración (solo admin)
-router.get('/', auth.hasRole(['administrador']), usuarioController.listarUsuarios);
-router.get('/crear', auth.hasRole(['administrador']), usuarioController.mostrarCrearUsuario);
-router.post('/crear', auth.hasRole(['administrador']), usuarioController.crearUsuario);
-router.get('/editar/:id', auth.hasRole(['administrador']), usuarioController.mostrarEditarUsuario);
-router.post('/editar/:id', auth.hasRole(['administrador']), usuarioController.editarUsuario);
-router.get('/eliminar/:id', auth.hasRole(['administrador']), usuarioController.eliminarUsuario);
+router.get('/', /* auth.hasRole(['administrador']), */ usuarioController.listarUsuarios);
+router.get('/crear', /* auth.hasRole(['administrador']), */ usuarioController.mostrarCrearUsuario);
+router.post('/crear', /* auth.hasRole(['administrador']), */ usuarioController.crearUsuario);
+router.get('/editar/:id', /* auth.hasRole(['administrador']), */ usuarioController.mostrarEditarUsuario);
+router.post('/editar/:id', /* auth.hasRole(['administrador']), */ usuarioController.editarUsuario);
+router.get('/eliminar/:id', /* auth.hasRole(['administrador']), */ usuarioController.eliminarUsuario);
 
 module.exports = router;

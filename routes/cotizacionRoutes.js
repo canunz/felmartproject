@@ -3,18 +3,18 @@ const express = require('express');
 const router = express.Router();
 const cotizacionController = require('../controllers/cotizacionController');
 const auth = require('../middlewares/auth');
+const precioresiduosController = require('../controllers/PrecioresiduosController');
 
-// Rutas accesibles según rol
+// Rutas administrativas (requieren autenticación)
 router.get('/', auth.isAuthenticated, cotizacionController.listar);
 router.get('/detalles/:id', auth.isAuthenticated, cotizacionController.detalles);
-router.get('/descargar/:id', auth.isAuthenticated, cotizacionController.descargarPDF);
+router.get('/crear', auth.isAuthenticated, cotizacionController.mostrarCrear);
+router.post('/crear', auth.isAuthenticated, cotizacionController.crear);
+router.post('/aceptar/:id', auth.isAuthenticated, cotizacionController.aceptar);
+router.post('/rechazar/:id', auth.isAuthenticated, cotizacionController.rechazar);
 
-// Rutas para administradores y operadores
-router.get('/crear', auth.hasRole(['administrador', 'operador']), cotizacionController.mostrarCrear);
-router.post('/crear', auth.hasRole(['administrador', 'operador']), cotizacionController.crear);
-
-// Rutas para clientes
-router.get('/aceptar/:id', auth.hasRole(['cliente']), cotizacionController.aceptar);
-router.post('/rechazar/:id', auth.hasRole(['cliente']), cotizacionController.rechazar);
+// Rutas públicas para cotización avanzada
+router.get('/cotizar', precioresiduosController.mostrarFormularioCotizacion);
+router.post('/cotizar', precioresiduosController.calcularCotizacionAvanzada);
 
 module.exports = router;

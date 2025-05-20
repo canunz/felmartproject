@@ -9,6 +9,10 @@ const cors            = require('cors');
 const expressLayouts  = require('express-ejs-layouts');
 const app = express();
 const pool            = require('./config/database'); // Asegúrate de que este archivo exista
+const { verifyConnection } = require('./config/email.config');
+
+// Verificar conexión del correo al inicio
+verifyConnection();
 
 // Seguridad HTTP headers (CSP permite jQuery desde code.jquery.com y recursos de FullCalendar)
 app.use(helmet({
@@ -94,6 +98,10 @@ app.use('/notificaciones', require('./routes/notificacionRoutes'));
 app.use('/reportes', require('./routes/reporteRoutes'));
 app.use('/dashboard', require('./routes/dashboardRoutes')); // Nueva ruta
 app.use('/perfil', require('./routes/perfilRoutes')); // Nueva ruta
+app.use('/precioresiduos', require('./routes/precioresiduosRoutes'));
+
+// Rutas de la API
+app.use('/api/cmf', require('./routes/api/cmfBancos.routes'));
 
 // 404 Not Found - Actualización para usar nuestra página de error personalizada
 app.use((req, res) => {

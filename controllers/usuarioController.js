@@ -1,20 +1,9 @@
 // controllers/usuarioController.js
 const crypto       = require('crypto');
-const nodemailer   = require('nodemailer');
+const { transporter } = require('../config/email.config');
 const { Usuario, Cliente, SolicitudRetiro, VisitaRetiro } = require('../models');
 const { Op, Sequelize } = require('sequelize');
 const moment       = require('moment');
-
-// Configuración de Nodemailer
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-  port: process.env.EMAIL_PORT || 587,
-  secure: process.env.EMAIL_SECURE === 'true',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
 
 const usuarioController = {
   // 1) Registro / Login / Logout ----------------------------------

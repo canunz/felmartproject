@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cotizar Residuos</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <div class="container mt-5">
+    <h4 class="mb-4">Cotizador de Residuos</h4>
+    <form id="cotizadorForm" autocomplete="off">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="residuoId" class="form-label">Tipo de residuo</label>
+          <select class="form-select" id="residuoId" required>
+            <option value="">-- Seleccione --</option>
+            <% precios.forEach(residuo => { %>
+              <option value="<%= residuo.id %>" data-unidad="<%= residuo.unidad %>" data-precio="<%= residuo.precio %>" data-moneda="<%= residuo.moneda %>" data-descripcion="<%= residuo.descripcion %>">
+                <%= residuo.descripcion %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="precio" class="form-label">Precio unitario</label>
+          <input type="text" class="form-control" id="precio" readonly>
+        </div>
+      </div>
+      <div id="unidadComentario" class="mb-2 text-info"></div>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="cantidad" class="form-label">Cantidad</label>
+          <input type="number" class="form-control" id="cantidad" min="1" disabled required>
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+          <button type="button" id="agregarResiduo" class="btn btn-primary w-100" disabled>Agregar a la lista</button>
+        </div>
+      </div>
+    </form>
+
+    <h5>Lista de residuos a cotizar</h5>
+    <table class="table" id="tablaResiduos">
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Unidad</th>
+          <th>Cantidad</th>
+          <th>Precio unitario</th>
+          <th>Subtotal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <th colspan="4" class="text-end">Total</th>
+          <th id="totalCotizacion">$0</th>
+          <th></th>
+        </tr>
+      </tfoot>
+    </table>
+
+    <form id="formContacto" class="mt-4" method="POST" action="/cotizaciones/cotizar">
+      <input type="hidden" name="residuosCotizados" id="residuosCotizados">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input type="text" class="form-control" name="nombre" required>
+        </div>
+        <div class="col-md-6">
+          <label for="rut" class="form-label">RUT</label>
+          <input type="text" class="form-control" name="rut" required>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="correo" class="form-label">Correo electrónico</label>
+          <input type="email" class="form-control" name="correo" required>
+        </div>
+        <div class="col-md-6">
+          <label for="telefono" class="form-label">Teléfono</label>
+          <input type="text" class="form-control" name="telefono" required>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-md-12">
+          <label for="direccion" class="form-label">Dirección</label>
+          <input type="text" class="form-control" name="direccion" required>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="comuna" class="form-label">Comuna</label>
+          <input type="text" class="form-control" name="comuna" required>
+        </div>
+        <div class="col-md-6">
+          <label for="ciudad" class="form-label">Ciudad</label>
+          <input type="text" class="form-control" name="ciudad" required>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">¿Es empresa?</label>
+        <select class="form-select" name="esEmpresa" id="esEmpresa" required>
+          <option value="no">No</option>
+          <option value="si">Sí</option>
+        </select>
+      </div>
+      <div id="datosEmpresa" style="display:none;">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="nombreEmpresa" class="form-label">Nombre empresa</label>
+            <input type="text" class="form-control" name="nombreEmpresa">
+          </div>
+          <div class="col-md-6">
+            <label for="rutEmpresa" class="form-label">RUT empresa</label>
+            <input type="text" class="form-control" name="rutEmpresa">
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success">Cotizar</button>
+    </form>
+
+  </div>
+  <script>
+    const residuoSelect = document.getElementById('residuoId');
+    const cantidadInput = document.getElementById('cantidad');
+    const unidadComentario = document.getElementById('unidadComentario');
+    const precioInput = document.getElementById('precio');
+    const agregarBtn = document.getElementById('agregarResiduo');
+    const tablaBody = document.querySelector('#tablaResiduos tbody');
+    const totalCotizacion = document.getElementById('totalCotizacion');
+    let residuosCotizados = [];
+
+    residuoSelect.addEventListener('change', function() {
+      const selected = this.options[this.selectedIndex];
+      if (selected.value) {
+        cantidadInput.disabled = false;
+        unidadComentario.textContent = 'Unidad: ' + selected.dataset.unidad;
+        precioInput.value = `${selected.dataset.precio} ${selected.dataset.moneda} por ${selected.dataset.unidad}`;
+        agregarBtn.disabled = false;
+      } else {
+        cantidadInput.disabled = true;
+        unidadComentario.textContent = '';
+        precioInput.value = '';
+        agregarBtn.disabled = true;
+      }
+    });
+
+    agregarBtn.addEventListener('click', function() {
+      const selected = residuoSelect.options[residuoSelect.selectedIndex];
+      const cantidad = parseFloat(cantidadInput.value);
+      if (!selected.value || !cantidad || cantidad <= 0) return;
+      const residuo = {
+        id: selected.value,
+        descripcion: selected.dataset.descripcion,
+        unidad: selected.dataset.unidad,
+        precio: parseFloat(selected.dataset.precio),
+        moneda: selected.dataset.moneda,
+        cantidad: cantidad,
+        subtotal: parseFloat(selected.dataset.precio) * cantidad
+      };
+      residuosCotizados.push(residuo);
+      renderTabla();
+      // Reset
+      residuoSelect.selectedIndex = 0;
+      cantidadInput.value = '';
+      cantidadInput.disabled = true;
+      unidadComentario.textContent = '';
+      precioInput.value = '';
+      agregarBtn.disabled = true;
+    });
+
+    function renderTabla() {
+      tablaBody.innerHTML = '';
+      let total = 0;
+      residuosCotizados.forEach((r, idx) => {
+        total += r.subtotal;
+        tablaBody.innerHTML += `
+          <tr>
+            <td>${r.descripcion}</td>
+            <td>${r.unidad}</td>
+            <td>${r.cantidad}</td>
+            <td>${r.precio} ${r.moneda}</td>
+            <td>${r.subtotal.toLocaleString('es-CL')}</td>
+            <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarResiduo(${idx})">Eliminar</button></td>
+          </tr>
+        `;
+      });
+      totalCotizacion.textContent = '$' + total.toLocaleString('es-CL');
+      document.getElementById('residuosCotizados').value = JSON.stringify(residuosCotizados);
+    }
+
+    window.eliminarResiduo = function(idx) {
+      residuosCotizados.splice(idx, 1);
+      renderTabla();
+    }
+
+    document.getElementById('esEmpresa').addEventListener('change', function() {
+      document.getElementById('datosEmpresa').style.display = this.value === 'si' ? 'block' : 'none';
+    });
+
+    document.getElementById('formContacto').addEventListener('submit', function(e) {
+      if (residuosCotizados.length === 0) {
+        alert('Debes agregar al menos un residuo a la cotización.');
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>

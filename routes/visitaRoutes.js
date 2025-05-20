@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const visitaController = require('../controllers/visitaController');
-const auth = require('../middlewares/auth');
+const auth = require('../middlewares/auth'); // Descomentado para restaurar protección
 
 // Rutas para el calendario y detalles
 router.get('/calendario', auth.isAuthenticated, visitaController.calendario);

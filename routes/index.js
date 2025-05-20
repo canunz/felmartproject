@@ -29,12 +29,12 @@ router.get('/logout', usuarioController.logout);
 
 // Ruta del dashboard
 router.get('/dashboard', (req, res) => {
-  // Verificar si el usuario está autenticado
+  // Protección restaurada: redirige a login si no hay sesión
   if (!req.session.usuario) {
     return res.redirect('/login');
   }
   
-  // Redirigir según el rol
+  // Redirigir según el rol como estaba originalmente
   switch (req.session.usuario.rol) {
     case 'administrador':
       return usuarioController.dashboard(req, res);
@@ -53,9 +53,12 @@ router.get('/dashboard', (req, res) => {
         success: req.flash('success')
       });
     default:
+      // Comportamiento original para rol no válido
       req.flash('error', 'Rol de usuario no válido');
-      return res.redirect('/logout');
+      return res.redirect('/logout'); 
   }
+  // El bloque 'else' para manejar la ausencia de sesión ha sido eliminado 
+  // ya que la primera condición if (!req.session.usuario) se encarga.
 });
 
 module.exports = router;

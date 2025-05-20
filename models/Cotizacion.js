@@ -10,20 +10,19 @@ const Cotizacion = sequelize.define('Cotizacion', {
   },
   solicitudRetiroId: {
     type: DataTypes.INTEGER,
-    references: {
-      model: 'solicitudes_retiro',
-      key: 'id'
-    },
-    allowNull: false
+    allowNull: true,
+    field: 'solicitudRetiroId'
   },
   numeroCotizacion: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true
+    unique: true,
+    field: 'numero_cotizacion'
   },
   fechaCotizacion: {
     type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
+    defaultValue: DataTypes.NOW,
+    field: 'fechaCotizacion'
   },
   subtotal: {
     type: DataTypes.DECIMAL(10, 2),
@@ -37,10 +36,6 @@ const Cotizacion = sequelize.define('Cotizacion', {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false
   },
-  validezCotizacion: {
-    type: DataTypes.INTEGER,
-    defaultValue: 15 // 15 días por defecto
-  },
   estado: {
     type: DataTypes.ENUM('pendiente', 'aceptada', 'rechazada', 'vencida'),
     defaultValue: 'pendiente'
@@ -50,6 +45,20 @@ const Cotizacion = sequelize.define('Cotizacion', {
   },
   rutaPdf: {
     type: DataTypes.STRING
+  },
+  detallesJson: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    defaultValue: '',
+    field: 'detalles_json'
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    field: 'createdAt'
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+    field: 'updatedAt'
   }
 }, {
   timestamps: true,

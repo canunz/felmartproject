@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const notificacionController = require('../controllers/notificacionController');
-const auth = require('../middlewares/auth');
+const auth = require('../middlewares/auth'); // Descomentado para restaurar protección
 
 // Rutas autenticadas
 router.get('/', auth.isAuthenticated, notificacionController.listar);

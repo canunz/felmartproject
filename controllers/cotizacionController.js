@@ -1,7 +1,6 @@
 // controllers/cotizacionController.js
 const { 
     Cotizacion, 
-    DetalleCotizacion, 
     SolicitudRetiro, 
     Cliente, 
     Residuo, 
@@ -75,10 +74,6 @@ const {
             { 
               model: SolicitudRetiro,
               include: [{ model: Cliente }]
-            },
-            { 
-              model: DetalleCotizacion,
-              include: [{ model: Residuo }]
             }
           ]
         });
@@ -89,14 +84,26 @@ const {
         }
         
         // Verificar acceso para clientes
-        if (usuario.rol === 'cliente' && cotizacion.SolicitudRetiro.clienteId !== req.session.clienteId) {
+        if (usuario.rol === 'cliente' && cotizacion.SolicitudRetiro && cotizacion.SolicitudRetiro.clienteId !== req.session.clienteId) {
           req.flash('error', 'No tienes permiso para ver esta cotización');
           return res.redirect('/cotizaciones');
+        }
+        
+        // Parsear los detalles JSON si existen
+        let detalles = [];
+        if (cotizacion.detallesJson) {
+          try {
+            const detallesData = JSON.parse(cotizacion.detallesJson);
+            detalles = detallesData.residuos || [];
+          } catch (e) {
+            console.error('Error al parsear detallesJson', e);
+          }
         }
         
         res.render('cotizaciones/detalles', {
           titulo: 'Detalles de Cotización',
           cotizacion,
+          detalles,
           usuario,
           error: req.flash('error'),
           success: req.flash('success')
@@ -254,10 +261,10 @@ const {
           estado: 'pendiente'
         });
         
-        // Crear detalles de cotización
+        // Crear detalles de cotización y almacenarlos en formato JSON
+        const detalles = [];
         for (let i = 0; i < residuoIds.length; i++) {
-          await DetalleCotizacion.create({
-            cotizacionId: nuevaCotizacion.id,
+          detalles.push({
             residuoId: residuoIds[i],
             cantidad: cantidades[i],
             precioUnitario: preciosUnitarios[i],
@@ -265,6 +272,10 @@ const {
             descripcion: descripciones[i] || null
           });
         }
+        
+        // Guardar los detalles en el campo detallesJson
+        nuevaCotizacion.detallesJson = JSON.stringify({ residuos: detalles });
+        await nuevaCotizacion.save();
         
         // Actualizar estado de la solicitud
         solicitud.estado = 'cotizada';
@@ -462,6 +473,139 @@ const {
       req.flash('error', 'Error al descargar PDF');
       res.redirect(`/cotizaciones/detalles/${req.params.id}`);
     }
+  },
+
+  /**
+   * Muestra el formulario de nueva cotización
+   * @param {Object} req - Objeto de solicitud
+   * @param {Object} res - Objeto de respuesta
+   */
+  mostrarFormularioNueva: (req, res) => {
+    // Obtener datos del usuario si está autenticado
+    const usuario = req.session.usuario || null;
+    
+    res.render('cotizaciones/nueva', {
+      title: 'Nueva Cotización',
+      usuario,
+      layout: 'layouts/main'
+    });
+  },
+
+  /**
+   * Procesa una nueva cotización
+   * @param {Object} req - Objeto de solicitud
+   * @param {Object} res - Objeto de respuesta
+   */
+  crearCotizacion: async (req, res) => {
+    try {
+      const {
+        email,
+        username,
+        first_name,
+        last_name,
+        telefono,
+        direccion,
+        ciudad,
+        region,
+        rut,
+        tipo_residuo,
+        cantidad,
+        fecha_retiro,
+        observaciones
+      } = req.body;
+
+      // Crear nueva cotización
+      const cotizacion = await Cotizacion.create({
+        usuario_id: req.session.usuario?.id,
+        email,
+        nombre: `${first_name} ${last_name}`,
+        telefono,
+        direccion,
+        ciudad,
+        region,
+        rut,
+        tipo_residuo,
+        cantidad,
+        fecha_retiro,
+        observaciones,
+        estado: 'pendiente'
+      });
+
+      req.flash('success_msg', 'Cotización enviada exitosamente');
+      res.redirect('/cotizaciones/mis-cotizaciones');
+    } catch (error) {
+      console.error('Error al crear cotización:', error);
+      req.flash('error_msg', 'Error al procesar la cotización');
+      res.redirect('/cotizaciones/nueva');
+    }
+  },
+
+  /**
+   * Muestra las cotizaciones del usuario
+   * @param {Object} req - Objeto de solicitud
+   * @param {Object} res - Objeto de respuesta
+   */
+  misCotizaciones: async (req, res) => {
+    try {
+      const cotizaciones = await Cotizacion.findByUsuario(req.session.usuario?.id);
+      
+      res.render('cotizaciones/lista', {
+        title: 'Mis Cotizaciones',
+        cotizaciones,
+        layout: 'layouts/main'
+      });
+    } catch (error) {
+      console.error('Error al obtener cotizaciones:', error);
+      req.flash('error_msg', 'Error al cargar las cotizaciones');
+      res.redirect('/');
+    }
+  },
+
+  /**
+   * Muestra el formulario público de cotización
+   */
+  mostrarFormularioCotizar: (req, res) => {
+    const usuario = req.session?.usuario || null;
+    const precios = require('../models/PrecioResiduo').obtenerTodos();
+    res.render('cotizaciones/cotizar', {
+      title: 'Cotizar Residuos',
+      titulo: 'Cotizar Residuos',
+      usuario,
+      precios
+    });
+  },
+
+  /**
+   * Procesa el formulario público de cotización y muestra el resultado
+   */
+  procesarCotizacion: async (req, res) => {
+    try {
+      // Aquí puedes guardar la cotización o solo mostrar el resultado
+      const cotizacion = {
+        numeroCotizacion: 'COT-PRUEBA-001',
+        fechaCotizacion: new Date(),
+        nombre: req.body.nombre,
+        rut: req.body.rut,
+        DetalleCotizacions: [{
+          descripcion: req.body.tipo_residuo === 'peligroso' ? 'Residuo Peligroso' : 'Residuo No Peligroso',
+          cantidad: req.body.cantidad,
+          precioUnitario: 1000, // Valor de ejemplo
+          subtotal: req.body.cantidad * 1000
+        }],
+        subtotal: req.body.cantidad * 1000,
+        iva: Math.round(req.body.cantidad * 1000 * 0.19),
+        total: Math.round(req.body.cantidad * 1000 * 1.19),
+        observaciones: req.body.observaciones
+      };
+      res.render('cotizaciones/resultado', {
+        title: 'Resultado Cotización',
+        cotizacion
+      });
+    } catch (error) {
+      console.error('Error al procesar cotización pública:', error);
+      req.flash('error_msg', 'Error al procesar la cotización');
+      res.redirect('/cotizaciones/cotizar');
+    }
   }
 };
 
@@ -476,7 +620,7 @@ const generarPDFCotizacion = async (cotizacionId) => {
           include: [{ model: Cliente }]
         },
         { 
-          model: DetalleCotizacion,
+          model: DetalleResiduo,
           include: [{ model: Residuo }]
         }
       ]

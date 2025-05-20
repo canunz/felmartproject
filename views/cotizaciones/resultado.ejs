@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Resultado Cotización</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-10">
+        <div class="card">
+          <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Cotización enviada</h4>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-success">
+              <i class="fas fa-check-circle me-2"></i>
+              Tu cotización ha sido enviada correctamente. Pronto recibirás un correo con el detalle.
+            </div>
+            <% if (typeof detalles !== 'undefined' && detalles.length) { %>
+              <h5>Detalle de la cotización</h5>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Tipo</th>
+                    <th>Unidad</th>
+                    <th>Cantidad</th>
+                    <th>Precio unitario</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% detalles.forEach(d => { %>
+                    <tr>
+                      <td><%= d.descripcion %></td>
+                      <td><%= d.unidad %></td>
+                      <td><%= d.cantidad %></td>
+                      <td><%= d.precioUnitario.toLocaleString('es-CL') %> <%= d.moneda %></td>
+                      <td><%= d.subtotal.toLocaleString('es-CL') %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th colspan="4" class="text-end">Total</th>
+                    <th><%= total.toLocaleString('es-CL') %></th>
+                  </tr>
+                </tfoot>
+              </table>
+            <% } %>
+            <% if (typeof nombre !== 'undefined') { %>
+              <div class="mt-4">
+                <h6>Datos de contacto</h6>
+                <ul>
+                  <li><strong>Nombre:</strong> <%= nombre %></li>
+                  <% if (typeof rut !== 'undefined') { %><li><strong>RUT:</strong> <%= rut %></li><% } %>
+                  <% if (typeof correo !== 'undefined') { %><li><strong>Correo:</strong> <%= correo %></li><% } %>
+                  <% if (typeof telefono !== 'undefined') { %><li><strong>Teléfono:</strong> <%= telefono %></li><% } %>
+                </ul>
+              </div>
+              <div class="mt-4">
+                <h6>Dirección de retiro</h6>
+                <ul>
+                  <% if (typeof direccion !== 'undefined' && direccion) { %><li><strong>Dirección:</strong> <%= direccion %></li><% } %>
+                  <% if (typeof comuna !== 'undefined' && comuna) { %><li><strong>Comuna:</strong> <%= comuna %></li><% } %>
+                  <% if (typeof ciudad !== 'undefined' && ciudad) { %><li><strong>Ciudad:</strong> <%= ciudad %></li><% } %>
+                </ul>
+              </div>
+            <% } %>
+            <a href="/cotizaciones/cotizar" class="btn btn-primary mt-3">Nueva Cotización</a>
+            <a href="/" class="btn btn-secondary mt-3">Volver al inicio</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</body>
+</html>

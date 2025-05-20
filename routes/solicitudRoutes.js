@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const solicitudController = require('../controllers/solicitudController');
-const auth = require('../middlewares/auth');
+const auth = require('../middlewares/auth'); // Descomentado para restaurar protección
 
 // Rutas accesibles según rol
 router.get('/', auth.isAuthenticated, solicitudController.listar);

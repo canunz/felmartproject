@@ -1,13 +1,13 @@
 // routes/perfilRoutes.js
 const express = require('express');
 const router = express.Router();
-const { isAuthenticated } = require('../middlewares/auth');
+const { isAuthenticated } = require('../middlewares/auth'); // Descomentado para restaurar protección
 const pool = require('../config/database');
 const bcrypt = require('bcrypt');
 
-// Mostrar perfil
+// Ruta para mostrar el perfil del usuario (abierta)
 router.get('/', isAuthenticated, async (req, res) => {
-  try {
+    try {
     const userId = req.session.usuario.id;
     
     // Obtener datos completos del usuario
@@ -36,17 +36,17 @@ router.get('/', isAuthenticated, async (req, res) => {
   }
 });
 
-// Actualizar perfil
+// Ruta para actualizar el perfil (abierta)
 router.post('/actualizar', isAuthenticated, async (req, res) => {
   try {
-    const userId = req.session.usuario.id;
+    const { id } = req.session.usuario;
     const { nombre, email, telefono, direccion, empresa } = req.body;
     
     // Verificar si el email ya está en uso por otro usuario
     if (email !== req.session.usuario.email) {
       const [existeEmail] = await pool.query(
         'SELECT id FROM usuarios WHERE email = ? AND id != ?',
-        [email, userId]
+        [email, id]
       );
       
       if (existeEmail.length > 0) {
@@ -58,7 +58,7 @@ router.post('/actualizar', isAuthenticated, async (req, res) => {
     // Actualizar datos
     await pool.query(
       'UPDATE usuarios SET nombre = ?, email = ?, telefono = ?, direccion = ?, empresa = ? WHERE id = ?',
-      [nombre, email, telefono, direccion, empresa, userId]
+      [nombre, email, telefono, direccion, empresa, id]
     );
     
     // Actualizar datos en la sesión
@@ -74,10 +74,10 @@ router.post('/actualizar', isAuthenticated, async (req, res) => {
   }
 });
 
-// Cambiar contraseña
+// Ruta para cambiar la contraseña (abierta)
 router.post('/cambiar-password', isAuthenticated, async (req, res) => {
   try {
-    const userId = req.session.usuario.id;
+    const { id } = req.session.usuario;
     const { password_actual, password_nuevo, password_confirmar } = req.body;
     
     // Validar que la nueva contraseña y la confirmación coincidan
@@ -89,7 +89,7 @@ router.post('/cambiar-password', isAuthenticated, async (req, res) => {
     // Obtener contraseña actual
     const [usuarios] = await pool.query(
       'SELECT password FROM usuarios WHERE id = ?',
-      [userId]
+      [id]
     );
     
     // Verificar contraseña actual
@@ -106,7 +106,7 @@ router.post('/cambiar-password', isAuthenticated, async (req, res) => {
     // Actualizar contraseña
     await pool.query(
       'UPDATE usuarios SET password = ? WHERE id = ?',
-      [hashedPassword, userId]
+      [hashedPassword, id]
     );
     
     req.flash('success', 'Contraseña actualizada exitosamente');
@@ -116,6 +116,6 @@ router.post('/cambiar-password', isAuthenticated, async (req, res) => {
     req.flash('error', 'Error al cambiar la contraseña');
     res.redirect('/perfil');
   }
-});
+}); // Cierre del try-catch y del router.post
 
 module.exports = router;

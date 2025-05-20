@@ -1,7 +1,17 @@
 // middlewares/auth.js
+const rutasPublicas = [
+  '/notificaciones/no-leidas',
+  '/notificaciones/marcar-leida',
+  '/notificaciones/marcar-todas-leidas'
+];
+
 const auth = {
   // Verificar si el usuario está autenticado
   isAuthenticated: (req, res, next) => {
+    // Permitir acceso a rutas públicas de notificaciones
+    if (rutasPublicas.some(ruta => req.path.startsWith(ruta))) {
+      return next();
+    }
     if (req.session && req.session.usuario) {
       return next();
     }
