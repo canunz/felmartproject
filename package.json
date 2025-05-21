@@ -5,16 +5,12 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    
     "dev": "nodemon app.js",
-
     "setup": "node config/sync-db.js",
-    "test:email": "node test/email.test.js"
-
+    "test:email": "node test/email.test.js",
     "test": "jest",
     "migrate": "sequelize-cli db:migrate",
     "seed": "sequelize-cli db:seed:all"
-
   },
   "keywords": [],
   "author": "",
@@ -49,14 +45,10 @@
     "winston": "^3.11.0"
   },
   "devDependencies": {
-
     "chai": "^5.2.0",
-    "nodemon": "^3.1.10"
-
     "jest": "^29.7.0",
-    "nodemon": "^3.0.2",
+    "nodemon": "^3.1.10",
     "sequelize-cli": "^6.6.2",
     "supertest": "^6.3.3"
-
   }
 }
