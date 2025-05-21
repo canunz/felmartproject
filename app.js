@@ -36,7 +36,8 @@ app.use(helmet({
       "font-src": [
         "'self'",
         "https://fonts.gstatic.com",
-        "https://cdnjs.cloudflare.com"
+        "https://cdnjs.cloudflare.com",
+        "data:"
       ],
       "img-src": ["'self'", "data:"]
     }
@@ -155,9 +156,9 @@ app.use('/clientes', require('./routes/clienteRoutes'));
 app.use('/residuos', require('./routes/residuoRoutes'));
 app.use('/solicitudes', require('./routes/solicitudRoutes'));
 app.use('/cotizaciones', require('./routes/cotizacionRoutes'));
-app.use('/calendario', require('./routes/calendarioRoutes')); 
+app.use('/calendario', require('./routes/calendarioRoutes'));
 app.use('/visitas', require('./routes/visitaRoutes'));
-app.use('/certificados', require('./routes/certificadoRoutes'));
+app.use('/certificados', require('./routes/certificadosRoutes'));
 app.use('/notificaciones', require('./routes/notificacionRoutes'));
 app.use('/reportes', require('./routes/reporteRoutes'));
 app.use('/dashboard', require('./routes/dashboardRoutes')); 

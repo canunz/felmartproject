@@ -12,8 +12,7 @@ const {
   const { Op } = require('sequelize');
   const fs = require('fs');
   const path = require('path');
-  const pdf = require('html-pdf');
-  const ejs = require('ejs');
+  const PDFDocument = require('pdfkit');
   const moment = require('moment');
   moment.locale('es');
   
@@ -454,31 +453,150 @@ const {
   const generarPDFCotizacion = async (cotizacion) => {
     return new Promise((resolve, reject) => {
       try {
-        const templatePath = path.join(__dirname, '../views/cotizaciones/pdf-template.ejs');
-        const template = fs.readFileSync(templatePath, 'utf-8');
-        
-        const html = ejs.render(template, {
-          cotizacion,
-          moment
-        });
-        
-        const options = {
-          format: 'A4',
-          border: {
-            top: '20px',
-            right: '20px',
-            bottom: '20px',
-            left: '20px'
-          }
-        };
-        
-        pdf.create(html, options).toBuffer((err, buffer) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(buffer);
+        const doc = new PDFDocument({
+          size: 'A4',
+          margin: 50,
+          info: {
+            Title: `Cotización ${cotizacion.numeroCotizacion}`,
+            Author: 'Felmart',
+            Subject: 'Cotización de Gestión de Residuos'
           }
         });
+
+        // Crear stream de escritura
+        const chunks = [];
+        doc.on('data', chunk => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+        doc.on('error', reject);
+
+        // Logo (si existe)
+        const logoPath = path.join(__dirname, '..', 'public', 'img', 'logo.png');
+        if (fs.existsSync(logoPath)) {
+          doc.image(logoPath, 50, 45, { width: 100 });
+        }
+
+        // Título
+        doc.fontSize(20)
+           .font('Helvetica-Bold')
+           .text('COTIZACIÓN', { align: 'center' })
+           .moveDown();
+
+        // Número de cotización
+        doc.fontSize(14)
+           .font('Helvetica')
+           .text(`N° ${cotizacion.numeroCotizacion}`, { align: 'center' })
+           .moveDown(2);
+
+        // Información del cliente
+        doc.fontSize(12)
+           .font('Helvetica-Bold')
+           .text('Información del Cliente')
+           .moveDown(0.5)
+           .font('Helvetica')
+           .text(`Empresa: ${cotizacion.SolicitudRetiro.Cliente.nombre}`)
+           .text(`RUC: ${cotizacion.SolicitudRetiro.Cliente.ruc}`)
+           .text(`Dirección: ${cotizacion.SolicitudRetiro.Cliente.direccion}`)
+           .text(`Teléfono: ${cotizacion.SolicitudRetiro.Cliente.telefono}`)
+           .moveDown();
+
+        // Información de la cotización
+        doc.font('Helvetica-Bold')
+           .text('Información de la Cotización')
+           .moveDown(0.5)
+           .font('Helvetica')
+           .text(`Fecha: ${moment(cotizacion.fechaCotizacion).format('DD/MM/YYYY')}`)
+           .text(`Válido hasta: ${moment(cotizacion.validezCotizacion).format('DD/MM/YYYY')}`)
+           .text(`Estado: ${cotizacion.estado.toUpperCase()}`)
+           .text(`Solicitud: ${cotizacion.SolicitudRetiro.numeroSolicitud}`)
+           .moveDown();
+
+        // Tabla de detalles
+        doc.font('Helvetica-Bold')
+           .text('Detalles de la Cotización')
+           .moveDown(0.5);
+
+        // Encabezados de la tabla
+        const tableTop = doc.y;
+        const tableHeaders = ['Residuo', 'Descripción', 'Cantidad', 'Precio Unit.', 'Subtotal'];
+        const columnWidths = [100, 150, 80, 80, 80];
+        let x = 50;
+
+        doc.font('Helvetica-Bold');
+        tableHeaders.forEach((header, i) => {
+          doc.text(header, x, tableTop);
+          x += columnWidths[i];
+        });
+
+        // Línea separadora
+        doc.moveDown()
+           .moveTo(50, doc.y)
+           .lineTo(500, doc.y)
+           .stroke();
+
+        // Detalles de la cotización
+        doc.font('Helvetica');
+        let y = doc.y + 10;
+        let maxY = y;
+
+        cotizacion.DetalleCotizacions.forEach(detalle => {
+          // Verificar si necesitamos una nueva página
+          if (y > 700) {
+            doc.addPage();
+            y = 50;
+            maxY = y;
+          }
+
+          x = 50;
+          doc.text(detalle.Residuo.nombre, x, y);
+          x += columnWidths[0];
+          doc.text(detalle.descripcion, x, y);
+          x += columnWidths[1];
+          doc.text(`${detalle.cantidad} ${detalle.Residuo.unidad}`, x, y);
+          x += columnWidths[2];
+          doc.text(`S/ ${detalle.precioUnitario.toFixed(2)}`, x, y);
+          x += columnWidths[3];
+          doc.text(`S/ ${detalle.subtotal.toFixed(2)}`, x, y);
+
+          y += 20;
+          maxY = Math.max(maxY, y);
+        });
+
+        // Totales
+        doc.moveDown(2)
+           .font('Helvetica-Bold')
+           .text(`Subtotal: S/ ${cotizacion.subtotal.toFixed(2)}`, { align: 'right' })
+           .text(`IGV (18%): S/ ${cotizacion.iva.toFixed(2)}`, { align: 'right' })
+           .text(`Total: S/ ${cotizacion.total.toFixed(2)}`, { align: 'right' });
+
+        // Observaciones (si existen)
+        if (cotizacion.observaciones) {
+          doc.moveDown(2)
+             .font('Helvetica-Bold')
+             .text('Observaciones')
+             .moveDown(0.5)
+             .font('Helvetica')
+             .text(cotizacion.observaciones);
+        }
+
+        // Pie de página
+        const footerY = 700;
+        doc.fontSize(10)
+           .font('Helvetica')
+           .text('Felmart - Gestión Integral de Residuos', 50, footerY, {
+             align: 'center',
+             width: 500
+           })
+           .text('Av. Principal 123, Lima, Perú | Tel: (01) 123-4567', 50, footerY + 15, {
+             align: 'center',
+             width: 500
+           })
+           .text('www.felmart.com | info@felmart.com', 50, footerY + 30, {
+             align: 'center',
+             width: 500
+           });
+
+        // Finalizar PDF
+        doc.end();
       } catch (error) {
         reject(error);
       }

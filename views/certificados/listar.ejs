@@ -1,53 +1,271 @@
 <%- include('../partials/header') %>
-<style>
-  .list-card {background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(0,97,110,0.08), 0 1.5px 4px rgba(0,97,110,0.08); padding: 2.5rem 2rem 2rem 2rem; margin-top: 2.5rem; margin-bottom: 2rem; max-width: 950px; margin-left: auto; margin-right: auto;}
-  .list-title {font-size: 2rem; font-weight: 700; color: #00616e; display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.5rem;}
-  .list-title i {font-size: 2.2rem; color: #00b4d8;}
-  .list-table th, .list-table td {vertical-align: middle !important;}
-  .list-table tbody tr:hover {background: #f1f8fa; transition: background 0.2s;}
-  .list-table th {background: #eaf6f8; color: #00616e; font-weight: 600;}
-  .list-table {border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,97,110,0.06);}
-  @media (max-width: 767px) {.list-card { padding: 1.2rem 0.5rem; } .list-title { font-size: 1.3rem; }}
-</style>
-<div class="list-card">
-  <div class="list-title">
-    <i class="fas fa-certificate"></i> Listado de Certificados
+
+<div class="container-fluid mt-4">
+  <!-- Tarjetas de resumen -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card bg-primary text-white h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-title">Total Certificados</h6>
+              <h2 class="mb-0"><%= typeof totalCertificados !== 'undefined' ? totalCertificados : 0 %></h2>
+            </div>
+            <i class="fas fa-certificate fa-2x opacity-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-success text-white h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-title">Certificados Válidos</h6>
+              <h2 class="mb-0"><%= typeof certificadosValidos !== 'undefined' ? certificadosValidos : 0 %></h2>
+            </div>
+            <i class="fas fa-check-circle fa-2x opacity-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-warning text-dark h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-title">Por Vencer</h6>
+              <h2 class="mb-0"><%= typeof certificadosPorVencer !== 'undefined' ? certificadosPorVencer : 0 %></h2>
+            </div>
+            <i class="fas fa-clock fa-2x opacity-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <form class="row mb-3">
-    <div class="col-md-5 mb-2">
-      <input type="text" class="form-control" placeholder="Buscar certificado...">
+
+  <!-- Lista de certificados -->
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="card-title mb-0">Mis Certificados</h5>
+      <div class="d-flex gap-2">
+        <div class="input-group" style="width: 300px;">
+          <input type="text" id="searchInput" class="form-control" placeholder="Buscar certificado...">
+          <button class="btn btn-outline-secondary" type="button" id="searchButton">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+        <select class="form-select" id="filterStatus" style="width: 200px;">
+          <option value="">Todos los estados</option>
+          <option value="valido">Válidos</option>
+          <option value="por_vencer">Por vencer</option>
+          <option value="vencido">Vencidos</option>
+        </select>
+      </div>
     </div>
-    <div class="col-md-2 mb-2">
-      <button class="btn btn-primary w-100"><i class="fas fa-search"></i> Buscar</button>
+    <div class="card-body">
+      <% if (typeof certificados !== 'undefined' && certificados && certificados.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr>
+                <th>N° Certificado</th>
+                <th>Fecha Emisión</th>
+                <th>Fecha Vencimiento</th>
+                <th>Tipo Residuo</th>
+                <th>Cantidad</th>
+                <th>Estado</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% certificados.forEach(certificado => { 
+                const hoy = new Date();
+                const fechaVencimiento = new Date(certificado.fechaVencimiento);
+                const diasRestantes = Math.ceil((fechaVencimiento - hoy) / (1000 * 60 * 60 * 24));
+                let estado = 'valido';
+                let estadoClass = 'success';
+                let estadoText = 'Válido';
+                
+                if (diasRestantes <= 0) {
+                  estado = 'vencido';
+                  estadoClass = 'danger';
+                  estadoText = 'Vencido';
+                } else if (diasRestantes <= 30) {
+                  estado = 'por_vencer';
+                  estadoClass = 'warning';
+                  estadoText = `Por vencer (${diasRestantes} días)`;
+                }
+              %>
+                <tr data-certificado-id="<%= certificado.id %>" data-estado="<%= estado %>">
+                  <td><%= certificado.numeroCertificado %></td>
+                  <td><%= new Date(certificado.fechaEmision).toLocaleDateString('es-ES') %></td>
+                  <td><%= new Date(certificado.fechaVencimiento).toLocaleDateString('es-ES') %></td>
+                  <td><%= certificado.tipoResiduo %></td>
+                  <td><%= certificado.cantidad %> <%= certificado.unidad %></td>
+                  <td>
+                    <span class="badge bg-<%= estadoClass %>"><%= estadoText %></span>
+                  </td>
+                  <td class="text-end">
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-primary" onclick="verDetalles('<%= certificado.id %>')">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-success" onclick="descargarPDF('<%= certificado.id %>')">
+                        <i class="fas fa-download"></i>
+                      </button>
+                      <% if (estado === 'por_vencer') { %>
+                        <button type="button" class="btn btn-sm btn-outline-warning" onclick="renovarCertificado('<%= certificado.id %>')">
+                          <i class="fas fa-sync-alt"></i>
+                        </button>
+                      <% } %>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="text-center py-5">
+          <i class="fas fa-certificate fa-4x text-muted mb-3"></i>
+          <p class="lead text-muted">No tienes certificados registrados</p>
+        </div>
+      <% } %>
     </div>
-  </form>
-  <div class="table-responsive">
-    <table class="table list-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>N° Certificado</th>
-          <th>Cliente</th>
-          <th>Fecha</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>CERT-2024-001</td>
-          <td>Empresa Ejemplo</td>
-          <td>2024-06-01</td>
-          <td><span class="badge bg-success">Emitido</span></td>
-          <td>
-            <a href="#" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
-            <a href="#" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
-            <a href="#" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </div>
+
+<!-- Scripts -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Funcionalidad de búsqueda
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const filterStatus = document.getElementById('filterStatus');
+    const rows = document.querySelectorAll('tbody tr');
+
+    function filterTable() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const statusFilter = filterStatus.value;
+
+      rows.forEach(row => {
+        const certificadoId = row.querySelector('td:first-child').textContent.toLowerCase();
+        const estado = row.dataset.estado;
+        const matchesSearch = certificadoId.includes(searchTerm);
+        const matchesStatus = !statusFilter || estado === statusFilter;
+
+        row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+      });
+    }
+
+    searchButton.addEventListener('click', filterTable);
+    searchInput.addEventListener('keyup', filterTable);
+    filterStatus.addEventListener('change', filterTable);
+  });
+
+  // Funciones de acción
+  function verDetalles(id) {
+    window.location.href = `/certificados/${id}`;
+  }
+
+  function descargarPDF(id) {
+    // Implementar descarga de PDF
+    Swal.fire({
+      title: 'Descargando certificado...',
+      text: 'Por favor espere un momento',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    fetch(`/certificados/${id}/pdf`)
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `certificado-${id}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        Swal.close();
+      })
+      .catch(error => {
+        console.error('Error al descargar el certificado:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo descargar el certificado. Por favor, inténtelo más tarde.'
+        });
+      });
+  }
+
+  function renovarCertificado(id) {
+    Swal.fire({
+      title: '¿Renovar certificado?',
+      text: 'Se creará una nueva solicitud para renovar este certificado.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, renovar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#0d6efd'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = `/solicitudes/renovar/${id}`;
+      }
+    });
+  }
+</script>
+
+<!-- Estilos -->
+<style>
+  .card {
+    border: none;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-radius: 12px;
+  }
+
+  .card-header {
+    background: white;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 1rem 1.5rem;
+  }
+
+  .card-title {
+    color: #00616e;
+    font-weight: 600;
+  }
+
+  .table th {
+    font-weight: 600;
+    color: #00616e;
+    border-top: none;
+  }
+
+  .btn-group .btn {
+    padding: 0.375rem 0.75rem;
+  }
+
+  .btn-group .btn i {
+    font-size: 0.875rem;
+  }
+
+  .badge {
+    padding: 0.5em 0.75em;
+    font-weight: 500;
+  }
+
+  .input-group .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.25);
+  }
+
+  .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.25);
+  }
+</style>
+
 <%- include('../partials/footer') %> 

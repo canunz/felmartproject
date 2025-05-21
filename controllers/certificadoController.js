@@ -10,8 +10,7 @@ const {
   const { Op } = require('sequelize');
   const fs = require('fs');
   const path = require('path');
-  const pdf = require('html-pdf');
-  const ejs = require('ejs');
+  const PDFDocument = require('pdfkit');
   const moment = require('moment');
   const multer = require('multer');
   
@@ -406,43 +405,115 @@ const {
         fs.mkdirSync(directorioDestino, { recursive: true });
       }
       
-      // Ruta del archivo de plantilla
-      const rutaPlantilla = path.join(__dirname, '..', 'views', 'certificados', 'plantilla-pdf.ejs');
-      
-      // Leer plantilla
-      const contenidoPlantilla = fs.readFileSync(rutaPlantilla, 'utf8');
-      
-      // Compilar plantilla con datos
-      const html = ejs.render(contenidoPlantilla, {
-        certificado,
-        moment
-      });
-      
       // Generar PDF
       const nombreArchivo = `certificado-${certificadoId}.pdf`;
       const rutaArchivoPDF = path.join(directorioDestino, nombreArchivo);
       
       return new Promise((resolve, reject) => {
-        pdf.create(html, {
-          format: 'Letter',
-          border: {
-            top: '1cm',
-            right: '1cm',
-            bottom: '1cm',
-            left: '1cm'
+        try {
+          const doc = new PDFDocument({
+            size: 'A4',
+            margin: 50,
+            info: {
+              Title: `Certificado ${certificado.numeroCertificado}`,
+              Author: 'Felmart',
+              Subject: 'Certificado de Gestión de Residuos'
+            }
+          });
+
+          // Crear stream de escritura
+          const stream = fs.createWriteStream(rutaArchivoPDF);
+          doc.pipe(stream);
+
+          // Logo (si existe)
+          const logoPath = path.join(__dirname, '..', 'public', 'img', 'logo.png');
+          if (fs.existsSync(logoPath)) {
+            doc.image(logoPath, 50, 45, { width: 100 });
           }
-        }).toFile(rutaArchivoPDF, async (err, res) => {
-          if (err) {
-            reject(err);
-            return;
+
+          // Título
+          doc.fontSize(20)
+             .font('Helvetica-Bold')
+             .text('Certificado de Gestión de Residuos', { align: 'center' })
+             .moveDown();
+
+          // Número de certificado
+          doc.fontSize(14)
+             .font('Helvetica')
+             .text(`N° ${certificado.numeroCertificado}`, { align: 'center' })
+             .moveDown(2);
+
+          // Información del cliente
+          doc.fontSize(12)
+             .font('Helvetica-Bold')
+             .text('Información del Cliente')
+             .moveDown(0.5)
+             .font('Helvetica')
+             .text(`Empresa: ${certificado.VisitaRetiro.SolicitudRetiro.Cliente.nombre}`)
+             .text(`RUC: ${certificado.VisitaRetiro.SolicitudRetiro.Cliente.ruc}`)
+             .text(`Dirección: ${certificado.VisitaRetiro.SolicitudRetiro.Cliente.direccion}`)
+             .moveDown();
+
+          // Detalles del certificado
+          doc.font('Helvetica-Bold')
+             .text('Detalles del Certificado')
+             .moveDown(0.5)
+             .font('Helvetica')
+             .text(`Tipo de Tratamiento: ${certificado.tipoTratamiento}`)
+             .text(`Planta Destino: ${certificado.plantaDestino}`)
+             .text(`Fecha de Emisión: ${moment(certificado.fechaEmision).format('DD/MM/YYYY')}`)
+             .moveDown();
+
+          // Información de la visita
+          doc.font('Helvetica-Bold')
+             .text('Información de la Visita')
+             .moveDown(0.5)
+             .font('Helvetica')
+             .text(`Fecha de Retiro: ${moment(certificado.VisitaRetiro.fechaRetiro).format('DD/MM/YYYY')}`)
+             .text(`Hora de Retiro: ${certificado.VisitaRetiro.horaRetiro}`)
+             .moveDown();
+
+          // Observaciones (si existen)
+          if (certificado.observaciones) {
+            doc.font('Helvetica-Bold')
+               .text('Observaciones')
+               .moveDown(0.5)
+               .font('Helvetica')
+               .text(certificado.observaciones)
+               .moveDown();
           }
-          
-          // Actualizar ruta en la base de datos
-          certificado.rutaPdf = `/uploads/certificados/${nombreArchivo}`;
-          await certificado.save();
-          
-          resolve(rutaArchivoPDF);
-        });
+
+          // Pie de página
+          const footerY = 700;
+          doc.fontSize(10)
+             .font('Helvetica')
+             .text('Este documento es un certificado oficial de gestión de residuos.', 50, footerY, {
+               align: 'center',
+               width: 500
+             })
+             .text('Felmart - Gestión de Residuos', 50, footerY + 15, {
+               align: 'center',
+               width: 500
+             })
+             .text('Ruta 5 Sur km 1036, sector Trapen, Puerto Montt, Chile', 50, footerY + 30, {
+               align: 'center',
+               width: 500
+             });
+
+          // Finalizar PDF
+          doc.end();
+
+          // Manejar eventos del stream
+          stream.on('finish', () => {
+            resolve(rutaArchivoPDF);
+          });
+
+          stream.on('error', (error) => {
+            reject(error);
+          });
+        } catch (error) {
+          reject(error);
+        }
       });
     } catch (error) {
       console.error('Error al generar PDF:', error);

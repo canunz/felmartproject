@@ -30,7 +30,9 @@
           <th>Cliente</th>
           <th>Fecha</th>
           <th>Estado</th>
-          <th>Acciones</th>
+          <% if (usuario.rol !== 'cliente') { %>
+            <th>Acciones</th>
+          <% } %>
         </tr>
       </thead>
       <tbody>
@@ -40,11 +42,13 @@
           <td>Empresa Ejemplo</td>
           <td>2024-06-01</td>
           <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+          <% if (usuario.rol !== 'cliente') { %>
           <td>
             <a href="#" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
             <a href="#" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
             <a href="#" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
           </td>
+          <% } %>
         </tr>
       </tbody>
     </table>
