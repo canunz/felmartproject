@@ -122,6 +122,7 @@ const {
         res.render('visitas/calendario', {
           titulo: 'Calendario de Visitas',
           eventosCalendario: JSON.stringify(eventosCalendario),
+          hayEventos: eventosCalendario.length > 0,
           operadores,
           usuario,
           error: req.flash('error'),
@@ -594,102 +595,101 @@ const {
           });
         }
         
-// controllers/visitaController.js (continuación)
-      // Notificar al cliente si el operador o admin cancela
-      if ((usuario.rol === 'administrador' || usuario.rol === 'operador') && 
-          visita.SolicitudRetiro && visita.SolicitudRetiro.Cliente && visita.SolicitudRetiro.Cliente.Usuario) {
-        await Notificacion.create({
-          usuarioId: visita.SolicitudRetiro.Cliente.Usuario.id,
-          tipo: 'visita',
-          titulo: 'Visita cancelada',
-          mensaje: `Su visita #${id} ha sido cancelada${motivo ? `. Motivo: ${motivo}` : ''}`,
-          referenciaId: id
-        });
-      }
-      
-      // Notificar a los administradores
-      if (usuario.rol !== 'administrador') {
-        const admins = await Usuario.findAll({
-          where: { rol: 'administrador' }
-        });
-        
-        for (const admin of admins) {
+        // Notificar al cliente si el operador o admin cancela
+        if ((usuario.rol === 'administrador' || usuario.rol === 'operador') && 
+            visita.SolicitudRetiro && visita.SolicitudRetiro.Cliente && visita.SolicitudRetiro.Cliente.Usuario) {
           await Notificacion.create({
-            usuarioId: admin.id,
+            usuarioId: visita.SolicitudRetiro.Cliente.Usuario.id,
             tipo: 'visita',
             titulo: 'Visita cancelada',
-            mensaje: `La visita #${id} ha sido cancelada por ${usuario.rol === 'cliente' ? 'el cliente' : 'el operador'}${motivo ? `. Motivo: ${motivo}` : ''}`,
+            mensaje: `Su visita #${id} ha sido cancelada${motivo ? `. Motivo: ${motivo}` : ''}`,
             referenciaId: id
           });
         }
+        
+        // Notificar a los administradores
+        if (usuario.rol !== 'administrador') {
+          const admins = await Usuario.findAll({
+            where: { rol: 'administrador' }
+          });
+          
+          for (const admin of admins) {
+            await Notificacion.create({
+              usuarioId: admin.id,
+              tipo: 'visita',
+              titulo: 'Visita cancelada',
+              mensaje: `La visita #${id} ha sido cancelada por ${usuario.rol === 'cliente' ? 'el cliente' : 'el operador'}${motivo ? `. Motivo: ${motivo}` : ''}`,
+              referenciaId: id
+            });
+          }
+        }
+        
+        req.flash('success', 'Visita cancelada correctamente');
+        res.redirect('/visitas/calendario');
+      } catch (error) {
+        console.error('Error al cancelar visita:', error);
+        req.flash('error', 'Error al cancelar visita');
+        res.redirect(`/visitas/detalles/${req.params.id}`);
       }
-      
-      req.flash('success', 'Visita cancelada correctamente');
-      res.redirect('/visitas/calendario');
-    } catch (error) {
-      console.error('Error al cancelar visita:', error);
-      req.flash('error', 'Error al cancelar visita');
-      res.redirect(`/visitas/detalles/${req.params.id}`);
     }
-  }
-};
+  };
 
-// Función para enviar correo de notificación de visita
-const enviarCorreoVisita = async (cliente, visita, esReprogramacion = false) => {
-  try {
-    // Configurar transporte de correo
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT,
-      secure: process.env.EMAIL_SECURE === 'true',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
-    
-    // Formato de fecha y hora
-    const fecha = moment(visita.fechaProgramada).format('DD/MM/YYYY');
-    const horaInicio = moment(visita.horaInicio, 'HH:mm:ss').format('HH:mm');
-    const horaFin = moment(visita.horaFin, 'HH:mm:ss').format('HH:mm');
-    
-    // Configurar contenido del correo
-    const mailOptions = {
-      from: `"Felmart" <${process.env.EMAIL_USER}>`,
-      to: cliente.email,
-      subject: esReprogramacion ? 'Visita reprogramada - Felmart' : 'Visita programada - Felmart',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
-          <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="color: #4a7c59;">Felmart - Gestión de Residuos</h2>
+  // Función para enviar correo de notificación de visita
+  const enviarCorreoVisita = async (cliente, visita, esReprogramacion = false) => {
+    try {
+      // Configurar transporte de correo
+      const transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        secure: process.env.EMAIL_SECURE === 'true',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
+        }
+      });
+      
+      // Formato de fecha y hora
+      const fecha = moment(visita.fechaProgramada).format('DD/MM/YYYY');
+      const horaInicio = moment(visita.horaInicio, 'HH:mm:ss').format('HH:mm');
+      const horaFin = moment(visita.horaFin, 'HH:mm:ss').format('HH:mm');
+      
+      // Configurar contenido del correo
+      const mailOptions = {
+        from: `"Felmart" <${process.env.EMAIL_USER}>`,
+        to: cliente.email,
+        subject: esReprogramacion ? 'Visita reprogramada - Felmart' : 'Visita programada - Felmart',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <h2 style="color: #4a7c59;">Felmart - Gestión de Residuos</h2>
+            </div>
+            <p>Estimado(a) <strong>${cliente.contactoPrincipal}</strong>,</p>
+            <p>Le informamos que se ha ${esReprogramacion ? 'reprogramado' : 'programado'} una visita para el retiro de residuos en su empresa.</p>
+            <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 15px 0;">
+              <p><strong>Fecha:</strong> ${fecha}</p>
+              <p><strong>Horario:</strong> ${horaInicio} a ${horaFin}</p>
+              <p><strong>Dirección:</strong> ${visita.SolicitudRetiro.direccionRetiro}</p>
+              <p><strong>Contacto:</strong> ${visita.SolicitudRetiro.contactoNombre} (${visita.SolicitudRetiro.contactoTelefono})</p>
+            </div>
+            <p>Por favor, asegúrese de que haya alguien disponible para recibir a nuestro personal en el horario indicado.</p>
+            <p>Si necesita reprogramar o tiene alguna consulta, por favor contáctenos.</p>
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #777; font-size: 12px;">
+              <p>Este es un correo automático, por favor no responda a este mensaje.</p>
+              <p>Felmart - Gestión de Residuos</p>
+              <p>Ruta 5 Sur km 1036, sector Trapen, Puerto Montt, Chile</p>
+            </div>
           </div>
-          <p>Estimado(a) <strong>${cliente.contactoPrincipal}</strong>,</p>
-          <p>Le informamos que se ha ${esReprogramacion ? 'reprogramado' : 'programado'} una visita para el retiro de residuos en su empresa.</p>
-          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 15px 0;">
-            <p><strong>Fecha:</strong> ${fecha}</p>
-            <p><strong>Horario:</strong> ${horaInicio} a ${horaFin}</p>
-            <p><strong>Dirección:</strong> ${visita.SolicitudRetiro.direccionRetiro}</p>
-            <p><strong>Contacto:</strong> ${visita.SolicitudRetiro.contactoNombre} (${visita.SolicitudRetiro.contactoTelefono})</p>
-          </div>
-          <p>Por favor, asegúrese de que haya alguien disponible para recibir a nuestro personal en el horario indicado.</p>
-          <p>Si necesita reprogramar o tiene alguna consulta, por favor contáctenos.</p>
-          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #777; font-size: 12px;">
-            <p>Este es un correo automático, por favor no responda a este mensaje.</p>
-            <p>Felmart - Gestión de Residuos</p>
-            <p>Ruta 5 Sur km 1036, sector Trapen, Puerto Montt, Chile</p>
-          </div>
-        </div>
-      `
-    };
-    
-    // Enviar correo
-    await transporter.sendMail(mailOptions);
-    console.log(`Correo enviado a ${cliente.email}`);
-    
-  } catch (error) {
-    console.error('Error al enviar correo:', error);
-    // No lanzamos el error para que no interrumpa el proceso principal
-  }
-};
+        `
+      };
+      
+      // Enviar correo
+      await transporter.sendMail(mailOptions);
+      console.log(`Correo enviado a ${cliente.email}`);
+      
+    } catch (error) {
+      console.error('Error al enviar correo:', error);
+      // No lanzamos el error para que no interrumpa el proceso principal
+    }
+  };
 
-module.exports = visitaController;
+  module.exports = visitaController;

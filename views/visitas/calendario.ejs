@@ -1,0 +1,130 @@
+<!-- views/visitas/calendario.ejs -->
+<%- include('../partials/header') %>
+
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Calendario de Visitas</h5>
+        </div>
+        <div class="card-body">
+          <% if (locals.error) { %>
+            <div class="alert alert-danger" role="alert">
+              <%= error %>
+            </div>
+          <% } %>
+          <% if (hayEventos) { %>
+            <div id="calendar"></div>
+          <% } else { %>
+            <div class="text-center mt-4 empty-state">
+              <i class="fas fa-calendar-alt fa-4x text-muted mb-3"></i>
+              <p class="lead text-muted">No tienes visitas programadas en tu calendario</p>
+              <a href="/solicitudes/crear" class="btn btn-primary mt-2 btn-solicitar-visita">
+                <i class="fas fa-plus"></i> Solicitar una visita
+              </a>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% if (hayEventos) { %>
+  <div class="row mt-4">
+    <div class="col-md-12 text-center">
+      <a href="/solicitudes/crear" class="btn btn-solicitar-visita">
+        <i class="fas fa-plus"></i> Solicitar nueva visita
+      </a>
+    </div>
+  </div>
+  <% } %>
+</div>
+
+<!-- FullCalendar CSS y JS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales/es.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    try {
+      const calendarEl = document.getElementById('calendar');
+      if (!calendarEl) return;
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,listMonth'
+        },
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        events: <%- eventosCalendario %>,
+        eventClick: function(info) {
+          window.location.href = '/solicitudes/' + info.event.id;
+        },
+        eventTimeFormat: {
+          hour: '2-digit',
+          minute: '2-digit',
+          meridiem: false
+        },
+        businessHours: {
+          daysOfWeek: [1, 2, 3, 4, 5], // Lunes a viernes
+          startTime: '08:00',
+          endTime: '18:00',
+        },
+        height: 'auto',
+        eventDidMount: function(info) {
+          if (info.event.extendedProps && info.event.extendedProps.status) {
+            const estado = info.event.extendedProps.status.toLowerCase();
+            info.el.classList.add('estado-' + estado);
+          }
+        },
+      });
+      calendar.render();
+    } catch (error) {
+      console.error('Error al inicializar el calendario:', error);
+      const calendarEl = document.getElementById('calendar');
+      if (calendarEl) {
+        calendarEl.innerHTML = '<div class="alert alert-danger">Error al cargar el calendario. Por favor, recargue la página.</div>';
+      }
+    }
+  });
+</script>
+
+<!-- Estilos personalizados para el calendario y el botón -->
+<style>
+  #calendar {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,97,110,0.08), 0 1.5px 4px rgba(0,97,110,0.08);
+    padding: 1.5rem;
+    margin-bottom: 0;
+  }
+  .btn-solicitar-visita {
+    background: #008080;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 10px rgba(0,128,128,0.10);
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-solicitar-visita:hover {
+    background: #00616e;
+    color: #fff;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 20px rgba(0,97,110,0.15);
+  }
+  /* Colores de eventos según estado */
+  .fc-event.estado-pendiente { background: #ffe066 !important; color: #856404 !important; border: none; }
+  .fc-event.estado-programada { background: #b5ead7 !important; color: #155724 !important; border: none; }
+  .fc-event.estado-completada { background: #caffbf !important; color: #155724 !important; border: none; }
+  .fc-event.estado-cancelada { background: #ffadad !important; color: #721c24 !important; border: none; }
+</style>
+
+<%- include('../partials/footer') %> 

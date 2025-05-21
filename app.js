@@ -15,6 +15,7 @@ const { verifyConnection } = require('./config/email.config');
 verifyConnection();
 
 // Seguridad HTTP headers (CSP permite jQuery desde code.jquery.com y recursos de FullCalendar)
+// En app.js - Modificar la configuración de Helmet
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -22,11 +23,13 @@ app.use(helmet({
       "script-src": [
         "'self'",
         "'unsafe-inline'",
+        "'unsafe-eval'",  // Añadir esto para permitir scripts en línea
         "https://cdn.jsdelivr.net",
         "https://cdnjs.cloudflare.com",
         "https://code.jquery.com",
         "https://kit.fontawesome.com"
       ],
+      "script-src-attr": ["'unsafe-inline'"],  // Añadir esta línea para permitir controladores de eventos en línea
       "style-src": [
         "'self'",
         "'unsafe-inline'",
@@ -37,7 +40,8 @@ app.use(helmet({
       "font-src": [
         "'self'",
         "https://fonts.gstatic.com",
-        "https://cdnjs.cloudflare.com"
+        "https://cdnjs.cloudflare.com",
+        "data:"
       ],
       "img-src": ["'self'", "data:"]
     }
@@ -70,15 +74,80 @@ app.use(session({
   }
 }));
 
+// Middleware para garantizar la integridad de datos de sesión
+app.use(async (req, res, next) => {
+  if (req.session.usuario) {
+    // Lista de campos que debería tener un usuario completo
+    const camposRequeridos = ['id', 'nombre', 'email', 'rol'];
+    
+    // Verificar si todos los campos necesarios están presentes
+    const sesionCompleta = camposRequeridos.every(campo => 
+      req.session.usuario[campo] !== undefined
+    );
+    
+    // Si falta algún campo y tenemos el ID, intentamos recuperar los datos
+    if (!sesionCompleta && req.session.usuario.id) {
+      console.log('Completando datos de sesión para usuario ID:', req.session.usuario.id);
+      
+      try {
+        const [usuarios] = await pool.query(
+          `SELECT id, nombre, email, rol FROM usuarios WHERE id = ${parseInt(req.session.usuario.id, 10)}`
+        );
+        
+        if (usuarios.length > 0) {
+          // Actualizar la sesión con datos completos (sin sobrescribir campos existentes)
+          camposRequeridos.forEach(campo => {
+            if (req.session.usuario[campo] === undefined && usuarios[0][campo] !== undefined) {
+              req.session.usuario[campo] = usuarios[0][campo];
+            }
+          });
+          
+          // Guardar sesión actualizada
+          req.session.save(err => {
+            if (err) console.error('Error al guardar sesión:', err);
+            next();
+          });
+        } else {
+          // Si no encontramos el usuario, mejor limpiar la sesión
+          req.session.usuario = null;
+          req.session.save(err => {
+            if (err) console.error('Error al guardar sesión:', err);
+            next();
+          });
+        }
+      } catch (error) {
+        console.error('Error al recuperar datos de usuario:', error);
+        next();
+      }
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
+
 // Middleware para variables globales
 app.use((req, res, next) => {
   res.locals.usuario = req.session.usuario || null;
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   // Añadir la ruta actual para seleccionar el menú activo en el sidebar
   res.locals.currentPath = req.path;
   next();
 });
+
+// Middleware para depurar sesión (solo en desarrollo)
+if (process.env.NODE_ENV !== 'production') {
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/perfil')) {
+      console.log('Datos de sesión en ruta perfil:', JSON.stringify(req.session.usuario, null, 2));
+    }
+    next();
+  });
+}
 
 // Configuración de vistas
 app.set('view engine', 'ejs');
@@ -91,17 +160,22 @@ app.use('/clientes', require('./routes/clienteRoutes'));
 app.use('/residuos', require('./routes/residuoRoutes'));
 app.use('/solicitudes', require('./routes/solicitudRoutes'));
 app.use('/cotizaciones', require('./routes/cotizacionRoutes'));
-app.use('/calendario', require('./routes/calendarioRoutes')); // Nueva ruta
+app.use('/calendario', require('./routes/calendarioRoutes'));
 app.use('/visitas', require('./routes/visitaRoutes'));
-app.use('/certificados', require('./routes/certificadoRoutes'));
+app.use('/certificados', require('./routes/certificadosRoutes'));
 app.use('/notificaciones', require('./routes/notificacionRoutes'));
 app.use('/reportes', require('./routes/reporteRoutes'));
+<<<<<<< HEAD
 app.use('/dashboard', require('./routes/dashboardRoutes')); // Nueva ruta
 app.use('/perfil', require('./routes/perfilRoutes')); // Nueva ruta
 app.use('/precioresiduos', require('./routes/precioresiduosRoutes'));
 
 // Rutas de la API
 app.use('/api/cmf', require('./routes/api/cmfBancos.routes'));
+=======
+app.use('/dashboard', require('./routes/dashboardRoutes')); 
+app.use('/perfil', require('./routes/perfilRoutes')); 
+>>>>>>> cata-gh
 
 // 404 Not Found - Actualización para usar nuestra página de error personalizada
 app.use((req, res) => {

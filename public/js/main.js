@@ -1,177 +1,332 @@
 // public/js/main.js
+/**
+ * Script principal para la plataforma Felmart
+ */
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle sidebar en dispositivos móviles
-    const toggleBtn = document.querySelector('.toggle-sidebar');
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', function() {
-        document.querySelector('.sidebar').classList.toggle('active');
-        document.querySelector('.content').classList.toggle('active');
-      });
-    }
-    
-    // Inicializar tooltips de Bootstrap
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-    
-    // Cargar notificaciones no leídas
-    cargarNotificaciones();
-    
-    // Actualizar notificaciones cada 1 minuto
-    setInterval(cargarNotificaciones, 60000);
-  });
+  // Menú móvil
+  initMobileMenu();
   
-  // Función para cargar notificaciones no leídas
-  function cargarNotificaciones() {
-    fetch('/notificaciones/no-leidas')
+  // Notificaciones
+  initNotifications();
+  
+  // Mensajes flash
+  initFlashMessages();
+  
+  // Inicializar modales
+  initModals();
+  
+  // Inicializar tooltips
+  initTooltips();
+});
+
+/**
+* Inicializa el menú móvil
+*/
+function initMobileMenu() {
+  const menuButton = document.getElementById('menuButton');
+  const mobileMenu = document.getElementById('mobileMenu');
+  
+  if (menuButton && mobileMenu) {
+      menuButton.addEventListener('click', function() {
+          mobileMenu.classList.toggle('hidden');
+      });
+  }
+}
+
+/**
+* Inicializa el sistema de notificaciones
+*/
+function initNotifications() {
+  const notificationsButton = document.getElementById('notificationsButton');
+  
+  if (notificationsButton) {
+      // Cargar notificaciones del usuario
+      loadNotifications();
+      
+      // Evento para mostrar/ocultar panel de notificaciones
+      notificationsButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          toggleNotificationsPanel();
+      });
+  }
+}
+
+/**
+* Carga las notificaciones del usuario mediante AJAX
+*/
+function loadNotifications() {
+  fetch('/api/notificaciones')
       .then(response => response.json())
       .then(data => {
-        if (data.success) {
-          actualizarIconoNotificaciones(data.totalNoLeidas);
-          actualizarListaNotificaciones(data.notificaciones);
-        }
+          // Actualizar contador si hay notificaciones no leídas
+          const notificationsButton = document.getElementById('notificationsButton');
+          const notificationBadge = notificationsButton.querySelector('span');
+          
+          if (data.noLeidas > 0) {
+              notificationBadge.classList.remove('hidden');
+          } else {
+              notificationBadge.classList.add('hidden');
+          }
+          
+          // Si el panel de notificaciones está visible, actualizarlo
+          const notificationsPanel = document.getElementById('notificationsPanel');
+          if (notificationsPanel && !notificationsPanel.classList.contains('hidden')) {
+              renderNotifications(data.notificaciones);
+          }
       })
       .catch(error => console.error('Error al cargar notificaciones:', error));
-  }
+}
+
+/**
+* Muestra u oculta el panel de notificaciones
+*/
+function toggleNotificationsPanel() {
+  let notificationsPanel = document.getElementById('notificationsPanel');
   
-  // Actualizar contador de notificaciones
-  function actualizarIconoNotificaciones(total) {
-    const contador = document.getElementById('notification-counter');
-    if (contador) {
-      contador.textContent = total;
+  if (!notificationsPanel) {
+      // Crear panel si no existe
+      notificationsPanel = createNotificationsPanel();
+      document.body.appendChild(notificationsPanel);
       
-      if (total > 0) {
-        contador.classList.remove('d-none');
-      } else {
-        contador.classList.add('d-none');
+      // Cargar notificaciones en el panel
+      fetch('/api/notificaciones')
+          .then(response => response.json())
+          .then(data => {
+              renderNotifications(data.notificaciones);
+          })
+          .catch(error => console.error('Error al cargar notificaciones:', error));
+  } else {
+      notificationsPanel.classList.toggle('hidden');
+      
+      // Marcar como leídas si el panel está visible
+      if (!notificationsPanel.classList.contains('hidden')) {
+          fetch('/api/notificaciones/marcar-leidas', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
+              }
+          })
+          .then(() => {
+              // Actualizar badge
+              const notificationBadge = document.querySelector('#notificationsButton span');
+              notificationBadge.classList.add('hidden');
+          })
+          .catch(error => console.error('Error al marcar notificaciones:', error));
       }
-    }
   }
+}
+
+/**
+* Crea el panel de notificaciones
+*/
+function createNotificationsPanel() {
+  const panel = document.createElement('div');
+  panel.id = 'notificationsPanel';
+  panel.className = 'absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-20 border border-gray-200';
+  panel.style.top = '60px';
+  panel.style.right = '1rem';
   
-// public/js/main.js (continuación)
-// Actualizar lista de notificaciones en el dropdown
-function actualizarListaNotificaciones(notificaciones) {
-    const contenedor = document.getElementById('notification-list');
-    if (!contenedor) return;
-    
-    // Limpiar contenedor
-    contenedor.innerHTML = '';
-    
-    // Si no hay notificaciones
-    if (notificaciones.length === 0) {
-      contenedor.innerHTML = '<div class="dropdown-item text-center py-3">No tienes notificaciones nuevas</div>';
+  panel.innerHTML = `
+      <div class="px-4 py-2 bg-gray-50 border-b">
+          <h3 class="text-sm font-medium">Notificaciones</h3>
+      </div>
+      <div id="notificationsContent" class="max-h-96 overflow-y-auto">
+          <div class="flex justify-center items-center py-4">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
+          </div>
+      </div>
+      <div class="p-2 bg-gray-50 border-t text-center">
+          <a href="/notificaciones" class="text-sm text-teal-600 hover:text-teal-800">Ver todas</a>
+      </div>
+  `;
+  
+  // Cerrar panel al hacer clic fuera de él
+  document.addEventListener('click', function(e) {
+      if (panel && !panel.contains(e.target) && e.target.id !== 'notificationsButton' && !e.target.closest('#notificationsButton')) {
+          panel.classList.add('hidden');
+      }
+  });
+  
+  return panel;
+}
+
+/**
+* Renderiza las notificaciones en el panel
+*/
+function renderNotifications(notificaciones) {
+  const content = document.getElementById('notificationsContent');
+  
+  if (!content) return;
+  
+  if (notificaciones.length === 0) {
+      content.innerHTML = '<div class="p-4 text-center text-gray-500">No tienes notificaciones</div>';
       return;
-    }
-    
-    // Agregar notificaciones a la lista
-    notificaciones.forEach(notificacion => {
-      const item = document.createElement('a');
-      item.href = obtenerEnlaceNotificacion(notificacion);
-      item.className = 'dropdown-item notification-item py-2';
-      if (!notificacion.leida) {
-        item.classList.add('unread');
-      }
+  }
+  
+  let html = '';
+  
+  notificaciones.forEach(notificacion => {
+      const leida = notificacion.leida ? '' : 'bg-blue-50';
       
-      // Obtener icono según tipo
-      let icono = 'fa-bell';
-      switch (notificacion.tipo) {
-        case 'solicitud':
-          icono = 'fa-file-alt';
-          break;
-        case 'cotizacion':
-          icono = 'fa-file-invoice-dollar';
-          break;
-        case 'visita':
-          icono = 'fa-calendar-check';
-          break;
-        case 'certificado':
-          icono = 'fa-certificate';
-          break;
-        case 'sistema':
-          icono = 'fa-cog';
-          break;
-      }
-      
-      // Fecha formateada
-      const fecha = new Date(notificacion.createdAt);
-      const fechaFormateada = fecha.toLocaleDateString('es-ES') + ' ' + 
-                              fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-      
-      // Contenido de la notificación
-      item.innerHTML = `
-        <div class="d-flex">
-          <div class="flex-shrink-0 me-3">
-            <i class="fas ${icono} fa-lg text-primary"></i>
-          </div>
-          <div class="flex-grow-1">
-            <h6 class="mb-1">${notificacion.titulo}</h6>
-            <p class="mb-0 text-muted">${notificacion.mensaje}</p>
-            <small class="text-muted">${fechaFormateada}</small>
-          </div>
-        </div>
+      html += `
+          <a href="${notificacion.enlace}" class="block px-4 py-3 hover:bg-gray-50 ${leida} border-b">
+              <div class="flex items-start">
+                  <div class="flex-shrink-0">
+                      <div class="h-8 w-8 rounded-full bg-${notificacion.color || 'teal'}-100 flex items-center justify-center">
+                          <i class="lucide-${notificacion.icono || 'bell'} text-${notificacion.color || 'teal'}-600"></i>
+                      </div>
+                  </div>
+                  <div class="ml-3 w-0 flex-1">
+                      <p class="text-sm font-medium text-gray-900">${notificacion.titulo}</p>
+                      <p class="text-sm text-gray-500">${notificacion.mensaje}</p>
+                      <p class="text-xs text-gray-400 mt-1">${notificacion.tiempo}</p>
+                  </div>
+              </div>
+          </a>
       `;
+  });
+  
+  content.innerHTML = html;
+}
+
+/**
+* Inicializa los mensajes flash
+*/
+function initFlashMessages() {
+  const flashMessages = document.querySelectorAll('.flash-message');
+  
+  flashMessages.forEach(flash => {
+      // Auto cerrar después de 5 segundos
+      setTimeout(() => {
+          fadeOut(flash);
+      }, 5000);
       
-      // Evento para marcar como leída al hacer clic
-      item.addEventListener('click', function(e) {
-        e.preventDefault();
-        marcarNotificacionLeida(notificacion.id, obtenerEnlaceNotificacion(notificacion));
+      // Botón de cerrar
+      const closeBtn = flash.querySelector('.close-flash');
+      if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+              fadeOut(flash);
+          });
+      }
+  });
+}
+
+/**
+* Desvanece un elemento
+*/
+function fadeOut(element) {
+  element.style.opacity = '1';
+  
+  (function fade() {
+      if ((element.style.opacity -= 0.1) < 0) {
+          element.style.display = 'none';
+      } else {
+          requestAnimationFrame(fade);
+      }
+  })();
+}
+
+/**
+* Inicializa los modales
+*/
+function initModals() {
+  // Abrir modal
+  document.querySelectorAll('[data-modal-target]').forEach(button => {
+      button.addEventListener('click', () => {
+          const modal = document.getElementById(button.dataset.modalTarget);
+          if (modal) {
+              modal.classList.remove('hidden');
+          }
+      });
+  });
+  
+  // Cerrar modal
+  document.querySelectorAll('[data-modal-close]').forEach(button => {
+      button.addEventListener('click', () => {
+          const modal = button.closest('.modal');
+          if (modal) {
+              modal.classList.add('hidden');
+          }
+      });
+  });
+  
+  // Cerrar modal al hacer clic fuera
+  document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+              modal.classList.add('hidden');
+          }
+      });
+  });
+}
+
+/**
+* Inicializa los tooltips
+*/
+function initTooltips() {
+  document.querySelectorAll('[data-tooltip]').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+          const tooltipText = el.getAttribute('data-tooltip');
+          
+          const tooltip = document.createElement('div');
+          tooltip.className = 'tooltip absolute z-50 px-2 py-1 text-xs text-white bg-gray-900 rounded shadow-lg';
+          tooltip.textContent = tooltipText;
+          
+          document.body.appendChild(tooltip);
+          
+          const rect = el.getBoundingClientRect();
+          tooltip.style.top = `${rect.top - tooltip.offsetHeight - 5 + window.scrollY}px`;
+          tooltip.style.left = `${rect.left + (el.offsetWidth / 2) - (tooltip.offsetWidth / 2) + window.scrollX}px`;
       });
       
-      contenedor.appendChild(item);
-    });
-    
-    // Agregar botón de ver todas
-    const verTodas = document.createElement('div');
-    verTodas.className = 'dropdown-item text-center py-2 border-top mt-2';
-    verTodas.innerHTML = '<a href="/notificaciones" class="text-primary">Ver todas</a>';
-    contenedor.appendChild(verTodas);
-  }
-  
-  // Obtener enlace según tipo de notificación
-  function obtenerEnlaceNotificacion(notificacion) {
-    switch (notificacion.tipo) {
-      case 'solicitud':
-        return `/solicitudes/detalles/${notificacion.referenciaId}`;
-      case 'cotizacion':
-        return `/cotizaciones/detalles/${notificacion.referenciaId}`;
-      case 'visita':
-        return `/visitas/detalles/${notificacion.referenciaId}`;
-      case 'certificado':
-        return `/certificados/detalles/${notificacion.referenciaId}`;
-      default:
-        return '/notificaciones';
-    }
-  }
-  
-  // Marcar notificación como leída
-  function marcarNotificacionLeida(id, redirectUrl) {
-    fetch(`/notificaciones/marcar-leida/${id}`, {
-      method: 'POST',
+      el.addEventListener('mouseleave', () => {
+          document.querySelectorAll('.tooltip').forEach(t => t.remove());
+      });
+  });
+}
+
+/**
+* Formatea una fecha a formato legible
+*/
+function formatDate(dateString) {
+  const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+  return new Date(dateString).toLocaleDateString('es-ES', options);
+}
+
+/**
+* Formatea un número como moneda (CLP)
+*/
+function formatCurrency(value) {
+  return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
+      minimumFractionDigits: 0
+  }).format(value);
+}
+
+/**
+* Realiza una solicitud AJAX con CSRF protection
+*/
+function ajax(url, method = 'GET', data = null) {
+  const options = {
+      method,
       headers: {
-        'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
       }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        window.location.href = redirectUrl;
-      }
-    })
-    .catch(error => console.error('Error al marcar notificación:', error));
+  };
+  
+  if (data && method !== 'GET') {
+      options.body = JSON.stringify(data);
   }
   
-  // Marcar todas las notificaciones como leídas
-  function marcarTodasLeidas() {
-    fetch('/notificaciones/marcar-todas-leidas', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+  return fetch(url, options).then(response => {
+      if (!response.ok) {
+          throw new Error('Error en la solicitud');
       }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        cargarNotificaciones();
-      }
-    })
-    .catch(error => console.error('Error al marcar notificaciones:', error));
-  }
+      return response.json();
+  });
+}
+
+

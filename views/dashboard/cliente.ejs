@@ -1,138 +1,161 @@
 <!-- views/dashboard/cliente.ejs -->
-<div class="container-fluid">
-    <!-- Tarjetas de resumen -->
-    <div class="row mb-4">
-      <!-- Mis Solicitudes -->
-      <div class="col-md-4 mb-3">
-        <div class="card h-100">
-          <div class="card-body d-flex align-items-center">
-            <div class="flex-shrink-0 bg-primary bg-opacity-10 p-3 rounded-circle me-3">
-              <i class="fas fa-file-alt fa-2x text-primary"></i>
-            </div>
-            <div>
-              <h6 class="card-title">Mis Solicitudes</h6>
-              <h3 class="mb-0"><%= typeof misSolicitudes !== 'undefined' ? misSolicitudes : 0 %></h3>
-            </div>
+<div class="container-fluid" style="padding: 20px; background-color: #f5f7fa;">
+  <!-- Header del Dashboard -->
+  <div style="margin-bottom: 30px;">
+    <h2 style="font-size: 28px; font-weight: 700; color: #00616e; margin-bottom: 8px;">Panel de Control - Cliente</h2>
+    <p style="color: #6c757d; font-size: 16px; margin: 0;">Bienvenido al sistema de gestión de residuos Felmart</p>
+  </div>
+  
+  <!-- Tarjetas de Estadísticas -->
+  <div class="row" style="margin-bottom: 30px;">
+    <div class="col-md-4" style="margin-bottom: 20px;">
+      <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="display: flex; align-items: center;">
+          <div style="width: 70px; height: 70px; background: linear-gradient(45deg, #00616e, #00818f); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px;">
+            <i class="fas fa-file-alt" style="font-size: 32px; color: white;"></i>
           </div>
-        </div>
-      </div>
-      
-      <!-- Solicitudes Pendientes -->
-      <div class="col-md-4 mb-3">
-        <div class="card h-100">
-          <div class="card-body d-flex align-items-center">
-            <div class="flex-shrink-0 bg-warning bg-opacity-10 p-3 rounded-circle me-3">
-              <i class="fas fa-clock fa-2x text-warning"></i>
-            </div>
-            <div>
-              <h6 class="card-title">Pendientes</h6>
-              <h3 class="mb-0"><%= typeof solicitudesPendientes !== 'undefined' ? solicitudesPendientes : 0 %></h3>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Próximas Visitas -->
-      <div class="col-md-4 mb-3">
-        <div class="card h-100">
-          <div class="card-body d-flex align-items-center">
-            <div class="flex-shrink-0 bg-info bg-opacity-10 p-3 rounded-circle me-3">
-              <i class="fas fa-calendar-check fa-2x text-info"></i>
-            </div>
-            <div>
-              <h6 class="card-title">Próximas Visitas</h6>
-              <h3 class="mb-0"><%= typeof proximasVisitas !== 'undefined' ? proximasVisitas : 0 %></h3>
-            </div>
+          <div>
+            <h5 style="font-size: 16px; color: #6c757d; margin-bottom: 8px; font-weight: 600;">Mis Solicitudes</h5>
+            <h2 style="font-size: 36px; font-weight: 700; color: #00616e; margin: 0; line-height: 1;"><%= typeof misSolicitudes !== 'undefined' ? misSolicitudes : 0 %></h2>
           </div>
         </div>
       </div>
     </div>
     
-    <!-- Acciones Rápidas -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header">
-            <h5 class="card-title mb-0">Acciones Rápidas</h5>
+    <div class="col-md-4" style="margin-bottom: 20px;">
+      <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="display: flex; align-items: center;">
+          <div style="width: 70px; height: 70px; background: linear-gradient(45deg, #ff9f00, #ffc107); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px;">
+            <i class="fas fa-clock" style="font-size: 32px; color: white;"></i>
           </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <a href="/solicitudes/crear" class="btn btn-primary w-100 d-flex align-items-center justify-content-center py-3">
-                  <i class="fas fa-plus-circle me-2"></i> Nueva Solicitud de Retiro
-                </a>
-              </div>
-              <div class="col-md-4 mb-3">
-                <a href="/visitas/calendario" class="btn btn-info w-100 d-flex align-items-center justify-content-center py-3">
-                  <i class="fas fa-calendar me-2"></i> Ver Calendario
-                </a>
-              </div>
-              <div class="col-md-4 mb-3">
-                <a href="/certificados" class="btn btn-success w-100 d-flex align-items-center justify-content-center py-3">
-                  <i class="fas fa-certificate me-2"></i> Mis Certificados
-                </a>
-              </div>
-            </div>
+          <div>
+            <h5 style="font-size: 16px; color: #6c757d; margin-bottom: 8px; font-weight: 600;">Pendientes</h5>
+            <h2 style="font-size: 36px; font-weight: 700; color: #ff9f00; margin: 0; line-height: 1;"><%= typeof solicitudesPendientes !== 'undefined' ? solicitudesPendientes : 0 %></h2>
           </div>
         </div>
       </div>
     </div>
     
-    <!-- Mis Solicitudes Recientes -->
-    <div class="row">
-      <div class="col-12 mb-4">
-        <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">Mis Solicitudes Recientes</h5>
-            <a href="/solicitudes" class="btn btn-sm btn-outline-primary">Ver todas</a>
+    <div class="col-md-4" style="margin-bottom: 20px;">
+      <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="display: flex; align-items: center;">
+          <div style="width: 70px; height: 70px; background: linear-gradient(45deg, #3D8C40, #4caf50); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px;">
+            <i class="fas fa-calendar-check" style="font-size: 32px; color: white;"></i>
           </div>
-          <div class="card-body">
-            <% if (typeof ultimasSolicitudes !== 'undefined' && ultimasSolicitudes && ultimasSolicitudes.length > 0) { %>
-              <div class="table-container">
-                <table class="table table-hover">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Fecha</th>
-                      <th>Dirección</th>
-                      <th>Estado</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <% ultimasSolicitudes.forEach(solicitud => { %>
-                      <tr>
-                        <td><%= solicitud.id %></td>
-                        <td><%= new Date(solicitud.fechaSolicitud).toLocaleDateString('es-ES') %></td>
-                        <td><%= solicitud.direccionRetiro %></td>
-                        <td>
-                          <% 
-                            let badgeClass = 'secondary';
-                            switch(solicitud.estado) {
-                              case 'pendiente': badgeClass = 'warning'; break;
-                              case 'cotizada': badgeClass = 'info'; break;
-                              case 'programada': badgeClass = 'primary'; break;
-                              case 'completada': badgeClass = 'success'; break;
-                              case 'cancelada': badgeClass = 'danger'; break;
-                            }
-                          %>
-                          <span class="badge bg-<%= badgeClass %>"><%= solicitud.estado %></span>
-                        </td>
-                        <td>
-                          <a href="/solicitudes/detalles/<%= solicitud.id %>" class="btn btn-sm btn-outline-secondary">
-                            <i class="fas fa-eye"></i>
-                          </a>
-                        </td>
-                      </tr>
-                    <% }); %>
-                  </tbody>
-                </table>
-              </div>
-            <% } else { %>
-              <p class="text-center py-3 text-muted">No tienes solicitudes recientes</p>
-            <% } %>
+          <div>
+            <h5 style="font-size: 16px; color: #6c757d; margin-bottom: 8px; font-weight: 600;">Próximas Visitas</h5>
+            <h2 style="font-size: 36px; font-weight: 700; color: #3D8C40; margin: 0; line-height: 1;"><%= typeof proximasVisitas !== 'undefined' ? proximasVisitas : 0 %></h2>
           </div>
         </div>
       </div>
     </div>
   </div>
+  
+  <!-- Acciones Rápidas -->
+  <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); margin-bottom: 30px;">
+    <h5 style="font-size: 20px; font-weight: 600; color: #00616e; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e9ecef;">
+      Acciones Rápidas
+    </h5>
+    
+    <div class="row">
+      <div class="col-md-4" style="margin-bottom: 20px;">
+        <a href="/solicitudes/crear" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #0d6efd, #0a58ca); color: white; padding: 16px; border-radius: 12px; text-decoration: none; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(13,110,253,0.15);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(13,110,253,0.25)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(13,110,253,0.15)'">
+          <i class="fas fa-plus-circle" style="font-size: 22px; margin-right: 12px;"></i>
+          <span style="font-size: 16px;">Nueva Solicitud de Retiro</span>
+        </a>
+      </div>
+      
+      <div class="col-md-4" style="margin-bottom: 20px;">
+        <a href="/visitas/calendario" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #0dcaf0, #0bacce); color: white; padding: 16px; border-radius: 12px; text-decoration: none; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(13,202,240,0.15);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(13,202,240,0.25)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(13,202,240,0.15)'">
+          <i class="fas fa-calendar-alt" style="font-size: 22px; margin-right: 12px;"></i>
+          <span style="font-size: 16px;">Ver Calendario</span>
+        </a>
+      </div>
+      
+      <div class="col-md-4" style="margin-bottom: 20px;">
+        <a href="/certificados" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #20c997, #1ba87e); color: white; padding: 16px; border-radius: 12px; text-decoration: none; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(32,201,151,0.15);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(32,201,151,0.25)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(32,201,151,0.15)'">
+          <i class="fas fa-certificate" style="font-size: 22px; margin-right: 12px;"></i>
+          <span style="font-size: 16px;">Mis Certificados</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Solicitudes recientes -->
+  <div style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 24px; border-bottom: 1px solid #e9ecef;">
+      <h5 style="font-size: 20px; font-weight: 600; color: #00616e; margin: 0;">Mis Solicitudes Recientes</h5>
+      <a href="/solicitudes" style="background: transparent; border: 2px solid #00616e; color: #00616e; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.3s ease;" onmouseover="this.style.background='#00616e'; this.style.color='white'" onmouseout="this.style.background='transparent'; this.style.color='#00616e'">
+        Ver todas
+      </a>
+    </div>
+    
+    <div style="padding: 0;">
+      <% if (typeof ultimasSolicitudes !== 'undefined' && ultimasSolicitudes && ultimasSolicitudes.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-hover" style="margin: 0;">
+            <thead style="background-color: #f8f9fa;">
+              <tr>
+                <th style="padding: 16px 24px; font-weight: 600; color: #00616e; border-top: none;">ID</th>
+                <th style="padding: 16px 24px; font-weight: 600; color: #00616e; border-top: none;">Fecha</th>
+                <th style="padding: 16px 24px; font-weight: 600; color: #00616e; border-top: none;">Dirección</th>
+                <th style="padding: 16px 24px; font-weight: 600; color: #00616e; border-top: none;">Estado</th>
+                <th style="padding: 16px 24px; font-weight: 600; color: #00616e; border-top: none;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% ultimasSolicitudes.forEach(solicitud => { %>
+                <tr>
+                  <td style="padding: 16px 24px; vertical-align: middle;"><%= solicitud.id %></td>
+                  <td style="padding: 16px 24px; vertical-align: middle;"><%= new Date(solicitud.fechaSolicitud).toLocaleDateString('es-ES') %></td>
+                  <td style="padding: 16px 24px; vertical-align: middle;"><%= solicitud.direccionRetiro %></td>
+                  <td style="padding: 16px 24px; vertical-align: middle;">
+                    <% 
+                      let badgeClass = 'secondary';
+                      let badgeStyle = '';
+                      switch(solicitud.estado) {
+                        case 'pendiente': 
+                          badgeStyle = 'background-color: #fff3cd; color: #856404;'; 
+                          break;
+                        case 'cotizada': 
+                          badgeStyle = 'background-color: #cce5ff; color: #004085;'; 
+                          break;
+                        case 'programada': 
+                          badgeStyle = 'background-color: #d1ecf1; color: #0c5460;'; 
+                          break;
+                        case 'completada': 
+                          badgeStyle = 'background-color: #d4edda; color: #155724;'; 
+                          break;
+                        case 'cancelada': 
+                          badgeStyle = 'background-color: #f8d7da; color: #721c24;'; 
+                          break;
+                        default:
+                          badgeStyle = 'background-color: #e2e3e5; color: #383d41;';
+                      }
+                    %>
+                    <span style="padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500; <%= badgeStyle %>">
+                      <%= solicitud.estado %>
+                    </span>
+                  </td>
+                  <td style="padding: 16px 24px; vertical-align: middle;">
+                    <a href="/solicitudes/detalles/<%= solicitud.id %>" style="background: #0dcaf0; color: white; padding: 6px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.3s ease;" onmouseover="this.style.background='#0bacce'" onmouseout="this.style.background='#0dcaf0'">
+                      <i class="fas fa-eye"></i> Ver
+                    </a>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div style="text-align: center; padding: 60px 20px;">
+          <i class="fas fa-file-alt" style="font-size: 72px; color: rgba(0, 97, 110, 0.15); margin-bottom: 20px;"></i>
+          <p style="font-size: 18px; color: #6c757d; margin-bottom: 24px;">No tienes solicitudes recientes</p>
+          <a href="/solicitudes/crear" style="background: linear-gradient(45deg, #00616e, #00818f); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500; display: inline-block; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 15px rgba(0,97,110,0.2)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+            <i class="fas fa-plus"></i> Crear una solicitud
+          </a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
