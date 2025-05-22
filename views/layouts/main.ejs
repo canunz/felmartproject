@@ -27,12 +27,7 @@
       <%- include('../partials/sidebar') %>
     <% } %>
 
-    <!-- Contenido principal -->
-    <div class="content <%= typeof usuario !== 'undefined' && usuario ? '' : 'w-100' %>">
-      <% if (typeof usuario !== 'undefined' && usuario) { %>
-        <!-- Header -->
-        <%- include('../partials/header') %>
-      <% } %>
+
 
       <!-- Mensajes de alerta -->
       <% if (typeof error !== 'undefined' && error.length > 0) { %>

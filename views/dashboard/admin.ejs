@@ -1,254 +1,1843 @@
-<div class="container-fluid">
-  <!-- Tarjetas de resumen -->
-  <div class="row mb-4">
-    <!-- Clientes -->
-    <div class="col-md-3 mb-3">
-      <div class="card dashboard-card h-100">
-        <div class="card-body d-flex align-items-center">
-          <div class="icon-wrapper bg-primary-light p-3 rounded-circle me-3">
-            <i class="fas fa-building fa-lg text-primary"></i>
-          </div>
-          <div>
-            <h6 class="card-subtitle text-muted mb-1">Clientes</h6>
-            <h3 class="card-title mb-0 fw-bold"><%= totalClientes %></h3>
-          </div>
-        </div>
-      </div>
-    </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador - Felmart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            /* Navigation colors - Exactos del cliente.ejs */
+            --nav-primary-color: #00616e;
+            --nav-primary-dark: #004d57;
+            --nav-primary-light: #00818f;
+            --nav-secondary-color: #6c757d;
+            --nav-white: #ffffff;
+            --nav-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --nav-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Dashboard colors */
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --purple-color: #6f42c1;
+            --orange-color: #fd7e14;
+            --light-bg: #f8f9fa;
+            --border-radius: 12px;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            --shadow-hover: 0 4px 20px rgba(0,0,0,0.12);
+        }
 
-    <!-- Solicitudes Pendientes -->
-    <div class="col-md-3 mb-3">
-      <div class="card dashboard-card h-100">
-        <div class="card-body d-flex align-items-center">
-          <div class="icon-wrapper bg-warning-light p-3 rounded-circle me-3">
-            <i class="fas fa-file-alt fa-lg text-warning"></i>
-          </div>
-          <div>
-            <h6 class="card-subtitle text-muted mb-1">Solicitudes Pendientes</h6>
-            <h3 class="card-title mb-0 fw-bold"><%= solicitudesPendientes %></h3>
-          </div>
-        </div>
-      </div>
-    </div>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <!-- Visitas Hoy -->
-    <div class="col-md-3 mb-3">
-      <div class="card dashboard-card h-100">
-        <div class="card-body d-flex align-items-center">
-          <div class="icon-wrapper bg-info-light p-3 rounded-circle me-3">
-            <i class="fas fa-calendar-check fa-lg text-info"></i>
-          </div>
-          <div>
-            <h6 class="card-subtitle text-muted mb-1">Visitas Hoy</h6>
-            <h3 class="card-title mb-0 fw-bold"><%= visitasHoy %></h3>
-          </div>
-        </div>
-      </div>
-    </div>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
 
-    <!-- Visitas Completadas -->
-    <div class="col-md-3 mb-3">
-      <div class="card dashboard-card h-100">
-        <div class="card-body d-flex align-items-center">
-          <div class="icon-wrapper bg-success-light p-3 rounded-circle me-3">
-            <i class="fas fa-truck fa-lg text-success"></i>
-          </div>
-          <div>
-            <h6 class="card-subtitle text-muted mb-1">Visitas Completadas</h6>
-            <h3 class="card-title mb-0 fw-bold"><%= typeof solicitudesCompletadas !== 'undefined' ? solicitudesCompletadas : 0 %></h3>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+        /* Header Navigation - Exacto del cliente.ejs */
+        .header-nav {
+            background: var(--nav-white);
+            box-shadow: var(--nav-shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-  <!-- Gráficos -->
-  <div class="row">
-    <!-- Solicitudes por Estado -->
-    <div class="col-lg-6 mb-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-header bg-white">
-          <h5 class="card-title mb-0">Solicitudes por Estado</h5>
-        </div>
-        <div class="card-body">
-          <canvas id="solicitudesPorEstadoChart"></canvas>
-        </div>
-      </div>
-    </div>
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0;
+        }
 
-    <!-- Solicitudes por Mes -->
-    <div class="col-lg-6 mb-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-header bg-white">
-          <h5 class="card-title mb-0">Solicitudes por Mes</h5>
-        </div>
-        <div class="card-body">
-          <canvas id="solicitudesPorMesChart"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
+        .logo-section {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
 
-  <!-- Últimas Solicitudes y Próximas Visitas -->
-  <div class="row">
-    <!-- Últimas Solicitudes -->
-    <div class="col-lg-6 mb-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-0">Últimas Solicitudes</h5>
-          <a href="/solicitudes" class="btn btn-sm btn-outline-primary">Ver todas</a>
-        </div>
-        <div class="card-body p-0">
-          <% if (ultimasSolicitudes && ultimasSolicitudes.length) { %>
-            <div class="table-responsive">
-              <table class="table table-hover mb-0">
-                <thead>
-                  <tr>
-                    <th class="px-3">ID</th>
-                    <th>Cliente</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
-                    <th class="text-end pe-3">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% ultimasSolicitudes.forEach(solicitud => { %>
-                    <tr>
-                      <td class="px-3"><%= solicitud.id %></td>
-                      <td><%= solicitud.Cliente?.nombreEmpresa || 'N/A' %></td>
-                      <td><%= new Date(solicitud.fechaSolicitud).toLocaleDateString('es-ES') %></td>
-                      <td>
-                        <% 
-                          let badge = 'secondary';
-                          switch(solicitud.estado) {
-                            case 'pendiente': badge='warning'; break;
-                            case 'cotizada': badge='info'; break;
-                            case 'programada': badge='primary'; break;
-                            case 'completada': badge='success'; break;
-                            case 'cancelada': badge='danger'; break;
-                          }
-                        %>
-                        <span class="badge bg-<%= badge %>"><%= solicitud.estado %></span>
-                      </td>
-                      <td class="text-end pe-3">
-                        <a href="/solicitudes/detalles/<%= solicitud.id %>" class="btn btn-sm btn-outline-secondary">
-                          <i class="fas fa-eye"></i>
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--nav-primary-color);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--nav-secondary-color);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--nav-transition);
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--nav-primary-color);
+            background: rgba(0, 97, 110, 0.05);
+        }
+
+        .nav-link i {
+            font-size: 16px;
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-btn {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--nav-transition);
+        }
+
+        .user-btn:hover {
+            background: linear-gradient(135deg, var(--nav-primary-dark), var(--nav-primary-color));
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--nav-white);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 1000;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--nav-primary-color);
+            text-decoration: none;
+            transition: var(--nav-transition);
+            font-size: 14px;
+            border-radius: 8px;
+            margin: 0.25rem 0;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 97, 110, 0.05);
+            color: var(--nav-primary-color);
+            transform: translateX(5px);
+        }
+
+        .dropdown-item.text-danger {
+            color: var(--danger-color) !important;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color) !important;
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Dashboard Content */
+        .dashboard-container {
+            padding: 2.5rem 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        .page-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--nav-primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--nav-secondary-color);
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        /* Alert Bar */
+        .alert-bar {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 1px solid #ffc107;
+            border-radius: var(--border-radius);
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert-bar i {
+            color: #856404;
+            font-size: 1.2rem;
+        }
+
+        .alert-bar-text {
+            flex: 1;
+            color: #856404;
+            font-weight: 500;
+        }
+
+        /* Statistics Cards */
+        .stats-grid {
+            margin-bottom: 3rem;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--nav-transition);
+            border: none;
+            height: 100%;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stats-card.primary::before {
+            background: linear-gradient(90deg, var(--nav-primary-color), var(--nav-primary-light));
+        }
+
+        .stats-card.warning::before {
+            background: linear-gradient(90deg, var(--warning-color), #ffcd3c);
+        }
+
+        .stats-card.success::before {
+            background: linear-gradient(90deg, var(--success-color), #34ce57);
+        }
+
+        .stats-card.info::before {
+            background: linear-gradient(90deg, var(--info-color), #20c997);
+        }
+
+        .stats-card.danger::before {
+            background: linear-gradient(90deg, var(--danger-color), #f56565);
+        }
+
+        .stats-card.purple::before {
+            background: linear-gradient(90deg, var(--purple-color), #8b5cf6);
+        }
+
+        .stats-card.orange::before {
+            background: linear-gradient(90deg, var(--orange-color), #fb923c);
+        }
+
+        .card-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-info h6 {
+            font-size: 0.9rem;
+            color: var(--nav-secondary-color);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-info h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .card-info h2.primary { color: var(--nav-primary-color); }
+        .card-info h2.warning { color: var(--warning-color); }
+        .card-info h2.success { color: var(--success-color); }
+        .card-info h2.info { color: var(--info-color); }
+        .card-info h2.danger { color: var(--danger-color); }
+        .card-info h2.purple { color: var(--purple-color); }
+        .card-info h2.orange { color: var(--orange-color); }
+
+        .card-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+
+        .card-icon.primary { color: var(--nav-primary-color); }
+        .card-icon.warning { color: var(--warning-color); }
+        .card-icon.success { color: var(--success-color); }
+        .card-icon.info { color: var(--info-color); }
+        .card-icon.danger { color: var(--danger-color); }
+        .card-icon.purple { color: var(--purple-color); }
+        .card-icon.orange { color: var(--orange-color); }
+
+        /* Quick Actions */
+        .action-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--nav-transition);
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            color: white;
+            gap: 0.75rem;
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            box-shadow: 0 4px 15px rgba(0, 97, 110, 0.2);
+        }
+
+        .action-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 97, 110, 0.3);
+            color: white;
+        }
+
+        .action-btn.warning {
+            background: linear-gradient(135deg, var(--warning-color), #ffcd3c);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2);
+        }
+
+        .action-btn.warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
+            color: white;
+        }
+
+        .action-btn.info {
+            background: linear-gradient(135deg, var(--info-color), #20c997);
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.2);
+        }
+
+        .action-btn.info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
+            color: white;
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, var(--success-color), #34ce57);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+        }
+
+        .action-btn.success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        .action-btn.purple {
+            background: linear-gradient(135deg, var(--purple-color), #8b5cf6);
+            box-shadow: 0 4px 15px rgba(111, 66, 193, 0.2);
+        }
+
+        .action-btn.purple:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(111, 66, 193, 0.3);
+            color: white;
+        }
+
+        .action-btn.orange {
+            background: linear-gradient(135deg, var(--orange-color), #fb923c);
+            box-shadow: 0 4px 15px rgba(253, 126, 20, 0.2);
+        }
+
+        .action-btn.orange:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(253, 126, 20, 0.3);
+            color: white;
+        }
+
+        /* Chart Cards */
+        .charts-grid {
+            margin-bottom: 3rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .chart-card .card-header {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-bottom: 1px solid #e9ecef;
+            padding: 1.5rem;
+        }
+
+        .chart-card .card-body {
+            padding: 2rem;
+            height: 350px;
+            position: relative;
+        }
+
+        .chart-card .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Table Styles */
+        .table-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e9ecef;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+
+        .table-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline-custom {
+            background: transparent;
+            border: 2px solid var(--nav-primary-color);
+            color: var(--nav-primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--nav-transition);
+        }
+
+        .btn-outline-custom:hover {
+            background: var(--nav-primary-color);
+            color: white;
+        }
+
+        .table-custom {
+            margin: 0;
+        }
+
+        .table-custom thead th {
+            background-color: #f8f9fa;
+            border-top: none;
+            border-bottom: 2px solid #e9ecef;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table-custom tbody td {
+            padding: 1rem 1.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .table-custom tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .status-badge.pendiente {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.cotizada {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .status-badge.programada {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-badge.completada {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.cancelada {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-badge.activo {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.inactivo {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn-action {
+            background: var(--info-color);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: var(--nav-transition);
+            border: none;
+        }
+
+        .btn-action:hover {
+            background: #138496;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Priority Alerts */
+        .priority-alerts {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .alert-item.high {
+            background: rgba(220, 53, 69, 0.1);
+            border-left-color: var(--danger-color);
+        }
+
+        .alert-item.medium {
+            background: rgba(255, 193, 7, 0.1);
+            border-left-color: var(--warning-color);
+        }
+
+        .alert-item.low {
+            background: rgba(23, 162, 184, 0.1);
+            border-left-color: var(--info-color);
+        }
+
+        .alert-icon {
+            font-size: 1.2rem;
+        }
+
+        .alert-icon.high { color: var(--danger-color); }
+        .alert-icon.medium { color: var(--warning-color); }
+        .alert-icon.low { color: var(--info-color); }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-description {
+            font-size: 0.9rem;
+            color: var(--nav-secondary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .dashboard-container {
+                padding: 1.5rem 0;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .stats-card {
+                margin-bottom: 1rem;
+            }
+
+            .card-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .table-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid .row > div {
+                margin-bottom: 2rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.15s; }
+        .stagger-3 { animation-delay: 0.2s; }
+        .stagger-4 { animation-delay: 0.25s; }
+        .stagger-5 { animation-delay: 0.3s; }
+        .stagger-6 { animation-delay: 0.35s; }
+        .stagger-7 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header-nav">
+        <div class="container-fluid px-4">
+            <div class="nav-container">
+                <a href="/" class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                    <span class="logo-text">Felmart</span>
+                </a>
+
+                <nav>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="/dashboard/admin" class="nav-link active">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/solicitudes" class="nav-link">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Solicitudes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/clientes" class="nav-link">
+                                <i class="fas fa-building"></i>
+                                <span>Clientes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/visitas" class="nav-link">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Visitas</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/operadores" class="nav-link">
+                                <i class="fas fa-users"></i>
+                                <span>Operadores</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/reportes" class="nav-link">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Reportes</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="user-dropdown">
+                    <button class="user-btn" id="adminDropdownBtn" type="button">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Administrador</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="adminDropdownMenu">
+                        <a href="/admin/perfil" class="dropdown-item">
+                            <i class="fas fa-user"></i> Mi Perfil
                         </a>
-                      </td>
-                    </tr>
-                  <% }) %>
-                </tbody>
-              </table>
-            </div>
-          <% } else { %>
-            <div class="p-4 text-center">
-              <p class="text-muted mb-0">No hay solicitudes recientes</p>
-            </div>
-          <% } %>
-        </div>
-      </div>
-    </div>
-
-    <!-- Próximas Visitas -->
-    <div class="col-lg-6 mb-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-0">Próximas Visitas</h5>
-          <a href="/visitas/calendario" class="btn btn-sm btn-outline-primary">Ver calendario</a>
-        </div>
-        <div class="card-body p-0">
-          <% if (proximasVisitas && proximasVisitas.length) { %>
-            <div class="table-responsive">
-              <table class="table table-hover mb-0">
-                <thead>
-                  <tr>
-                    <th class="px-3">ID</th>
-                    <th>Cliente</th>
-                    <th>Fecha</th>
-                    <th>Operador</th>
-                    <th class="text-end pe-3">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% proximasVisitas.forEach(visita => { %>
-                    <tr>
-                      <td class="px-3"><%= visita.id %></td>
-                      <td><%= visita.SolicitudRetiro?.Cliente?.nombreEmpresa || 'N/A' %></td>
-                      <td>
-                        <%= new Date(visita.fechaProgramada).toLocaleDateString('es-ES') %>
-                        <%= visita.horaInicio?.substring(0,5) || '' %>
-                      </td>
-                      <td><%= visita.Operador?.nombre || 'Sin asignar' %></td>
-                      <td class="text-end pe-3">
-                        <a href="/visitas/detalles/<%= visita.id %>" class="btn btn-sm btn-outline-secondary">
-                          <i class="fas fa-eye"></i>
+                        <a href="/admin/notificaciones" class="dropdown-item">
+                            <i class="fas fa-bell"></i> Notificaciones
                         </a>
-                      </td>
-                    </tr>
-                  <% }) %>
-                </tbody>
-              </table>
+                        <a href="/admin/auditoria" class="dropdown-item">
+                            <i class="fas fa-shield-alt"></i> Registro de Actividad
+                        </a>
+                        <a href="/admin/backups" class="dropdown-item">
+                            <i class="fas fa-database"></i> Respaldo de Datos
+                        </a>
+                        <a href="/admin/ayuda" class="dropdown-item">
+                            <i class="fas fa-question-circle"></i> Ayuda y Soporte
+                        </a>
+                        <div style="border-top: 1px solid #e9ecef; margin: 0.5rem 0;"></div>
+                        <a href="/" class="dropdown-item">
+                            <i class="fas fa-home"></i> Volver al Inicio
+                        </a>
+                        <a href="/logout" class="dropdown-item text-danger">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
             </div>
-          <% } else { %>
-            <div class="p-4 text-center">
-              <p class="text-muted mb-0">No hay visitas programadas próximamente</p>
-            </div>
-          <% } %>
         </div>
-      </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <div class="container-fluid dashboard-container px-4">
+        <!-- Page Header -->
+        <div class="page-header fade-in-up">
+            <h1 class="page-title">Panel de Administración Felmart</h1>
+            <p class="page-subtitle">Sistema integral de gestión de residuos - Sector Salmonero, Naviero, Agrícola y Forestal</p>
+        </div>
+
+        <!-- Alert Bar -->
+        <div class="alert-bar fade-in-up">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div class="alert-bar-text">
+                <strong>Atención:</strong> Tienes 3 solicitudes vencidas que requieren atención inmediata.
+            </div>
+            <a href="/admin/solicitudes?filter=vencidas" class="btn btn-sm btn-warning">
+                <i class="fas fa-eye me-1"></i>Revisar
+            </a>
+        </div>
+        
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-card primary fade-in-up stagger-1">
+                        <div class="card-content">
+                            <div class="card-info">
+                                <h6>Total Clientes</h6>
+                                <h2 class="primary">127</h2>
+                            </div>
+                            <div class="card-icon primary">
+                                <i class="fas fa-building"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-card warning fade-in-up stagger-2">
+                        <div class="card-content">
+                            <div class="card-info">
+                                <h6>Solicitudes Pendientes</h6>
+                                <h2 class="warning">23</h2>
+                            </div>
+                            <div class="card-icon warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-card info fade-in-up stagger-3">
+                        <div class="card-content">
+                            <div class="card-info">
+                                <h6>Visitas Programadas Hoy</h6>
+                                <h2 class="info">12</h2>
+                            </div>
+                            <div class="card-icon info">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-card success fade-in-up stagger-4">
+                        <div class="card-content">
+                            <div class="card-info">
+                                <h6>Servicios Completados</h6>
+                                <h2 class="success">856</h2>
+                            </div>
+                            <div class="card-icon success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-card danger fade-in-up stagger-5">
+                        <div class="card-content">
+                            <div class="card-info">
+                                <h6>Servicios Vencidos</h6>
+                                <h2 class="danger">3</h2>
+                            </div>
+                            <div class="card-icon danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-card purple fade-in-up stagger-6">
+                        <div class="card-content">
+                            <div class="card-info">
+                                <h6>Operadores Activos</h6>
+                                <h2 class="purple">8</h2>
+                            </div>
+                            <div class="card-icon purple">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-card orange fade-in-up stagger-7">
+                        <div class="card-content">
+                            <div class="card-info">
+                                <h6>Ingresos del Mes</h6>
+                                <h2 class="orange">$4.2M</h2>
+                            </div>
+                            <div class="card-icon orange">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-card primary fade-in-up stagger-1">
+                        <div class="card-content">
+                            <div class="card-info">
+                                <h6>Certificados Emitidos</h6>
+                                <h2 class="primary">342</h2>
+                            </div>
+                            <div class="card-icon primary">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Priority Alerts -->
+        <div class="priority-alerts fade-in-up">
+            <h5 class="section-title">
+                <i class="fas fa-bell"></i>
+                Alertas Prioritarias
+            </h5>
+            
+            <div class="alert-item high">
+                <div class="alert-icon high">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">Solicitud Crítica Vencida</div>
+                    <div class="alert-description">Nestlé - Retiro de aceites contaminados vencido hace 2 días</div>
+                </div>
+                <a href="/admin/solicitudes/45" class="btn btn-sm btn-danger">Ver Detalle</a>
+            </div>
+
+            <div class="alert-item medium">
+                <div class="alert-icon medium">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">Camión Requiere Mantenimiento</div>
+                    <div class="alert-description">Vehículo PAT-1234 próximo a vencimiento de revisión técnica</div>
+                </div>
+                <a href="/admin/vehiculos/maintenance" class="btn btn-sm btn-warning">Programar</a>
+            </div>
+
+            <div class="alert-item low">
+                <div class="alert-icon low">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">Facturas Pendientes de Pago</div>
+                    <div class="alert-description">5 facturas con más de 30 días de antigüedad</div>
+                </div>
+                <a href="/admin/facturacion?status=vencidas" class="btn btn-sm btn-info">Revisar</a>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="action-section fade-in-up">
+            <h5 class="section-title">
+                <i class="fas fa-bolt"></i>
+                Acciones Rápidas
+            </h5>
+            
+            <div class="action-grid">
+                <a href="/admin/solicitudes/crear" class="action-btn primary">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Nueva Solicitud</span>
+                </a>
+                
+                <a href="/admin/clientes/crear" class="action-btn info">
+                    <i class="fas fa-building"></i>
+                    <span>Registrar Cliente</span>
+                </a>
+                
+                <a href="/admin/visitas/programar" class="action-btn warning">
+                    <i class="fas fa-calendar-plus"></i>
+                    <span>Programar Visita</span>
+                </a>
+                
+                <a href="/admin/cotizaciones/generar" class="action-btn success">
+                    <i class="fas fa-calculator"></i>
+                    <span>Generar Cotización</span>
+                </a>
+
+                <a href="/admin/operadores/crear" class="action-btn purple">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Nuevo Operador</span>
+                </a>
+
+                <a href="/admin/certificados/emitir" class="action-btn orange">
+                    <i class="fas fa-certificate"></i>
+                    <span>Emitir Certificado</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Charts Row -->
+        <div class="charts-grid">
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-card fade-in-up">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-chart-pie"></i>
+                                Solicitudes por Estado
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="solicitudesPorEstadoChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-card fade-in-up">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-chart-line"></i>
+                                Ingresos Mensuales
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="ingresosMensualesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="chart-card fade-in-up">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-industry"></i>
+                                Clientes por Sector
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="clientesPorSectorChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="chart-card fade-in-up">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-recycle"></i>
+                                Tipos de Residuos
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="tiposResiduosChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="chart-card fade-in-up">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-users"></i>
+                                Operadores Activos
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="operadoresChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tables Row -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="table-section fade-in-up">
+                    <div class="table-header">
+                        <h5 class="table-title">
+                            <i class="fas fa-clock"></i>
+                            Solicitudes Urgentes
+                        </h5>
+                        <a href="/admin/solicitudes?filter=urgentes" class="btn-outline-custom">
+                            <i class="fas fa-eye me-2"></i>
+                            Ver todas
+                        </a>
+                    </div>
+                    
+                    <div class="table-content">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Cliente</th>
+                                        <th>Tipo Residuo</th>
+                                        <th>Estado</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>#SOL-001</strong></td>
+                                        <td>Nestlé Chile</td>
+                                        <td>Aceites Contaminados</td>
+                                        <td>
+                                            <span class="status-badge pendiente">
+                                                Pendiente
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="/admin/solicitudes/detalles/1" class="btn-action">
+                                                <i class="fas fa-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#SOL-002</strong></td>
+                                        <td>Salmones Camanchaca</td>
+                                        <td>Químicos Veterinarios</td>
+                                        <td>
+                                            <span class="status-badge programada">
+                                                Programada
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="/admin/solicitudes/detalles/2" class="btn-action">
+                                                <i class="fas fa-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#SOL-003</strong></td>
+                                        <td>Forestal Arauco</td>
+                                        <td>Pesticidas Vencidos</td>
+                                        <td>
+                                            <span class="status-badge cotizada">
+                                                Cotizada
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="/admin/solicitudes/detalles/3" class="btn-action">
+                                                <i class="fas fa-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#SOL-004</strong></td>
+                                        <td>Naviera Austral</td>
+                                        <td>Lubricantes Usados</td>
+                                        <td>
+                                            <span class="status-badge completada">
+                                                Completada
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="/admin/solicitudes/detalles/4" class="btn-action">
+                                                <i class="fas fa-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="table-section fade-in-up">
+                    <div class="table-header">
+                        <h5 class="table-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Próximas Visitas
+                        </h5>
+                        <a href="/admin/visitas/calendario" class="btn-outline-custom">
+                            <i class="fas fa-calendar me-2"></i>
+                            Ver calendario
+                        </a>
+                    </div>
+                    
+                    <div class="table-content">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>Hora</th>
+                                        <th>Cliente</th>
+                                        <th>Ubicación</th>
+                                        <th>Operador</th>
+                                        <th class="text-center">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>09:00</strong></td>
+                                        <td>Nestlé Chile</td>
+                                        <td>Puerto Montt</td>
+                                        <td>Carlos Ruiz</td>
+                                        <td class="text-center">
+                                            <span class="status-badge programada">Programada</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>11:30</strong></td>
+                                        <td>Salmones Camanchaca</td>
+                                        <td>Castro, Chiloé</td>
+                                        <td>Ana López</td>
+                                        <td class="text-center">
+                                            <span class="status-badge programada">Programada</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>14:00</strong></td>
+                                        <td>Forestal Arauco</td>
+                                        <td>Osorno</td>
+                                        <td>Miguel Torres</td>
+                                        <td class="text-center">
+                                            <span class="status-badge programada">Programada</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>16:30</strong></td>
+                                        <td>Naviera Austral</td>
+                                        <td>Puerto Varas</td>
+                                        <td>Sin asignar</td>
+                                        <td class="text-center">
+                                            <span class="status-badge pendiente">Pendiente</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information Row -->
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="table-section fade-in-up">
+                    <div class="table-header">
+                        <h5 class="table-title">
+                            <i class="fas fa-building"></i>
+                            Clientes Principales
+                        </h5>
+                        <a href="/admin/clientes" class="btn-outline-custom">
+                            <i class="fas fa-list me-2"></i>
+                            Ver todos
+                        </a>
+                    </div>
+                    
+                    <div class="table-content">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>Cliente</th>
+                                        <th>Sector</th>
+                                        <th class="text-center">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Nestlé Chile</strong></td>
+                                        <td>Agrícola</td>
+                                        <td class="text-center">
+                                            <span class="status-badge activo">Activo</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Salmones Camanchaca</strong></td>
+                                        <td>Salmonero</td>
+                                        <td class="text-center">
+                                            <span class="status-badge activo">Activo</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Forestal Arauco</strong></td>
+                                        <td>Forestal</td>
+                                        <td class="text-center">
+                                            <span class="status-badge activo">Activo</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Naviera Austral</strong></td>
+                                        <td>Naviero</td>
+                                        <td class="text-center">
+                                            <span class="status-badge activo">Activo</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="table-section fade-in-up">
+                    <div class="table-header">
+                        <h5 class="table-title">
+                            <i class="fas fa-users"></i>
+                            Operadores en Campo
+                        </h5>
+                        <a href="/admin/operadores" class="btn-outline-custom">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            Ver ubicaciones
+                        </a>
+                    </div>
+                    
+                    <div class="table-content">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>Operador</th>
+                                        <th>Ubicación</th>
+                                        <th class="text-center">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Carlos Ruiz</strong></td>
+                                        <td>Puerto Montt</td>
+                                        <td class="text-center">
+                                            <span class="status-badge activo">En Ruta</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Ana López</strong></td>
+                                        <td>Castro</td>
+                                        <td class="text-center">
+                                            <span class="status-badge activo">En Servicio</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Miguel Torres</strong></td>
+                                        <td>Osorno</td>
+                                        <td class="text-center">
+                                            <span class="status-badge activo">Disponible</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Pedro Sánchez</strong></td>
+                                        <td>Puerto Varas</td>
+                                        <td class="text-center">
+                                            <span class="status-badge activo">En Ruta</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="table-section fade-in-up">
+                    <div class="table-header">
+                        <h5 class="table-title">
+                            <i class="fas fa-file-invoice"></i>
+                            Facturación Reciente
+                        </h5>
+                        <a href="/admin/facturacion" class="btn-outline-custom">
+                            <i class="fas fa-money-bill me-2"></i>
+                            Ver todas
+                        </a>
+                    </div>
+                    
+                    <div class="table-content">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>Factura</th>
+                                        <th>Cliente</th>
+                                        <th class="text-center">Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>#F-2025001</strong></td>
+                                        <td>Nestlé Chile</td>
+                                        <td class="text-center"><strong>$850.000</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#F-2025002</strong></td>
+                                        <td>Salmones Camanchaca</td>
+                                        <td class="text-center"><strong>$1.200.000</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#F-2025003</strong></td>
+                                        <td>Forestal Arauco</td>
+                                        <td class="text-center"><strong>$650.000</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#F-2025004</strong></td>
+                                        <td>Naviera Austral</td>
+                                        <td class="text-center"><strong>$920.000</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<!-- Scripts de Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  // 1) Solicitudes por Estado (Doughnut)
-  const ctxEstado = document.getElementById('solicitudesPorEstadoChart').getContext('2d');
-  new Chart(ctxEstado, {
-    type: 'doughnut',
-    data: {
-      labels: <%= typeof datosSolicitudesPorEstado !== 'undefined' ? JSON.stringify(datosSolicitudesPorEstado.labels) : '[]' %>,
-      datasets: [{
-        data: <%= typeof datosSolicitudesPorEstado !== 'undefined' ? JSON.stringify(datosSolicitudesPorEstado.data) : '[]' %>,
-        backgroundColor: ['#ffc107', '#17a2b8', '#007bff', '#28a745', '#dc3545'],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'right' }
-      }
-    }
-  });
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Dropdown funcional para el admin
+        const adminDropdownBtn = document.getElementById('adminDropdownBtn');
+        const adminDropdownMenu = document.getElementById('adminDropdownMenu');
+        adminDropdownBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            adminDropdownMenu.classList.toggle('show');
+        });
+        document.addEventListener('click', function(e) {
+            if (!adminDropdownMenu.contains(e.target) && !adminDropdownBtn.contains(e.target)) {
+                adminDropdownMenu.classList.remove('show');
+            }
+        });
 
-  // 2) Solicitudes por Mes (Line)
-  const ctxMes = document.getElementById('solicitudesPorMesChart').getContext('2d');
-  new Chart(ctxMes, {
-    type: 'line',
-    data: {
-      labels: <%= typeof datosSolicitudesPorMes !== 'undefined' ? JSON.stringify(datosSolicitudesPorMes.labels) : '[]' %>,
-      datasets: [{
-        label: 'Solicitudes',
-        data: <%= typeof datosSolicitudesPorMes !== 'undefined' ? JSON.stringify(datosSolicitudesPorMes.data) : '[]' %>,
-        fill: true,
-        backgroundColor: 'rgba(0, 123, 255, 0.1)',
-        borderColor: '#007bff',
-        tension: 0.3
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: { beginAtZero: true, ticks: { precision: 0 } }
-      },
-      plugins: {
-        legend: { position: 'top' },
-        tooltip: { mode: 'index', intersect: false }
-      }
-    }
-  });
-</script>
+        // Charts initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Solicitudes por Estado Chart (Doughnut)
+            const ctxEstado = document.getElementById('solicitudesPorEstadoChart');
+            if (ctxEstado) {
+                new Chart(ctxEstado, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pendiente', 'Cotizada', 'Programada', 'Completada', 'Cancelada'],
+                        datasets: [{
+                            data: [23, 15, 18, 35, 5],
+                            backgroundColor: [
+                                '#ffc107',
+                                '#17a2b8',
+                                '#00616e',
+                                '#28a745',
+                                '#dc3545'
+                            ],
+                            borderWidth: 0,
+                            cutout: '60%'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    font: { size: 12 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Ingresos Mensuales Chart (Line)
+            const ctxIngresos = document.getElementById('ingresosMensualesChart');
+            if (ctxIngresos) {
+                new Chart(ctxIngresos, {
+                    type: 'line',
+                    data: {
+                        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Ingresos (Millones CLP)',
+                            data: [3.2, 4.1, 3.8, 4.5, 4.2, 4.8],
+                            fill: true,
+                            backgroundColor: 'rgba(0, 97, 110, 0.1)',
+                            borderColor: '#00616e',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            pointBackgroundColor: '#00616e',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Clientes por Sector Chart (Pie)
+            const ctxSector = document.getElementById('clientesPorSectorChart');
+            if (ctxSector) {
+                new Chart(ctxSector, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Salmonero', 'Naviero', 'Agrícola', 'Forestal'],
+                        datasets: [{
+                            data: [45, 25, 20, 10],
+                            backgroundColor: ['#00616e', '#17a2b8', '#28a745', '#fd7e14']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { padding: 15, usePointStyle: true, font: { size: 11 } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Tipos de Residuos Chart (Bar)
+            const ctxResiduos = document.getElementById('tiposResiduosChart');
+            if (ctxResiduos) {
+                new Chart(ctxResiduos, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Aceites', 'Químicos', 'Pesticidas', 'Lubricantes'],
+                        datasets: [{
+                            data: [35, 28, 22, 15],
+                            backgroundColor: ['#dc3545', '#ffc107', '#28a745', '#6f42c1'],
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Operadores Chart (Bar)
+            const ctxOperadores = document.getElementById('operadoresChart');
+            if (ctxOperadores) {
+                new Chart(ctxOperadores, {
+                    type: 'bar',
+                    data: {
+                        labels: ['En Servicio', 'Disponibles', 'En Ruta'],
+                        datasets: [{
+                            data: [3, 2, 3],
+                            backgroundColor: ['#28a745', '#17a2b8', '#ffc107'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, max: 5 },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Animation on page load
+            const animatedElements = document.querySelectorAll('.fade-in-up');
+            animatedElements.forEach((element, index) => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    element.style.transition = 'all 0.6s ease-out';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+
+        // Add click effect to stat cards
+        document.querySelectorAll('.stats-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Real-time updates simulation
+        function updateDashboard() {
+            console.log('Actualizando dashboard administrativo...');
+            // Simulate real-time updates
+            updateStatsCards();
+            updateAlerts();
+        }
+
+        function updateStatsCards() {
+            // Simulate updating stats cards with new data
+            const cards = document.querySelectorAll('.stats-card h2');
+            cards.forEach(card => {
+                const currentValue = parseInt(card.textContent.replace(/[^0-9]/g, ''));
+                if (Math.random() > 0.7) { // 30% chance to update
+                    const change = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+                    const newValue = Math.max(0, currentValue + change);
+                    if (card.textContent.includes('M')) {
+                        card.textContent = newValue + 'M';
+                    } else if (card.textContent.includes('K')) {
+                        card.textContent = newValue + 'K';
+                    } else {
+                        card.textContent = newValue;
+                    }
+                }
+            });
+        }
+
+        function updateAlerts() {
+            // Simulate updating alert count
+            const alertCount = document.querySelector('.alert-bar-text strong');
+            if (alertCount && Math.random() > 0.8) {
+                const currentCount = parseInt(alertCount.nextSibling.textContent.match(/\d+/)[0]);
+                const newCount = Math.max(0, currentCount + (Math.random() > 0.5 ? 1 : -1));
+                alertCount.nextSibling.textContent = ` Tienes ${newCount} solicitudes vencidas que requieren atención inmediata.`;
+            }
+        }
+
+        // Update dashboard every 30 seconds
+        setInterval(updateDashboard, 30000);
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Auto-refresh functionality
+        let autoRefreshInterval;
+        
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(() => {
+                updateDashboard();
+            }, 60000); // Every minute
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+        }
+
+        // Start auto-refresh on page load
+        startAutoRefresh();
+
+        // Stop auto-refresh when page is hidden
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                stopAutoRefresh();
+            } else {
+                startAutoRefresh();
+            }
+        });
+
+        // Keyboard shortcuts for admin efficiency
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + N for new solicitud
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                window.location.href = '/admin/solicitudes/crear';
+            }
+            
+            // Ctrl/Cmd + K for quick search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                // Focus search input or open search modal
+                console.log('Quick search activated');
+            }
+
+            // Ctrl/Cmd + D for dashboard refresh
+            if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+                e.preventDefault();
+                updateDashboard();
+                showNotification('Dashboard actualizado', 'success');
+            }
+        });
+
+        // Emergency alert system
+        function checkEmergencyAlerts() {
+            // Simulate checking for emergency situations
+            const emergencyTypes = [
+                'Derrame de químicos reportado',
+                'Vehículo de transporte con falla mecánica',
+                'Cliente reporta incidencia con residuos',
+                'Operador requiere asistencia inmediata'
+            ];
+            
+            if (Math.random() > 0.95) { // 5% chance of emergency
+                const emergencyType = emergencyTypes[Math.floor(Math.random() * emergencyTypes.length)];
+                showEmergencyAlert(emergencyType);
+            }
+        }
+
+        function showEmergencyAlert(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+            alert.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 400px; border: 2px solid #dc3545;';
+            alert.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle fa-2x me-3 text-danger"></i>
+                    <div>
+                        <h6 class="mb-1"><strong>¡ALERTA DE EMERGENCIA!</strong></h6>
+                        <p class="mb-0">${message}</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            // Play alert sound (if available)
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+H4sWUdCDOE0fPRfiwHKmm/7N2cTAwZZ7js4pkVDB1W4sS0lJLNGCwABJPqUbSHdUXbgqxUyONjwTSsQMgcKDVdCzFKMrIFjN5xxRU9FmUYUPdKmFWjF7RyYSPVdJQCbSMEkrGCCJLcQZIoqYnkQoEKBqFQXBDODxEPdwQCQUTIFNhUKMiHKpYFkXoABzECLGzIoiNpNwi8GNhPIAI1QaW3PmGCVwrDKEIHvCcPNgIDCMtJgQpCrfUFMCQD0AiOdpRkABHJdJEYADuQAIkJcCDRCEQAQuwMmPMNAEKlDyFCDDiSIGEQlCBADuA0AYqOCaFKgU2rqIhLgvDdnJHYDQrOzE2XQe+F4EYGUJbGGRZqAyFnAhBzLcxhWpMFDEiUPIANlKgQGrHwRUAz38wUkYCQW7/OJCEQGhGgQmFILDWQ8QBY9QoA4kHnBsAIBKgWuIEAJQmCEAKiSABMGUJwqAMFACGBBVQABcAEUJBpJJCHgYOGiSBJFIBFUUMCIUsIxBgJPYfADJRIAMzLYIoYBiNcGQGSqVCBWAHk2BIJVIBELkAHDpQCTYwAqaWVYAIYAAMgEAIiKJEQR7YmEFArRJeXFYlEJMCYhEiGYqJgAASQHwGFIAXEJJBmAIxWKgACQeUfAQRnKHAHCQgcMQUAGhAQYMgxB1BgIAjAJbsAIAAAFwBgABQEAQEOWQQkANSxQYQcIqEbZEsEQBYxCQCNRgIJBrI5ZwAUCrOTXJUCFQoSCQCVJQoFqBRoSCLEEQAtFQpEJCrVUDJFKFQGQIzgFQAG0RoJlwJhIFEkBSXaIJWJAhAAYABWGQCRJQAIJDIGKKBEhELQBQCKAAK1QSGIXAKRIxQYCGIAFwgCFQADQQUQIKIAHhIBBBAEKlmAEkQgRwAQRDEoaAEGRAeEQCAEQgGkVQKEQGISFQZKEhIkMQAJkgJABWAIUEDKUBwCQC4hgBQKbXjmOjwZAOKCxXsABSAAQAJGAMhZAGwEYBwAGbJnGgAKAFQCNRhYJGAAAFkIHBgACAQIkqeJlnYIUJIeIZCCdQRGIXCdQ5AkCAAEBAEQAFkQHIFWADwFKEAMsZIABgAMmkIABTkGAQGKAJExQIEAANOhAIAQJQhACGRQAJQCcRLAIAAMJBBgIAAgAMJwMjdJJNBgwYUQIAGQIAJGCTbDRIJQUAMYIAOABGAJJBIGEAABqQPADQgEEADEKADQQABwKOiAFoiOWIGqgGgCACwHgBBEAMgAEgAMlgAYAAIgwGqIQqmYgRcIQCgDESQJDgAEgCgREgIYEANABIgAygAAtNhQVVBDgAEFoAFZQAWgABwGIEAIQTCBFARCQeIAKQAqQ+CJCgICCsITADEABEKgAFIgAYABCQAFIgAIABSQAFIgAIAEFCQUBGAAAEgAIsIwAGEGAAGIwQQAGQKIkAEwcFIAKAA0BIBQCKgBE0kQgCRoAEwADMgAqQ1QDCCAADQAGEAAIGQANABAGQBAwAYAKGQABnAMEiwAFAAAEDQBnAOGSABEAHQOAIgAEQCgwAIMAQAEGABqBQABgAACAAGAAQDQANAQAMAAQADAAEAAQABAAEAAQABAAEAAQABAAEAAQ=');
+                audio.play();
+            } catch (e) {
+                // Audio not supported or failed to load
+            }
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 10000);
+        }
+
+        // Check for emergency alerts every 2 minutes
+        setInterval(checkEmergencyAlerts, 120000);
+
+        // Welcome message on first load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                showNotification('¡Bienvenido al Panel de Administración de Felmart!', 'success');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

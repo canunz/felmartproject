@@ -31,13 +31,19 @@ router.get('/', isAuthenticated, async (req, res) => { // Middleware isAuthentic
       [userId]
     );
     
+    if (req.session.usuario.rol === 'administrador') {
+      return res.render('dashboard/admin', {
+        usuario: req.session.usuario
+      });
+    }
+    
     res.render('dashboard/index', {
       titulo: 'Panel de Control',
       countSolicitudes: solicitudesResult[0].total || 0,
       countPendientes: pendientesResult[0].total || 0,
       countVisitas: visitasResult[0].total || 0,
       solicitudesRecientes: solicitudesRecientes || [],
-      usuario: req.session.usuario // Se asume que la vista lo espera
+      usuario: req.session.usuario
     });
   } catch (error) {
     console.error('Error al cargar el dashboard:', error);

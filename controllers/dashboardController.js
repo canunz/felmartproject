@@ -86,6 +86,12 @@ exports.mostrarDashboard = async (req, res) => {
         // Obtener actividades recientes
         const actividades = await obtenerActividadesRecientes(req.usuario);
         
+        if (req.usuario.rol === 'administrador') {
+            return res.render('dashboard/admin', {
+                usuario: req.usuario
+            });
+        }
+        
         res.render('dashboard/index', {
             currentPage: 'dashboard',
             stats,

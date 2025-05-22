@@ -228,13 +228,24 @@ const usuarioController = {
   dashboard: async (req, res) => {
     try {
       const { usuario } = req.session;
-      if (usuario.rol === 'administrador' || usuario.rol === 'operador') {
+      if (usuario.rol === 'administrador') {
+        return res.render('dashboard/admin', {
+          usuario,
+          titulo: 'Panel de Administración',
+          totalClientes: 0,
+          totalSolicitudes: 0,
+          totalVisitas: 0,
+          error: req.flash('error'),
+          success: req.flash('success')
+        });
+      }
+      if (usuario.rol === 'operador') {
         // Ejemplo: obtener algunos datos generales
         const totalUsuarios = await Usuario.count();
         const totalClientes = await Cliente.count();
         const totalSolicitudes = await SolicitudRetiro.count();
         const totalVisitas = await VisitaRetiro.count();
-        res.render('dashboard', {
+        return res.render('dashboard', {
           titulo: 'Panel de Administración',
           usuario,
           totalUsuarios,
@@ -246,7 +257,7 @@ const usuarioController = {
         });
       } else {
         // Si es cliente, puedes redirigir a su propio dashboard o mostrar menos datos
-        res.render('dashboard', {
+        return res.render('dashboard', {
           titulo: 'Mi Panel',
           usuario,
           error: req.flash('error'),

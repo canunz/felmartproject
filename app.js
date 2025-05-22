@@ -165,17 +165,16 @@ app.use('/visitas', require('./routes/visitaRoutes'));
 app.use('/certificados', require('./routes/certificadosRoutes'));
 app.use('/notificaciones', require('./routes/notificacionRoutes'));
 app.use('/reportes', require('./routes/reporteRoutes'));
-<<<<<<< HEAD
+
 app.use('/dashboard', require('./routes/dashboardRoutes')); // Nueva ruta
 app.use('/perfil', require('./routes/perfilRoutes')); // Nueva ruta
 app.use('/precioresiduos', require('./routes/precioresiduosRoutes'));
 
 // Rutas de la API
 app.use('/api/cmf', require('./routes/api/cmfBancos.routes'));
-=======
+
 app.use('/dashboard', require('./routes/dashboardRoutes')); 
 app.use('/perfil', require('./routes/perfilRoutes')); 
->>>>>>> cata-gh
 
 // 404 Not Found - Actualización para usar nuestra página de error personalizada
 app.use((req, res) => {

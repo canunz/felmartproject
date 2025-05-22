@@ -11,7 +11,8 @@ const {
   const { Op } = require('sequelize');
   const fs = require('fs');
   const path = require('path');
-  const PDFDocument = require('pdfkit');
+  const pdf = require('html-pdf');
+  const ejs = require('ejs');
   const moment = require('moment');
   moment.locale('es');
   
@@ -21,86 +22,39 @@ const {
       try {
         let cotizaciones = [];
         const { usuario } = req.session;
-        const { estado, fechaDesde, fechaHasta, pagina = 1 } = req.query;
-        const porPagina = 10;
-        
-        // Construir condiciones de búsqueda
-        const where = {};
-        if (estado && estado !== 'todos') {
-          where.estado = estado;
-        }
-        if (fechaDesde && fechaHasta) {
-          where.fechaCotizacion = {
-            [Op.between]: [new Date(fechaDesde), new Date(fechaHasta)]
-          };
-        }
         
         // Filtrar cotizaciones según rol
         if (usuario.rol === 'administrador' || usuario.rol === 'operador') {
           // Admin y operador ven todas las cotizaciones
-          const { count, rows } = await Cotizacion.findAndCountAll({
-            where,
+          cotizaciones = await Cotizacion.findAll({
             include: [
               { 
                 model: SolicitudRetiro,
                 include: [{ model: Cliente }]
               }
             ],
-            order: [['fechaCotizacion', 'DESC']],
-            limit: porPagina,
-            offset: (pagina - 1) * porPagina
-          });
-          
-          cotizaciones = rows;
-          const totalPaginas = Math.ceil(count / porPagina);
-          
-          res.render('cotizaciones/listar', {
-            titulo: 'Cotizaciones',
-            cotizaciones,
-            usuario,
-            estado,
-            fechaDesde,
-            fechaHasta,
-            paginaActual: parseInt(pagina),
-            totalPaginas,
-            totalCotizaciones: count,
-            porPagina,
-            error: req.flash('error'),
-            success: req.flash('success')
+            order: [['fechaCotizacion', 'DESC']]
           });
         } else if (usuario.rol === 'cliente') {
           // Cliente solo ve sus cotizaciones
-          const { count, rows } = await Cotizacion.findAndCountAll({
-            where,
+          cotizaciones = await Cotizacion.findAll({
             include: [
               { 
                 model: SolicitudRetiro,
                 where: { clienteId: req.session.clienteId }
               }
             ],
-            order: [['fechaCotizacion', 'DESC']],
-            limit: porPagina,
-            offset: (pagina - 1) * porPagina
-          });
-          
-          cotizaciones = rows;
-          const totalPaginas = Math.ceil(count / porPagina);
-          
-          res.render('cotizaciones/listar', {
-            titulo: 'Mis Cotizaciones',
-            cotizaciones,
-            usuario,
-            estado,
-            fechaDesde,
-            fechaHasta,
-            paginaActual: parseInt(pagina),
-            totalPaginas,
-            totalCotizaciones: count,
-            porPagina,
-            error: req.flash('error'),
-            success: req.flash('success')
+            order: [['fechaCotizacion', 'DESC']]
           });
         }
+        
+        res.render('cotizaciones/listar', {
+          titulo: 'Cotizaciones',
+          cotizaciones,
+          usuario,
+          error: req.flash('error'),
+          success: req.flash('success')
+        });
       } catch (error) {
         console.error('Error al listar cotizaciones:', error);
         req.flash('error', 'Error al cargar la lista de cotizaciones');
@@ -302,10 +256,9 @@ const {
           subtotal,
           iva,
           total,
-          validezCotizacion: new Date(validezCotizacion),
+          validezCotizacion,
           observaciones,
-          estado: 'pendiente',
-          creadoPor: req.session.usuario.id
+          estado: 'pendiente'
         });
         
         // Crear detalles de cotización y almacenarlos en formato JSON
@@ -316,7 +269,7 @@ const {
             cantidad: cantidades[i],
             precioUnitario: preciosUnitarios[i],
             subtotal: subtotales[i],
-            descripcion: descripciones[i]
+            descripcion: descripciones[i] || null
           });
         }
         
@@ -325,41 +278,47 @@ const {
         await nuevaCotizacion.save();
         
         // Actualizar estado de la solicitud
-        await solicitud.update({ estado: 'cotizada' });
+        solicitud.estado = 'cotizada';
+        await solicitud.save();
+        
+        // Generar PDF de cotización
+        await generarPDFCotizacion(nuevaCotizacion.id);
         
         // Notificar al cliente
-        await Notificacion.create({
-          usuarioId: solicitud.Cliente.usuarioId,
-          titulo: 'Nueva cotización disponible',
-          mensaje: `Se ha generado una nueva cotización para su solicitud de retiro #${solicitud.numeroSolicitud}`,
-          tipo: 'cotizacion',
-          referenciaId: nuevaCotizacion.id
-        });
+        if (solicitud.Cliente && solicitud.Cliente.Usuario) {
+          await Notificacion.create({
+            usuarioId: solicitud.Cliente.Usuario.id,
+            tipo: 'cotizacion',
+            titulo: 'Nueva cotización disponible',
+            mensaje: `Se ha generado una cotización para su solicitud #${solicitudId}`,
+            referenciaId: nuevaCotizacion.id
+          });
+        }
         
-        req.flash('success', 'Cotización creada exitosamente');
+        req.flash('success', 'Cotización creada correctamente');
         res.redirect(`/cotizaciones/detalles/${nuevaCotizacion.id}`);
       } catch (error) {
         console.error('Error al crear cotización:', error);
-        req.flash('error', 'Error al crear la cotización');
+        req.flash('error', 'Error al crear cotización');
         res.redirect(`/cotizaciones/crear?solicitudId=${req.body.solicitudId}`);
       }
     },
     
-    // Actualizar estado de cotización
-    actualizarEstado: async (req, res) => {
+    // Aceptar cotización (para clientes)
+    aceptar: async (req, res) => {
       try {
         const { id } = req.params;
-        const { estado } = req.body;
         const { usuario } = req.session;
+        
+        // Verificar que sea un cliente
+        if (usuario.rol !== 'cliente') {
+          req.flash('error', 'Solo los clientes pueden aceptar cotizaciones');
+          return res.redirect(`/cotizaciones/detalles/${id}`);
+        }
         
         // Buscar cotización
         const cotizacion = await Cotizacion.findByPk(id, {
-          include: [
-            { 
-              model: SolicitudRetiro,
-              include: [{ model: Cliente }]
-            }
-          ]
+          include: [{ model: SolicitudRetiro }]
         });
         
         if (!cotizacion) {
@@ -367,73 +326,100 @@ const {
           return res.redirect('/cotizaciones');
         }
         
-        // Verificar permisos
-        if (usuario.rol === 'cliente' && cotizacion.SolicitudRetiro.clienteId !== req.session.clienteId) {
-          req.flash('error', 'No tienes permiso para actualizar esta cotización');
+        // Verificar que la cotización pertenezca al cliente
+        if (cotizacion.SolicitudRetiro.clienteId !== req.session.clienteId) {
+          req.flash('error', 'No tienes permiso para aceptar esta cotización');
           return res.redirect('/cotizaciones');
         }
         
-        // Validar cambio de estado
-        if (estado === 'aceptada' && usuario.rol !== 'cliente') {
-          req.flash('error', 'Solo el cliente puede aceptar la cotización');
+        // Verificar que la cotización esté pendiente
+        if (cotizacion.estado !== 'pendiente') {
+          req.flash('error', 'Solo se pueden aceptar cotizaciones pendientes');
           return res.redirect(`/cotizaciones/detalles/${id}`);
         }
         
-        if (estado === 'rechazada' && usuario.rol !== 'cliente') {
-          req.flash('error', 'Solo el cliente puede rechazar la cotización');
-          return res.redirect(`/cotizaciones/detalles/${id}`);
-        }
+        // Actualizar estado de la cotización
+        cotizacion.estado = 'aceptada';
+        await cotizacion.save();
         
-        // Actualizar estado
-        await cotizacion.update({ estado });
+        // Notificar a administradores
+        const admins = await Usuario.findAll({
+          where: { rol: 'administrador' }
+        });
         
-        // Actualizar estado de la solicitud
-        if (estado === 'aceptada') {
-          await cotizacion.SolicitudRetiro.update({ estado: 'aceptada' });
-        } else if (estado === 'rechazada') {
-          await cotizacion.SolicitudRetiro.update({ estado: 'rechazada' });
-        }
-        
-        // Notificar al cliente o administrador según el caso
-        if (estado === 'aceptada' || estado === 'rechazada') {
+        for (const admin of admins) {
           await Notificacion.create({
-            usuarioId: cotizacion.creadoPor,
-            titulo: `Cotización ${estado}`,
-            mensaje: `La cotización #${cotizacion.numeroCotizacion} ha sido ${estado}`,
+            usuarioId: admin.id,
             tipo: 'cotizacion',
-            referenciaId: cotizacion.id
+            titulo: 'Cotización aceptada',
+            mensaje: `El cliente ha aceptado la cotización #${cotizacion.numeroCotizacion}`,
+            referenciaId: id
           });
         }
         
-        req.flash('success', `Estado de cotización actualizado a: ${estado}`);
+        req.flash('success', 'Cotización aceptada correctamente');
         res.redirect(`/cotizaciones/detalles/${id}`);
       } catch (error) {
-        console.error('Error al actualizar estado de cotización:', error);
-        req.flash('error', 'Error al actualizar el estado de la cotización');
-        res.redirect('/cotizaciones');
+        console.error('Error al aceptar cotización:', error);
+        req.flash('error', 'Error al aceptar cotización');
+        res.redirect(`/cotizaciones/detalles/${req.params.id}`);
       }
     },
     
-    // Generar PDF de cotización
-    generarPDF: async (req, res) => {
-      try {
-        const { id } = req.params;
-        const { usuario } = req.session;
-        
-        // Buscar cotización con todos sus detalles
-        const cotizacion = await Cotizacion.findByPk(id, {
-          include: [
-            { 
-              model: SolicitudRetiro,
-              include: [{ model: Cliente }]
-            },
-            { 
-              model: DetalleCotizacion,
-              include: [{ model: Residuo }]
-            }
-          ]
+  // controllers/cotizacionController.js (continuación)
+  // Rechazar cotización (para clientes)
+  rechazar: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { motivo } = req.body;
+      const { usuario } = req.session;
+      
+      // Verificar que sea un cliente
+      if (usuario.rol !== 'cliente') {
+        req.flash('error', 'Solo los clientes pueden rechazar cotizaciones');
+        return res.redirect(`/cotizaciones/detalles/${id}`);
+      }
+      
+      // Buscar cotización
+      const cotizacion = await Cotizacion.findByPk(id, {
+        include: [{ model: SolicitudRetiro }]
+      });
+      
+      if (!cotizacion) {
+        req.flash('error', 'Cotización no encontrada');
+        return res.redirect('/cotizaciones');
+      }
+      
+      // Verificar que la cotización pertenezca al cliente
+      if (cotizacion.SolicitudRetiro.clienteId !== req.session.clienteId) {
+        req.flash('error', 'No tienes permiso para rechazar esta cotización');
+        return res.redirect('/cotizaciones');
+      }
+      
+      // Verificar que la cotización esté pendiente
+      if (cotizacion.estado !== 'pendiente') {
+        req.flash('error', 'Solo se pueden rechazar cotizaciones pendientes');
+        return res.redirect(`/cotizaciones/detalles/${id}`);
+      }
+      
+      // Actualizar estado de la cotización
+      cotizacion.estado = 'rechazada';
+      cotizacion.observaciones = motivo ? `Rechazada: ${motivo}` : 'Rechazada por el cliente';
+      await cotizacion.save();
+      
+      // Notificar a administradores
+      const admins = await Usuario.findAll({
+        where: { rol: 'administrador' }
+      });
+      
+      for (const admin of admins) {
+        await Notificacion.create({
+          usuarioId: admin.id,
+          tipo: 'cotizacion',
+          titulo: 'Cotización rechazada',
+          mensaje: `El cliente ha rechazado la cotización #${cotizacion.numeroCotizacion}${motivo ? `. Motivo: ${motivo}` : ''}`,
+          referenciaId: id
         });
-<<<<<<< HEAD
       }
       
       req.flash('success', 'Cotización rechazada correctamente');
@@ -678,187 +664,19 @@ const generarPDFCotizacion = async (cotizacionId) => {
         if (err) {
           reject(err);
           return;
-=======
-        
-        if (!cotizacion) {
-          req.flash('error', 'Cotización no encontrada');
-          return res.redirect('/cotizaciones');
->>>>>>> cata-gh
         }
         
-        // Verificar acceso para clientes
-        if (usuario.rol === 'cliente' && cotizacion.SolicitudRetiro.clienteId !== req.session.clienteId) {
-          req.flash('error', 'No tienes permiso para ver esta cotización');
-          return res.redirect('/cotizaciones');
-        }
-        
-        // Generar PDF
-        const pdfBuffer = await generarPDFCotizacion(cotizacion);
-        
-        // Enviar PDF
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=cotizacion-${cotizacion.numeroCotizacion}.pdf`);
-        res.send(pdfBuffer);
-      } catch (error) {
-        console.error('Error al generar PDF de cotización:', error);
-        req.flash('error', 'Error al generar el PDF de la cotización');
-        res.redirect(`/cotizaciones/detalles/${req.params.id}`);
-      }
-    }
-  };
-
-  // Función auxiliar para generar PDF
-  const generarPDFCotizacion = async (cotizacion) => {
-    return new Promise((resolve, reject) => {
-      try {
-        const doc = new PDFDocument({
-          size: 'A4',
-          margin: 50,
-          info: {
-            Title: `Cotización ${cotizacion.numeroCotizacion}`,
-            Author: 'Felmart',
-            Subject: 'Cotización de Gestión de Residuos'
-          }
-        });
-
-        // Crear stream de escritura
-        const chunks = [];
-        doc.on('data', chunk => chunks.push(chunk));
-        doc.on('end', () => resolve(Buffer.concat(chunks)));
-        doc.on('error', reject);
-
-        // Logo (si existe)
-        const logoPath = path.join(__dirname, '..', 'public', 'img', 'logo.png');
-        if (fs.existsSync(logoPath)) {
-          doc.image(logoPath, 50, 45, { width: 100 });
-        }
-
-        // Título
-        doc.fontSize(20)
-           .font('Helvetica-Bold')
-           .text('COTIZACIÓN', { align: 'center' })
-           .moveDown();
-
-        // Número de cotización
-        doc.fontSize(14)
-           .font('Helvetica')
-           .text(`N° ${cotizacion.numeroCotizacion}`, { align: 'center' })
-           .moveDown(2);
-
-        // Información del cliente
-        doc.fontSize(12)
-           .font('Helvetica-Bold')
-           .text('Información del Cliente')
-           .moveDown(0.5)
-           .font('Helvetica')
-           .text(`Empresa: ${cotizacion.SolicitudRetiro.Cliente.nombre}`)
-           .text(`RUC: ${cotizacion.SolicitudRetiro.Cliente.ruc}`)
-           .text(`Dirección: ${cotizacion.SolicitudRetiro.Cliente.direccion}`)
-           .text(`Teléfono: ${cotizacion.SolicitudRetiro.Cliente.telefono}`)
-           .moveDown();
-
-        // Información de la cotización
-        doc.font('Helvetica-Bold')
-           .text('Información de la Cotización')
-           .moveDown(0.5)
-           .font('Helvetica')
-           .text(`Fecha: ${moment(cotizacion.fechaCotizacion).format('DD/MM/YYYY')}`)
-           .text(`Válido hasta: ${moment(cotizacion.validezCotizacion).format('DD/MM/YYYY')}`)
-           .text(`Estado: ${cotizacion.estado.toUpperCase()}`)
-           .text(`Solicitud: ${cotizacion.SolicitudRetiro.numeroSolicitud}`)
-           .moveDown();
-
-        // Tabla de detalles
-        doc.font('Helvetica-Bold')
-           .text('Detalles de la Cotización')
-           .moveDown(0.5);
-
-        // Encabezados de la tabla
-        const tableTop = doc.y;
-        const tableHeaders = ['Residuo', 'Descripción', 'Cantidad', 'Precio Unit.', 'Subtotal'];
-        const columnWidths = [100, 150, 80, 80, 80];
-        let x = 50;
-
-        doc.font('Helvetica-Bold');
-        tableHeaders.forEach((header, i) => {
-          doc.text(header, x, tableTop);
-          x += columnWidths[i];
-        });
-
-        // Línea separadora
-        doc.moveDown()
-           .moveTo(50, doc.y)
-           .lineTo(500, doc.y)
-           .stroke();
-
-        // Detalles de la cotización
-        doc.font('Helvetica');
-        let y = doc.y + 10;
-        let maxY = y;
-
-        cotizacion.DetalleCotizacions.forEach(detalle => {
-          // Verificar si necesitamos una nueva página
-          if (y > 700) {
-            doc.addPage();
-            y = 50;
-            maxY = y;
-          }
-
-          x = 50;
-          doc.text(detalle.Residuo.nombre, x, y);
-          x += columnWidths[0];
-          doc.text(detalle.descripcion, x, y);
-          x += columnWidths[1];
-          doc.text(`${detalle.cantidad} ${detalle.Residuo.unidad}`, x, y);
-          x += columnWidths[2];
-          doc.text(`S/ ${detalle.precioUnitario.toFixed(2)}`, x, y);
-          x += columnWidths[3];
-          doc.text(`S/ ${detalle.subtotal.toFixed(2)}`, x, y);
-
-          y += 20;
-          maxY = Math.max(maxY, y);
-        });
-
-        // Totales
-        doc.moveDown(2)
-           .font('Helvetica-Bold')
-           .text(`Subtotal: S/ ${cotizacion.subtotal.toFixed(2)}`, { align: 'right' })
-           .text(`IGV (18%): S/ ${cotizacion.iva.toFixed(2)}`, { align: 'right' })
-           .text(`Total: S/ ${cotizacion.total.toFixed(2)}`, { align: 'right' });
-
-        // Observaciones (si existen)
-        if (cotizacion.observaciones) {
-          doc.moveDown(2)
-             .font('Helvetica-Bold')
-             .text('Observaciones')
-             .moveDown(0.5)
-             .font('Helvetica')
-             .text(cotizacion.observaciones);
-        }
-
-        // Pie de página
-        const footerY = 700;
-        doc.fontSize(10)
-           .font('Helvetica')
-           .text('Felmart - Gestión Integral de Residuos', 50, footerY, {
-             align: 'center',
-             width: 500
-           })
-           .text('Av. Principal 123, Lima, Perú | Tel: (01) 123-4567', 50, footerY + 15, {
-             align: 'center',
-             width: 500
-           })
-           .text('www.felmart.com | info@felmart.com', 50, footerY + 30, {
-             align: 'center',
-             width: 500
-           });
-
-        // Finalizar PDF
-        doc.end();
-      } catch (error) {
-        reject(error);
-      }
+        // Actualizar ruta en la base de datos
+        cotizacion.rutaPdf = `/uploads/cotizaciones/cotizacion-${cotizacionId}.pdf`;
+        cotizacion.save().then(() => {
+          resolve(rutaArchivoPDF);
+        }).catch(reject);
+      });
     });
-  };
+  } catch (error) {
+    console.error('Error al generar PDF:', error);
+    throw error;
+  }
+};
 
-  module.exports = cotizacionController;
+module.exports = cotizacionController;
