@@ -160,6 +160,7 @@ app.use('/clientes', require('./routes/clienteRoutes'));
 app.use('/residuos', require('./routes/residuoRoutes'));
 app.use('/solicitudes', require('./routes/solicitudRoutes'));
 app.use('/cotizaciones', require('./routes/cotizacionRoutes'));
+app.use('/contacto', require('./routes/contactoRoutes'));
 app.use('/calendario', require('./routes/calendarioRoutes'));
 app.use('/visitas', require('./routes/visitaRoutes'));
 app.use('/certificados', require('./routes/certificadosRoutes'));
