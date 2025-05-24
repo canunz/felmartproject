@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const usuarioController = require('../controllers/usuarioController');
+const dashboardController = require('../controllers/dashboardController');
 
 // En tu controlador o route handler
 router.get('/', (req, res) => {
@@ -37,7 +38,7 @@ router.get('/dashboard', (req, res) => {
   // Redirigir según el rol como estaba originalmente
   switch (req.session.usuario.rol) {
     case 'administrador':
-      return usuarioController.dashboard(req, res);
+      return dashboardController.renderAdminDashboard(req, res);
     case 'operador':
       return res.render('dashboard/operador', {
         titulo: 'Panel de Control - Operador',
@@ -53,12 +54,9 @@ router.get('/dashboard', (req, res) => {
         success: req.flash('success')
       });
     default:
-      // Comportamiento original para rol no válido
       req.flash('error', 'Rol de usuario no válido');
       return res.redirect('/logout'); 
   }
-  // El bloque 'else' para manejar la ausencia de sesión ha sido eliminado 
-  // ya que la primera condición if (!req.session.usuario) se encarga.
 });
 
 module.exports = router;

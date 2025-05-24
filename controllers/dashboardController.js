@@ -1,8 +1,5 @@
 // controllers/dashboardController.js
-const Solicitud = require('../models/Solicitud');
-const Cotizacion = require('../models/Cotizacion');
-const Visita = require('../models/Visita');
-const Cliente = require('../models/Cliente');
+const { Usuario, SolicitudRetiro, VisitaRetiro, Cliente, Cotizacion } = require('../models');
 const { Op } = require('sequelize');
 
 /**
@@ -238,3 +235,75 @@ function formatDate(date) {
         year: 'numeric'
     });
 }
+
+const dashboardController = {
+    // Obtener estadísticas para el dashboard administrativo
+    getAdminStats: async () => {
+        try {
+            // Total de clientes (usuarios con rol 'cliente')
+            const totalClientes = await Usuario.count({
+                where: {
+                    rol: 'cliente'
+                }
+            });
+
+            // Total de solicitudes pendientes
+            const solicitudesPendientes = await SolicitudRetiro.count({
+                where: {
+                    estado: 'pendiente'
+                }
+            });
+
+            // Total de visitas programadas para hoy
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            const manana = new Date(hoy);
+            manana.setDate(manana.getDate() + 1);
+
+            const visitasHoy = await VisitaRetiro.count({
+                where: {
+                    fechaProgramada: {
+                        [Op.gte]: hoy,
+                        [Op.lt]: manana
+                    }
+                }
+            });
+
+            // Total de servicios completados
+            const serviciosCompletados = await VisitaRetiro.count({
+                where: {
+                    estado: 'completada'
+                }
+            });
+
+            return {
+                totalClientes,
+                solicitudesPendientes,
+                visitasHoy,
+                serviciosCompletados
+            };
+        } catch (error) {
+            console.error('Error al obtener estadísticas:', error);
+            throw error;
+        }
+    },
+
+    // Renderizar dashboard administrativo
+    renderAdminDashboard: async (req, res) => {
+        try {
+            const stats = await dashboardController.getAdminStats();
+            
+            res.render('dashboard/admin', {
+                usuario: req.session.usuario,
+                titulo: 'Panel de Administración',
+                ...stats
+            });
+        } catch (error) {
+            console.error('Error al renderizar dashboard:', error);
+            req.flash('error', 'Error al cargar el dashboard');
+            res.redirect('/');
+        }
+    }
+};
+
+module.exports = dashboardController;

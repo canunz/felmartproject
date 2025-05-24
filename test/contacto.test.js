@@ -15,11 +15,11 @@ describe('Contacto Controller', () => {
   let sendMailStub;
   let server;
 
-  beforeAll((done) => {
+  before((done) => {
     server = app.listen(0, done); // Usar puerto aleatorio
   });
 
-  afterAll((done) => {
+  after((done) => {
     server.close(done);
   });
 

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes - Felmart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    
+    <style>
+        /* Reutilizamos los estilos del admin.ejs */
+        :root {
+            --nav-primary-color: #00616e;
+            --nav-primary-dark: #004d57;
+            --nav-primary-light: #00818f;
+            --nav-secondary-color: #6c757d;
+            --nav-white: #ffffff;
+            --nav-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --nav-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --border-radius: 12px;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .content-wrapper {
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            color: var(--nav-primary-color);
+            font-weight: 700;
+        }
+
+        .card {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary {
+            background-color: var(--nav-primary-color);
+            border-color: var(--nav-primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--nav-primary-dark);
+            border-color: var(--nav-primary-dark);
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-badge.activo {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.inactivo {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: var(--nav-primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="content-wrapper">
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="page-title">Gestión de Clientes</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard/admin">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Clientes</li>
+                    </ol>
+                </nav>
+            </div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoClienteModal">
+                <i class="fas fa-plus me-2"></i>Nuevo Cliente
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table id="clientesTable" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Empresa</th>
+                            <th>Sector</th>
+                            <th>Contacto</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (typeof clientes !== 'undefined' && clientes.length > 0) { %>
+                            <% clientes.forEach(cliente => { %>
+                                <tr>
+                                    <td><%= cliente.id %></td>
+                                    <td><%= cliente.empresa %></td>
+                                    <td><%= cliente.sector %></td>
+                                    <td><%= cliente.contacto %></td>
+                                    <td><%= cliente.email %></td>
+                                    <td><%= cliente.telefono %></td>
+                                    <td>
+                                        <span class="status-badge <%= cliente.estado.toLowerCase() %>">
+                                            <%= cliente.estado %>
+                                        </span>
+                                    </td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-info btn-sm" onclick="verCliente('<%= cliente.id %>')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-warning btn-sm" onclick="editarCliente('<%= cliente.id %>')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="eliminarCliente('<%= cliente.id %>')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Cliente -->
+    <div class="modal fade" id="nuevoClienteModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nuevo Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="nuevoClienteForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Empresa</label>
+                                <input type="text" class="form-control" name="empresa" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Sector</label>
+                                <select class="form-select" name="sector" required>
+                                    <option value="">Seleccione un sector</option>
+                                    <option value="Salmonero">Salmonero</option>
+                                    <option value="Naviero">Naviero</option>
+                                    <option value="Agrícola">Agrícola</option>
+                                    <option value="Forestal">Forestal</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre Contacto</label>
+                                <input type="text" class="form-control" name="contacto" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" name="telefono" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Estado</label>
+                                <select class="form-select" name="estado" required>
+                                    <option value="Activo">Activo</option>
+                                    <option value="Inactivo">Inactivo</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Dirección</label>
+                            <textarea class="form-control" name="direccion" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="guardarCliente()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $('#clientesTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+                }
+            });
+        });
+
+        function verCliente(id) {
+            // Implementar vista detallada del cliente
+            window.location.href = `/admin/clientes/${id}`;
+        }
+
+        function editarCliente(id) {
+            // Implementar edición del cliente
+            window.location.href = `/admin/clientes/editar/${id}`;
+        }
+
+        function eliminarCliente(id) {
+            if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
+                fetch(`/api/clientes/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error al eliminar el cliente');
+                    }
+                });
+            }
+        }
+
+        function guardarCliente() {
+            const formData = new FormData(document.getElementById('nuevoClienteForm'));
+            const cliente = Object.fromEntries(formData);
+
+            fetch('/api/clientes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(cliente)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error al guardar el cliente');
+                }
+            });
+        }
+    </script>
+</body>
+</html> 
