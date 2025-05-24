@@ -775,17 +775,18 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/admin/solicitudes" class="nav-link">
-                                <i class="fas fa-file-alt"></i>
-                                <span>Solicitudes</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a href="/admin/clientes" class="nav-link">
                                 <i class="fas fa-building"></i>
                                 <span>Clientes</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="/admin/solicitudes" class="nav-link">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Solicitudes</span>
+                            </a>
+                        </li>
+                     
                         <li class="nav-item">
                             <a href="/admin/visitas" class="nav-link">
                                 <i class="fas fa-calendar-check"></i>
@@ -921,20 +922,6 @@
                         </div>
                         <div class="card-body">
                             <canvas id="solicitudesPorEstadoChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-6 mb-4">
-                    <div class="chart-card fade-in-up">
-                        <div class="card-header">
-                            <h5 class="card-title">
-                                <i class="fas fa-chart-line"></i>
-                                Ingresos Mensuales
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="ingresosMensualesChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -1196,116 +1183,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="col-lg-4 mb-4">
-                <div class="table-section fade-in-up">
-                    <div class="table-header">
-                        <h5 class="table-title">
-                            <i class="fas fa-users"></i>
-                            Operadores en Campo
-                        </h5>
-                        <a href="/admin/operadores" class="btn-outline-custom">
-                            <i class="fas fa-map-marker-alt me-2"></i>
-                            Ver ubicaciones
-                        </a>
-                    </div>
-                    
-                    <div class="table-content">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-custom">
-                                <thead>
-                                    <tr>
-                                        <th>Operador</th>
-                                        <th>Ubicación</th>
-                                        <th class="text-center">Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>Carlos Ruiz</strong></td>
-                                        <td>Puerto Montt</td>
-                                        <td class="text-center">
-                                            <span class="status-badge activo">En Ruta</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Ana López</strong></td>
-                                        <td>Castro</td>
-                                        <td class="text-center">
-                                            <span class="status-badge activo">En Servicio</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Miguel Torres</strong></td>
-                                        <td>Osorno</td>
-                                        <td class="text-center">
-                                            <span class="status-badge activo">Disponible</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Pedro Sánchez</strong></td>
-                                        <td>Puerto Varas</td>
-                                        <td class="text-center">
-                                            <span class="status-badge activo">En Ruta</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 mb-4">
-                <div class="table-section fade-in-up">
-                    <div class="table-header">
-                        <h5 class="table-title">
-                            <i class="fas fa-file-invoice"></i>
-                            Facturación Reciente
-                        </h5>
-                        <a href="/admin/facturacion" class="btn-outline-custom">
-                            <i class="fas fa-money-bill me-2"></i>
-                            Ver todas
-                        </a>
-                    </div>
-                    
-                    <div class="table-content">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-custom">
-                                <thead>
-                                    <tr>
-                                        <th>Factura</th>
-                                        <th>Cliente</th>
-                                        <th class="text-center">Monto</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>#F-2025001</strong></td>
-                                        <td>Nestlé Chile</td>
-                                        <td class="text-center"><strong>$850.000</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#F-2025002</strong></td>
-                                        <td>Salmones Camanchaca</td>
-                                        <td class="text-center"><strong>$1.200.000</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#F-2025003</strong></td>
-                                        <td>Forestal Arauco</td>
-                                        <td class="text-center"><strong>$650.000</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#F-2025004</strong></td>
-                                        <td>Naviera Austral</td>
-                                        <td class="text-center"><strong>$920.000</strong></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -1468,68 +1345,12 @@
         // Real-time updates simulation
         function updateDashboard() {
             console.log('Actualizando dashboard administrativo...');
-            // Simulate real-time updates
-            updateStatsCards();
-            updateAlerts();
-        }
-
-        function updateStatsCards() {
-            // Simulate updating stats cards with new data
-            const cards = document.querySelectorAll('.stats-card h2');
-            cards.forEach(card => {
-                const currentValue = parseInt(card.textContent.replace(/[^0-9]/g, ''));
-                if (Math.random() > 0.7) { // 30% chance to update
-                    const change = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
-                    const newValue = Math.max(0, currentValue + change);
-                    if (card.textContent.includes('M')) {
-                        card.textContent = newValue + 'M';
-                    } else if (card.textContent.includes('K')) {
-                        card.textContent = newValue + 'K';
-                    } else {
-                        card.textContent = newValue;
-                    }
-                }
-            });
-        }
-
-        function updateAlerts() {
-            // Simulate updating alert count
-            const alertCount = document.querySelector('.alert-bar-text strong');
-            if (alertCount && Math.random() > 0.8) {
-                const currentCount = parseInt(alertCount.nextSibling.textContent.match(/\d+/)[0]);
-                const newCount = Math.max(0, currentCount + (Math.random() > 0.5 ? 1 : -1));
-                alertCount.nextSibling.textContent = ` Tienes ${newCount} solicitudes vencidas que requieren atención inmediata.`;
-            }
+            // Aquí solo actualizaremos cuando haya datos reales del servidor
+            // No se realizarán cambios aleatorios
         }
 
         // Update dashboard every 30 seconds
         setInterval(updateDashboard, 30000);
-
-        // Notification system
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-            notification.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} me-2"></i>
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, 5000);
-        }
-
-        // Initialize tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
 
         // Auto-refresh functionality
         let autoRefreshInterval;
@@ -1637,6 +1458,32 @@
             setTimeout(() => {
                 showNotification('¡Bienvenido al Panel de Administración de Felmart!', 'success');
             }, 1000);
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
         });
     </script>
 </body>
