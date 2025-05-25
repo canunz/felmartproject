@@ -104,14 +104,14 @@ const usuarioController = {
       const usuario = await Usuario.findOne({ where: { email } });
       if (!usuario) {
         req.flash('error', 'No existe cuenta con ese correo');
-        return res.redirect('/olvide-password');
+        return res.redirect('/usuarios/olvide-password');
       }
       const token = crypto.randomBytes(20).toString('hex');
       usuario.resetPasswordToken   = token;
       usuario.resetPasswordExpires = Date.now() + 2*60*60*1000; // 2h
       await usuario.save();
 
-      const resetUrl = `${req.protocol}://${req.get('host')}/reset-password/${token}`;
+      const resetUrl = `${req.protocol}://${req.get('host')}/usuarios/reset-password/${token}`;
       await transporter.sendMail({
         to: usuario.email,
         from: process.env.EMAIL_USER,
@@ -128,7 +128,7 @@ const usuarioController = {
     } catch (error) {
       console.error('Error al enviar correo de recuperación:', error);
       req.flash('error', 'Error al procesar solicitud');
-      res.redirect('/olvide-password');
+      res.redirect('/usuarios/olvide-password');
     }
   },
 
@@ -143,7 +143,7 @@ const usuarioController = {
       });
       if (!usuario) {
         req.flash('error', 'Token inválido o expirado');
-        return res.redirect('/olvide-password');
+        return res.redirect('/usuarios/olvide-password');
       }
       res.render('usuarios/reset-password', {
         titulo: 'Restablecer Contraseña',
@@ -154,7 +154,7 @@ const usuarioController = {
     } catch (error) {
       console.error('Error al mostrar reset-password:', error);
       req.flash('error', 'Error al procesar solicitud');
-      res.redirect('/olvide-password');
+      res.redirect('/usuarios/olvide-password');
     }
   },
 
@@ -164,7 +164,7 @@ const usuarioController = {
       const { password, confirmarPassword } = req.body;
       if (password !== confirmarPassword) {
         req.flash('error', 'Las contraseñas no coinciden');
-        return res.redirect(`/reset-password/${token}`);
+        return res.redirect(`/usuarios/reset-password/${token}`);
       }
       const usuario = await Usuario.findOne({
         where: {
@@ -174,7 +174,7 @@ const usuarioController = {
       });
       if (!usuario) {
         req.flash('error', 'Token inválido o expirado');
-        return res.redirect('/olvide-password');
+        return res.redirect('/usuarios/olvide-password');
       }
       usuario.password             = password;
       usuario.resetPasswordToken   = null;
@@ -185,7 +185,7 @@ const usuarioController = {
     } catch (error) {
       console.error('Error al restablecer contraseña:', error);
       req.flash('error', 'Error al procesar solicitud');
-      res.redirect(`/reset-password/${req.params.token}`);
+      res.redirect(`/usuarios/reset-password/${req.params.token}`);
     }
   },
 
@@ -206,11 +206,11 @@ const usuarioController = {
       const usuario = await Usuario.findByPk(req.session.usuario.id);
       if (!await usuario.verificarPassword(actual)) {
         req.flash('error', 'Contraseña actual incorrecta');
-        return res.redirect('/cambiar-password');
+        return res.redirect('/usuarios/cambiar-password');
       }
       if (nueva !== confirmar) {
         req.flash('error', 'Las contraseñas no coinciden');
-        return res.redirect('/cambiar-password');
+        return res.redirect('/usuarios/cambiar-password');
       }
       usuario.password = nueva;
       await usuario.save();
@@ -219,7 +219,7 @@ const usuarioController = {
     } catch (error) {
       console.error('Error al cambiar contraseña:', error);
       req.flash('error', 'Error al procesar solicitud');
-      res.redirect('/cambiar-password');
+      res.redirect('/usuarios/cambiar-password');
     }
   },
 

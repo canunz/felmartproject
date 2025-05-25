@@ -775,28 +775,24 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/admin/solicitudes" class="nav-link">
-                                <i class="fas fa-file-alt"></i>
-                                <span>Solicitudes</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a href="/admin/clientes" class="nav-link">
                                 <i class="fas fa-building"></i>
                                 <span>Clientes</span>
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="/admin/solicitudes" class="nav-link">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Solicitudes</span>
+                            </a>
+                        </li>
+                     
+                        <li class="nav-item">
                             <a href="/admin/visitas" class="nav-link">
                                 <i class="fas fa-calendar-check"></i>
                                 <span>Visitas</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="/admin/operadores" class="nav-link">
-                                <i class="fas fa-users"></i>
-                                <span>Operadores</span>
-                            </a>
                         </li>
                         <li class="nav-item">
                             <a href="/admin/reportes" class="nav-link">
@@ -850,16 +846,6 @@
             <p class="page-subtitle">Sistema integral de gestión de residuos - Sector Salmonero, Naviero, Agrícola y Forestal</p>
         </div>
 
-        <!-- Alert Bar -->
-        <div class="alert-bar fade-in-up">
-            <i class="fas fa-exclamation-triangle"></i>
-            <div class="alert-bar-text">
-                <strong>Atención:</strong> Tienes 3 solicitudes vencidas que requieren atención inmediata.
-            </div>
-            <a href="/admin/solicitudes?filter=vencidas" class="btn btn-sm btn-warning">
-                <i class="fas fa-eye me-1"></i>Revisar
-            </a>
-        </div>
         
         <!-- Statistics Cards -->
         <div class="stats-grid">
@@ -869,7 +855,7 @@
                         <div class="card-content">
                             <div class="card-info">
                                 <h6>Total Clientes</h6>
-                                <h2 class="primary">127</h2>
+                                <h2 class="primary"><%= typeof totalClientes !== 'undefined' ? totalClientes : 0 %></h2>
                             </div>
                             <div class="card-icon primary">
                                 <i class="fas fa-building"></i>
@@ -883,7 +869,7 @@
                         <div class="card-content">
                             <div class="card-info">
                                 <h6>Solicitudes Pendientes</h6>
-                                <h2 class="warning">23</h2>
+                                <h2 class="warning"><%= typeof solicitudesPendientes !== 'undefined' ? solicitudesPendientes : 0 %></h2>
                             </div>
                             <div class="card-icon warning">
                                 <i class="fas fa-clock"></i>
@@ -897,7 +883,7 @@
                         <div class="card-content">
                             <div class="card-info">
                                 <h6>Visitas Programadas Hoy</h6>
-                                <h2 class="info">12</h2>
+                                <h2 class="info"><%= typeof visitasHoy !== 'undefined' ? visitasHoy : 0 %></h2>
                             </div>
                             <div class="card-icon info">
                                 <i class="fas fa-calendar-check"></i>
@@ -911,7 +897,7 @@
                         <div class="card-content">
                             <div class="card-info">
                                 <h6>Servicios Completados</h6>
-                                <h2 class="success">856</h2>
+                                <h2 class="success"><%= typeof serviciosCompletados !== 'undefined' ? serviciosCompletados : 0 %></h2>
                             </div>
                             <div class="card-icon success">
                                 <i class="fas fa-check-circle"></i>
@@ -920,147 +906,9 @@
                     </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <div class="stats-card danger fade-in-up stagger-5">
-                        <div class="card-content">
-                            <div class="card-info">
-                                <h6>Servicios Vencidos</h6>
-                                <h2 class="danger">3</h2>
-                            </div>
-                            <div class="card-icon danger">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="stats-card purple fade-in-up stagger-6">
-                        <div class="card-content">
-                            <div class="card-info">
-                                <h6>Operadores Activos</h6>
-                                <h2 class="purple">8</h2>
-                            </div>
-                            <div class="card-icon purple">
-                                <i class="fas fa-users"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="stats-card orange fade-in-up stagger-7">
-                        <div class="card-content">
-                            <div class="card-info">
-                                <h6>Ingresos del Mes</h6>
-                                <h2 class="orange">$4.2M</h2>
-                            </div>
-                            <div class="card-icon orange">
-                                <i class="fas fa-dollar-sign"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="stats-card primary fade-in-up stagger-1">
-                        <div class="card-content">
-                            <div class="card-info">
-                                <h6>Certificados Emitidos</h6>
-                                <h2 class="primary">342</h2>
-                            </div>
-                            <div class="card-icon primary">
-                                <i class="fas fa-certificate"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
-        <!-- Priority Alerts -->
-        <div class="priority-alerts fade-in-up">
-            <h5 class="section-title">
-                <i class="fas fa-bell"></i>
-                Alertas Prioritarias
-            </h5>
-            
-            <div class="alert-item high">
-                <div class="alert-icon high">
-                    <i class="fas fa-exclamation-circle"></i>
-                </div>
-                <div class="alert-content">
-                    <div class="alert-title">Solicitud Crítica Vencida</div>
-                    <div class="alert-description">Nestlé - Retiro de aceites contaminados vencido hace 2 días</div>
-                </div>
-                <a href="/admin/solicitudes/45" class="btn btn-sm btn-danger">Ver Detalle</a>
-            </div>
 
-            <div class="alert-item medium">
-                <div class="alert-icon medium">
-                    <i class="fas fa-truck"></i>
-                </div>
-                <div class="alert-content">
-                    <div class="alert-title">Camión Requiere Mantenimiento</div>
-                    <div class="alert-description">Vehículo PAT-1234 próximo a vencimiento de revisión técnica</div>
-                </div>
-                <a href="/admin/vehiculos/maintenance" class="btn btn-sm btn-warning">Programar</a>
-            </div>
-
-            <div class="alert-item low">
-                <div class="alert-icon low">
-                    <i class="fas fa-file-invoice"></i>
-                </div>
-                <div class="alert-content">
-                    <div class="alert-title">Facturas Pendientes de Pago</div>
-                    <div class="alert-description">5 facturas con más de 30 días de antigüedad</div>
-                </div>
-                <a href="/admin/facturacion?status=vencidas" class="btn btn-sm btn-info">Revisar</a>
-            </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="action-section fade-in-up">
-            <h5 class="section-title">
-                <i class="fas fa-bolt"></i>
-                Acciones Rápidas
-            </h5>
-            
-            <div class="action-grid">
-                <a href="/admin/solicitudes/crear" class="action-btn primary">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Nueva Solicitud</span>
-                </a>
-                
-                <a href="/admin/clientes/crear" class="action-btn info">
-                    <i class="fas fa-building"></i>
-                    <span>Registrar Cliente</span>
-                </a>
-                
-                <a href="/admin/visitas/programar" class="action-btn warning">
-                    <i class="fas fa-calendar-plus"></i>
-                    <span>Programar Visita</span>
-                </a>
-                
-                <a href="/admin/cotizaciones/generar" class="action-btn success">
-                    <i class="fas fa-calculator"></i>
-                    <span>Generar Cotización</span>
-                </a>
-
-                <a href="/admin/operadores/crear" class="action-btn purple">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Nuevo Operador</span>
-                </a>
-
-                <a href="/admin/certificados/emitir" class="action-btn orange">
-                    <i class="fas fa-certificate"></i>
-                    <span>Emitir Certificado</span>
-                </a>
-            </div>
-        </div>
-        
         <!-- Charts Row -->
         <div class="charts-grid">
             <div class="row">
@@ -1074,20 +922,6 @@
                         </div>
                         <div class="card-body">
                             <canvas id="solicitudesPorEstadoChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-6 mb-4">
-                    <div class="chart-card fade-in-up">
-                        <div class="card-header">
-                            <h5 class="card-title">
-                                <i class="fas fa-chart-line"></i>
-                                Ingresos Mensuales
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="ingresosMensualesChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -1118,20 +952,6 @@
                         </div>
                         <div class="card-body">
                             <canvas id="tiposResiduosChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 mb-4">
-                    <div class="chart-card fade-in-up">
-                        <div class="card-header">
-                            <h5 class="card-title">
-                                <i class="fas fa-users"></i>
-                                Operadores Activos
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="operadoresChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -1363,116 +1183,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="col-lg-4 mb-4">
-                <div class="table-section fade-in-up">
-                    <div class="table-header">
-                        <h5 class="table-title">
-                            <i class="fas fa-users"></i>
-                            Operadores en Campo
-                        </h5>
-                        <a href="/admin/operadores" class="btn-outline-custom">
-                            <i class="fas fa-map-marker-alt me-2"></i>
-                            Ver ubicaciones
-                        </a>
-                    </div>
-                    
-                    <div class="table-content">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-custom">
-                                <thead>
-                                    <tr>
-                                        <th>Operador</th>
-                                        <th>Ubicación</th>
-                                        <th class="text-center">Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>Carlos Ruiz</strong></td>
-                                        <td>Puerto Montt</td>
-                                        <td class="text-center">
-                                            <span class="status-badge activo">En Ruta</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Ana López</strong></td>
-                                        <td>Castro</td>
-                                        <td class="text-center">
-                                            <span class="status-badge activo">En Servicio</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Miguel Torres</strong></td>
-                                        <td>Osorno</td>
-                                        <td class="text-center">
-                                            <span class="status-badge activo">Disponible</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Pedro Sánchez</strong></td>
-                                        <td>Puerto Varas</td>
-                                        <td class="text-center">
-                                            <span class="status-badge activo">En Ruta</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 mb-4">
-                <div class="table-section fade-in-up">
-                    <div class="table-header">
-                        <h5 class="table-title">
-                            <i class="fas fa-file-invoice"></i>
-                            Facturación Reciente
-                        </h5>
-                        <a href="/admin/facturacion" class="btn-outline-custom">
-                            <i class="fas fa-money-bill me-2"></i>
-                            Ver todas
-                        </a>
-                    </div>
-                    
-                    <div class="table-content">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-custom">
-                                <thead>
-                                    <tr>
-                                        <th>Factura</th>
-                                        <th>Cliente</th>
-                                        <th class="text-center">Monto</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>#F-2025001</strong></td>
-                                        <td>Nestlé Chile</td>
-                                        <td class="text-center"><strong>$850.000</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#F-2025002</strong></td>
-                                        <td>Salmones Camanchaca</td>
-                                        <td class="text-center"><strong>$1.200.000</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#F-2025003</strong></td>
-                                        <td>Forestal Arauco</td>
-                                        <td class="text-center"><strong>$650.000</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#F-2025004</strong></td>
-                                        <td>Naviera Austral</td>
-                                        <td class="text-center"><strong>$920.000</strong></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -1528,39 +1238,6 @@
                                     font: { size: 12 }
                                 }
                             }
-                        }
-                    }
-                });
-            }
-
-            // Ingresos Mensuales Chart (Line)
-            const ctxIngresos = document.getElementById('ingresosMensualesChart');
-            if (ctxIngresos) {
-                new Chart(ctxIngresos, {
-                    type: 'line',
-                    data: {
-                        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-                        datasets: [{
-                            label: 'Ingresos (Millones CLP)',
-                            data: [3.2, 4.1, 3.8, 4.5, 4.2, 4.8],
-                            fill: true,
-                            backgroundColor: 'rgba(0, 97, 110, 0.1)',
-                            borderColor: '#00616e',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            pointBackgroundColor: '#00616e',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2,
-                            pointRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true },
-                            x: { grid: { display: false } }
                         }
                     }
                 });
@@ -1668,68 +1345,12 @@
         // Real-time updates simulation
         function updateDashboard() {
             console.log('Actualizando dashboard administrativo...');
-            // Simulate real-time updates
-            updateStatsCards();
-            updateAlerts();
-        }
-
-        function updateStatsCards() {
-            // Simulate updating stats cards with new data
-            const cards = document.querySelectorAll('.stats-card h2');
-            cards.forEach(card => {
-                const currentValue = parseInt(card.textContent.replace(/[^0-9]/g, ''));
-                if (Math.random() > 0.7) { // 30% chance to update
-                    const change = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
-                    const newValue = Math.max(0, currentValue + change);
-                    if (card.textContent.includes('M')) {
-                        card.textContent = newValue + 'M';
-                    } else if (card.textContent.includes('K')) {
-                        card.textContent = newValue + 'K';
-                    } else {
-                        card.textContent = newValue;
-                    }
-                }
-            });
-        }
-
-        function updateAlerts() {
-            // Simulate updating alert count
-            const alertCount = document.querySelector('.alert-bar-text strong');
-            if (alertCount && Math.random() > 0.8) {
-                const currentCount = parseInt(alertCount.nextSibling.textContent.match(/\d+/)[0]);
-                const newCount = Math.max(0, currentCount + (Math.random() > 0.5 ? 1 : -1));
-                alertCount.nextSibling.textContent = ` Tienes ${newCount} solicitudes vencidas que requieren atención inmediata.`;
-            }
+            // Aquí solo actualizaremos cuando haya datos reales del servidor
+            // No se realizarán cambios aleatorios
         }
 
         // Update dashboard every 30 seconds
         setInterval(updateDashboard, 30000);
-
-        // Notification system
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-            notification.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} me-2"></i>
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, 5000);
-        }
-
-        // Initialize tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
 
         // Auto-refresh functionality
         let autoRefreshInterval;
@@ -1837,6 +1458,32 @@
             setTimeout(() => {
                 showNotification('¡Bienvenido al Panel de Administración de Felmart!', 'success');
             }, 1000);
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
         });
     </script>
 </body>
