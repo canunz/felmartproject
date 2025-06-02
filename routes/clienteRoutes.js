@@ -2,19 +2,15 @@
 const express = require('express');
 const router = express.Router();
 const clienteController = require('../controllers/clienteController');
-const auth = require('../middlewares/auth');
 
-// Rutas de administración (solo admin)
-router.get('/', auth.hasRole(['administrador']), clienteController.listar);
-router.get('/crear', auth.hasRole(['administrador']), clienteController.mostrarCrear);
-router.post('/crear', auth.hasRole(['administrador']), clienteController.crear);
-router.get('/detalles/:id', auth.hasRole(['administrador']), clienteController.detalles);
-router.get('/editar/:id', auth.hasRole(['administrador']), clienteController.mostrarEditar);
-router.post('/editar/:id', auth.hasRole(['administrador']), clienteController.editar);
-router.get('/eliminar/:id', auth.hasRole(['administrador']), clienteController.eliminar);
+// Rutas de la vista
+router.get('/dashboard/clientes', clienteController.renderClientes);
 
-// Rutas de perfil (solo cliente)
-router.get('/perfil', auth.hasRole(['cliente']), clienteController.mostrarPerfil);
-router.post('/perfil', auth.hasRole(['cliente']), clienteController.actualizarPerfil);
+// Rutas API
+router.get('/api/clientes', clienteController.getClientes);
+router.get('/api/clientes/:id', clienteController.getClienteById);
+router.post('/api/clientes', clienteController.createCliente);
+router.put('/api/clientes/:id', clienteController.updateCliente);
+router.delete('/api/clientes/:id', clienteController.deleteCliente);
 
 module.exports = router;

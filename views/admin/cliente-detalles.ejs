@@ -1,0 +1,82 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h3><%= editar ? 'Editar Cliente' : 'Detalles del Cliente' %></h3>
+        </div>
+        <div class="card-body">
+            <form action="<%= editar ? `/admin/clientes/editar/${cliente.id}` : '#' %>" method="POST">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="rut" class="form-label">RUT</label>
+                        <input type="text" class="form-control" id="rut" name="rut" value="<%= cliente.rut %>" <%= !editar ? 'readonly' : '' %> required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="nombreEmpresa" class="form-label">Nombre Empresa</label>
+                        <input type="text" class="form-control" id="nombreEmpresa" name="nombreEmpresa" value="<%= cliente.nombreEmpresa %>" <%= !editar ? 'readonly' : '' %> required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="<%= cliente.email %>" <%= !editar ? 'readonly' : '' %> required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" id="telefono" name="telefono" value="<%= cliente.telefono %>" <%= !editar ? 'readonly' : '' %> required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="direccion" name="direccion" value="<%= cliente.direccion %>" <%= !editar ? 'readonly' : '' %> required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="comuna" class="form-label">Comuna</label>
+                        <input type="text" class="form-control" id="comuna" name="comuna" value="<%= cliente.comuna %>" <%= !editar ? 'readonly' : '' %> required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="ciudad" class="form-label">Ciudad</label>
+                        <input type="text" class="form-control" id="ciudad" name="ciudad" value="<%= cliente.ciudad %>" <%= !editar ? 'readonly' : '' %> required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="region" class="form-label">Región</label>
+                        <input type="text" class="form-control" id="region" name="region" value="<%= cliente.region %>" <%= !editar ? 'readonly' : '' %> required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="contactoPrincipal" class="form-label">Contacto Principal</label>
+                        <input type="text" class="form-control" id="contactoPrincipal" name="contactoPrincipal" value="<%= cliente.contactoPrincipal %>" <%= !editar ? 'readonly' : '' %> required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select class="form-select" id="estado" name="estado" <%= !editar ? 'disabled' : '' %>>
+                            <option value="1" <%= cliente.estado ? 'selected' : '' %>>Activo</option>
+                            <option value="0" <%= !cliente.estado ? 'selected' : '' %>>Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="/admin/clientes" class="btn btn-secondary">Volver</a>
+                    <% if (editar) { %>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <% } else { %>
+                        <a href="/admin/clientes/editar/<%= cliente.id %>" class="btn btn-info">Editar</a>
+                    <% } %>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %> 

@@ -50,33 +50,31 @@ const auth = {
   // Verificar si es un Administrador
   isAdmin: (req, res, next) => {
     if (!req.session || !req.session.usuario) {
-      req.session.returnTo = req.originalUrl;
-      req.flash('error', 'Debes iniciar sesión para acceder a esta página');
+      req.flash('error', 'Debes iniciar sesión para acceder');
       return res.redirect('/login');
     }
-    
-    if (req.session.usuario.rol === 'administrador') {
-      return next();
+
+    if (req.session.usuario.rol !== 'administrador') {
+      req.flash('error', 'No tienes permisos para acceder a esta sección');
+      return res.redirect('/dashboard');
     }
-    
-    req.flash('error', 'Esta sección requiere permisos de administrador');
-    return res.redirect('/dashboard');
+
+    next();
   },
   
   // Verificar si es un Operador o Administrador
   isOperadorOrAdmin: (req, res, next) => {
     if (!req.session || !req.session.usuario) {
-      req.session.returnTo = req.originalUrl;
-      req.flash('error', 'Debes iniciar sesión para acceder a esta página');
+      req.flash('error', 'Debes iniciar sesión para acceder');
       return res.redirect('/login');
     }
-    
-    if (req.session.usuario.rol === 'administrador' || req.session.usuario.rol === 'operador') {
-      return next();
+
+    if (req.session.usuario.rol !== 'operador' && req.session.usuario.rol !== 'administrador') {
+      req.flash('error', 'No tienes permisos para acceder a esta sección');
+      return res.redirect('/dashboard');
     }
-    
-    req.flash('error', 'Esta sección requiere permisos de operador o administrador');
-    return res.redirect('/dashboard');
+
+    next();
   }
 };
 

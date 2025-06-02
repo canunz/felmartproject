@@ -4,6 +4,12 @@ const router = express.Router();
 const usuarioController = require('../controllers/usuarioController');
 const dashboardController = require('../controllers/dashboardController');
 
+// Importar rutas
+const dashboardRoutes = require('./dashboardRoutes');
+const clienteRoutes = require('./api/clienteRoutes');
+const usuarioRoutes = require('./usuarioRoutes');
+const cotizacionRoutes = require('./cotizacionRoutes');
+
 // En tu controlador o route handler
 router.get('/', (req, res) => {
   res.render('home', {
@@ -58,5 +64,13 @@ router.get('/dashboard', (req, res) => {
       return res.redirect('/logout'); 
   }
 });
+
+// Rutas de la aplicación
+router.use('/dashboard', dashboardRoutes);
+router.use('/usuarios', usuarioRoutes);
+router.use('/cotizaciones', cotizacionRoutes);
+
+// Rutas de la API
+router.use('/api/clientes', clienteRoutes);
 
 module.exports = router;

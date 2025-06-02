@@ -1,7 +1,7 @@
 <!-- views/partials/navbar.ejs -->
 <header class="site-header">
-  <nav class="navbar navbar-expand-lg navbar-dark" style="background: #004c57;">
-    <div class="container-fluid px-4">
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--nav-primary-color);">
+    <div class="container-fluid">
       <!-- Logo -->
       <a href="/" class="navbar-brand">
         <img src="/img/logo.png" alt="Felmart Logo" style="height: 60px; width: auto;">
@@ -15,6 +15,11 @@
             <a href="/dashboard" class="btn btn-outline-light me-3">
               <i class="fas fa-tachometer-alt me-2"></i>Panel Principal
             </a>
+            <% if (usuario && usuario.rol === 'administrador') { %>
+              <a href="/dashboard/clientes" class="btn btn-outline-light me-3">
+                <i class="fas fa-users me-2"></i>Gestión de Clientes
+              </a>
+            <% } %>
             <div class="dropdown">
               <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" 
                       style="background: rgba(255,255,255,0.1); border: none; border-radius: 25px; padding: 5px 15px 5px 5px;">
@@ -30,6 +35,11 @@
                 <li><a class="dropdown-item" href="/perfil">
                   <i class="fas fa-user me-2"></i>Mi Perfil
                 </a></li>
+                <% if (usuario && usuario.rol === 'administrador') { %>
+                  <li><a class="dropdown-item" href="/dashboard/clientes">
+                    <i class="fas fa-users me-2"></i>Gestión de Clientes
+                  </a></li>
+                <% } %>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item text-danger" href="/logout">
                   <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión

@@ -7,8 +7,10 @@ const flash           = require('connect-flash');
 const helmet          = require('helmet');
 const cors            = require('cors');
 const expressLayouts  = require('express-ejs-layouts');
+const sequelize       = require('./config/database');
+const apiRoutes       = require('./routes/api');
+
 const app = express();
-const pool            = require('./config/database'); // Asegúrate de que este archivo exista
 const { verifyConnection } = require('./config/email.config');
 
 // Verificar conexión del correo al inicio
@@ -90,7 +92,7 @@ app.use(async (req, res, next) => {
       console.log('Completando datos de sesión para usuario ID:', req.session.usuario.id);
       
       try {
-        const [usuarios] = await pool.query(
+        const [usuarios] = await sequelize.query(
           `SELECT id, nombre, email, rol FROM usuarios WHERE id = ${parseInt(req.session.usuario.id, 10)}`
         );
         
@@ -153,56 +155,45 @@ if (process.env.NODE_ENV !== 'production') {
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Rutas
-app.use('/', require('./routes/index'));
-app.use('/usuarios', require('./routes/usuarioRoutes'));
-app.use('/clientes', require('./routes/clienteRoutes'));
-app.use('/residuos', require('./routes/residuoRoutes'));
-app.use('/solicitudes', require('./routes/solicitudRoutes'));
-app.use('/cotizaciones', require('./routes/cotizacionRoutes'));
-app.use('/contacto', require('./routes/contactoRoutes'));
-app.use('/calendario', require('./routes/calendarioRoutes'));
-app.use('/visitas', require('./routes/visitaRoutes'));
-app.use('/certificados', require('./routes/certificadosRoutes'));
-app.use('/notificaciones', require('./routes/notificacionRoutes'));
-app.use('/reportes', require('./routes/reporteRoutes'));
+// Importar rutas
+const routes = require('./routes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const notificacionesRoutes = require('./routes/notificacionesRoutes');
+const clientesRoutes = require('./routes/api/clientesRoutes');
 
-app.use('/dashboard', require('./routes/dashboardRoutes')); // Nueva ruta
-app.use('/perfil', require('./routes/perfilRoutes')); // Nueva ruta
-app.use('/precioresiduos', require('./routes/precioresiduosRoutes'));
+// Usar rutas
+app.use('/', routes);
+app.use('/dashboard', dashboardRoutes);
+app.use('/admin', adminRoutes);
+app.use('/notificaciones', notificacionesRoutes);
+app.use('/api', clientesRoutes);
 
 // Rutas de la API
 app.use('/api/cmf', require('./routes/api/cmfBancos.routes'));
+app.use('/api', apiRoutes);
 
-app.use('/dashboard', require('./routes/dashboardRoutes')); 
-app.use('/perfil', require('./routes/perfilRoutes')); 
-
-// 404 Not Found - Actualización para usar nuestra página de error personalizada
-app.use((req, res) => {
-  res.status(404).render('404', {
-    titulo: 'Página no encontrada',
-    mensaje: 'La página que buscas no existe',
-    usuario: req.session.usuario || null,
-    layout: false // No usar el layout principal
-  });
-});
-
-// Error handler - Actualización para usar página de error personalizada
+// Manejo de errores
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(err.status || 500).render('500', {
-    titulo: 'Error en el servidor',
-    mensaje: err.message,
-    error: process.env.NODE_ENV === 'development' ? err : {},
-    usuario: req.session.usuario || null,
-    layout: false // No usar el layout principal
+  console.error(err.stack);
+  res.status(500).json({ 
+    success: false, 
+    message: 'Error interno del servidor' 
   });
 });
 
 // Levantar servidor
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor iniciado en puerto ${PORT}`);
-});
 
+sequelize.sync()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Servidor corriendo en puerto ${PORT}`);
+        });
+    })
+    .catch(err => {
+        console.error('Error al conectar con la base de datos:', err);
+    });
+
+// Exportar la aplicación para pruebas
 module.exports = app;
