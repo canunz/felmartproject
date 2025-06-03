@@ -8,6 +8,7 @@ const Cotizacion = require('./Cotizacion');
 const VisitaRetiro = require('./VisitaRetiro');
 const Certificado = require('./Certificado');
 const Notificacion = require('./Notificacion');
+const PrecioResiduo = require('./PrecioResiduo');
 
 // Relaciones entre modelos
 
@@ -68,5 +69,6 @@ module.exports = {
   Cotizacion,
   VisitaRetiro,
   Certificado,
-  Notificacion
+  Notificacion,
+  PrecioResiduo
 };

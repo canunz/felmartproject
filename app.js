@@ -161,6 +161,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const notificacionesRoutes = require('./routes/notificacionesRoutes');
 const clientesRoutes = require('./routes/api/clientesRoutes');
+const precioresiduosRoutes = require('./routes/precioresiduosRoutes');
 
 // Usar rutas
 app.use('/', routes);
@@ -168,6 +169,7 @@ app.use('/dashboard', dashboardRoutes);
 app.use('/admin', adminRoutes);
 app.use('/notificaciones', notificacionesRoutes);
 app.use('/api', clientesRoutes);
+app.use('/admin/residuos', precioresiduosRoutes);
 
 // Rutas de la API
 app.use('/api/cmf', require('./routes/api/cmfBancos.routes'));

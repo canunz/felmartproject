@@ -2,8 +2,40 @@
  * Modelo de Precios de Residuos - Datos y funciones útiles
  */
 
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
+
+const PrecioResiduo = sequelize.define('PrecioResiduo', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  descripcion: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  precio: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false
+  },
+  unidad: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  moneda: {
+    type: DataTypes.STRING,
+    allowNull: false
+  }
+}, {
+  timestamps: true,
+  tableName: 'precios_residuos'
+});
+
+module.exports = PrecioResiduo;
+
 // Datos iniciales (podrían venir de una base de datos)
-const preciosResiduos = [
+let preciosResiduos = [
     { id: 1, descripcion: 'ACEITE', precio: 1, unidad: 'IBC', moneda: 'UF' },
     { id: 2, descripcion: 'ACEITE CON TRAZAS DE AGUA', precio: 6, unidad: 'IBC', moneda: 'UF' },
     { id: 3, descripcion: 'AGUAS CEMENTICIAS', precio: 9, unidad: 'IBC', moneda: 'UF' },
@@ -25,59 +57,67 @@ const preciosResiduos = [
     { id: 19, descripcion: 'ESCOMBROS', precio: 5, unidad: 'M3', moneda: 'UF' },
     { id: 20, descripcion: 'RESIDUOS DE VIDRIO', precio: 6, unidad: 'IBC', moneda: 'UF' }
   ];
-  
-  // Nuevo: Almacenamiento de UF manual
+
+// Generador de ID incremental para residuos
+function generarNuevoId() {
+  if (preciosResiduos.length === 0) return 1;
+  return Math.max(...preciosResiduos.map(r => r.id)) + 1;
+}
+
+// Nuevo: Almacenamiento de UF manual
 let configuracionUF = {
   valorManual: null,
   fechaActualizacion: null,
   ultimoRecordatorio: null
 };
-  // Funciones útiles
-  module.exports = {
-    /**
-     * Obtener todos los precios de residuos
-     */
-    obtenerTodos: () => preciosResiduos,
-  
-    /**
-     * Buscar un residuo por su descripción
-     * @param {string} descripcion - Nombre del residuo (ej: "ACEITE")
-     */
-    buscarPorDescripcion: (descripcion) => {
-      return preciosResiduos.find(item => item.descripcion === descripcion);
-    },
-  
-    /**
-     * Filtrar residuos por unidad (IBC, M3, TAMBOR)
-     * @param {string} unidad - Tipo de unidad
-     */
-    filtrarPorUnidad: (unidad) => {
-      return preciosResiduos.filter(item => item.unidad === unidad);
-    },
-  
-    buscarPorId: (id) => preciosResiduos.find(item => item.id === id),
 
-    agregarResiduo: (nuevoResiduo) => {
-      const residuoConId = { ...nuevoResiduo, id: generarNuevoId() };
-      preciosResiduos.push(residuoConId);
-      return residuoConId;
-    },
-  
-    actualizarResiduo: (id, datos) => {
-      const index = preciosResiduos.findIndex(r => r.id === id);
-      if (index !== -1) {
-        preciosResiduos[index] = { ...preciosResiduos[index], ...datos };
-        return preciosResiduos[index];
-      }
-      return null;
-    },
-  
-    eliminarResiduo: (id) => {
-      const lengthBefore = preciosResiduos.length;
-      preciosResiduos = preciosResiduos.filter(r => r.id !== id);
-      return lengthBefore !== preciosResiduos.length;
-    },
-    obtenerValorUF: async () => {
+// Funciones útiles
+module.exports = {
+  /**
+   * Obtener todos los precios de residuos
+   */
+  obtenerTodos: () => preciosResiduos,
+
+  /**
+   * Buscar un residuo por su descripción
+   * @param {string} descripcion - Nombre del residuo (ej: "ACEITE")
+   */
+  buscarPorDescripcion: (descripcion) => {
+    return preciosResiduos.find(item => item.descripcion === descripcion);
+  },
+
+  /**
+   * Filtrar residuos por unidad (IBC, M3, TAMBOR)
+   * @param {string} unidad - Tipo de unidad
+   */
+  filtrarPorUnidad: (unidad) => {
+    return preciosResiduos.filter(item => item.unidad === unidad);
+  },
+
+  buscarPorId: (id) => preciosResiduos.find(item => item.id === id),
+
+  agregarResiduo: (nuevoResiduo) => {
+    const residuoConId = { ...nuevoResiduo, id: generarNuevoId() };
+    preciosResiduos.push(residuoConId);
+    return residuoConId;
+  },
+
+  actualizarResiduo: (id, datos) => {
+    const index = preciosResiduos.findIndex(r => r.id === id);
+    if (index !== -1) {
+      preciosResiduos[index] = { ...preciosResiduos[index], ...datos };
+      return preciosResiduos[index];
+    }
+    return null;
+  },
+
+  eliminarResiduo: (id) => {
+    const lengthBefore = preciosResiduos.length;
+    preciosResiduos = preciosResiduos.filter(r => r.id !== id);
+    return lengthBefore !== preciosResiduos.length;
+  },
+
+  obtenerValorUF: async () => {
     // Si hay un valor manual y es del mes actual, usarlo
     const hoy = new Date();
     if (configuracionUF.valorManual && 
@@ -118,6 +158,4 @@ let configuracionUF = {
    * Obtener la configuración actual de UF
    */
   getConfiguracionUF: () => configuracionUF
-    
-  
-  };
+};

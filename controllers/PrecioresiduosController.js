@@ -48,7 +48,12 @@ module.exports = {
   mostrarAdmin: (req, res) => {
     res.render('admin/residuos', {
       title: 'Administrar Residuos',
-      precios: PrecioResiduo.obtenerTodos()
+      titulo: 'Administrar Residuos',
+      precios: PrecioResiduo.obtenerTodos(),
+      messages: {
+        error: req.flash('error'),
+        success: req.flash('success')
+      }
     });
   },
 
@@ -448,5 +453,46 @@ module.exports = {
         mensaje: 'Error al procesar la cotización' 
       });
     }
+  },
+
+  /**
+   * Crear un nuevo residuo
+   */
+  crearResiduo: (req, res) => {
+    const { descripcion, precio, unidad, moneda } = req.body;
+    if (!descripcion || !precio || !unidad || !moneda) {
+      req.flash('error', 'Todos los campos son obligatorios');
+      return res.redirect('/admin/residuos');
+    }
+    try {
+      PrecioResiduo.agregarResiduo({ descripcion, precio: parseFloat(precio), unidad, moneda });
+      req.flash('success', 'Residuo creado correctamente');
+    } catch (e) {
+      req.flash('error', 'Error al crear el residuo');
+    }
+    res.redirect('/admin/residuos');
+  },
+
+  /**
+   * Editar un residuo existente
+   */
+  editarResiduo: (req, res) => {
+    const { id } = req.params;
+    const { descripcion, precio, unidad, moneda } = req.body;
+    if (!descripcion || !precio || !unidad || !moneda) {
+      req.flash('error', 'Todos los campos son obligatorios');
+      return res.redirect('/admin/residuos');
+    }
+    try {
+      const actualizado = PrecioResiduo.actualizarResiduo(parseInt(id), { descripcion, precio: parseFloat(precio), unidad, moneda });
+      if (actualizado) {
+        req.flash('success', 'Residuo actualizado correctamente');
+      } else {
+        req.flash('error', 'Residuo no encontrado');
+      }
+    } catch (e) {
+      req.flash('error', 'Error al actualizar el residuo');
+    }
+    res.redirect('/admin/residuos');
   },
 };
