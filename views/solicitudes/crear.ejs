@@ -1,0 +1,103 @@
+<%- include('../partials/navbar') %>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-5">
+          <div class="text-center mb-4">
+            <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-gradient" style="width:60px;height:60px;background:linear-gradient(135deg,#00616e,#00b4d8);">
+              <i class="fas fa-recycle text-white fs-2"></i>
+            </span>
+            <h2 class="fw-bold text-primary mt-3 mb-1">Nueva Solicitud de Retiro</h2>
+            <p class="text-muted">Complete el formulario para solicitar un retiro de residuos</p>
+          </div>
+          <% if (error && error.length) { %>
+            <div class="alert alert-danger"><%= error %></div>
+          <% } %>
+          <% if (success && success.length) { %>
+            <div class="alert alert-success"><%= success %></div>
+          <% } %>
+          <form action="/solicitudes/crear" method="POST" id="formCrearSolicitud" novalidate>
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Tipo de Residuo *</label>
+              <select name="tipoResiduo" class="form-select" required>
+                <option value="">Seleccione un tipo</option>
+                <% residuos.forEach(function(tipo) { %>
+                  <option value="<%= tipo.id %>"><%= tipo.nombre %></option>
+                <% }); %>
+              </select>
+              <div class="invalid-feedback">Seleccione un tipo de residuo.</div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Cantidad Estimada *</label>
+              <div class="input-group">
+                <input type="number" name="cantidad" class="form-control" min="1" required placeholder="Ej: 100">
+                <select name="unidad" class="form-select w-auto">
+                  <option value="kg">kg</option>
+                  <option value="l">L</option>
+                  <option value="m3">m³</option>
+                  <option value="u">Unidades</option>
+                </select>
+              </div>
+              <div class="invalid-feedback">Ingrese una cantidad válida.</div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Descripción del Residuo *</label>
+              <textarea name="descripcion" class="form-control" rows="3" required placeholder="Ej: Aceite usado, solventes, etc."></textarea>
+              <div class="invalid-feedback">Describa el residuo.</div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Dirección de Retiro *</label>
+              <input type="text" name="direccion" class="form-control" required placeholder="Dirección exacta donde se debe retirar el residuo">
+              <div class="invalid-feedback">Ingrese la dirección de retiro.</div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Nombre de Contacto *</label>
+              <input type="text" name="contactoNombre" class="form-control" required placeholder="Nombre completo del responsable">
+              <div class="invalid-feedback">Ingrese el nombre de contacto.</div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Teléfono de Contacto *</label>
+              <input type="tel" name="contactoTelefono" class="form-control" required pattern="[0-9\-\+\s]{8,15}" placeholder="Ej: +56912345678">
+              <div class="invalid-feedback">Ingrese un teléfono válido.</div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Fecha de Retiro Solicitada *</label>
+              <input type="date" name="fechaRetiroSolicitada" class="form-control" required min="<%= new Date().toISOString().split('T')[0] %>">
+              <div class="invalid-feedback">Seleccione una fecha válida.</div>
+            </div>
+            <div class="text-center pt-2">
+              <button type="submit" class="btn btn-lg btn-primary px-5 shadow-sm">
+                <i class="fas fa-paper-plane me-2"></i>Enviar Solicitud
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// Validación Bootstrap
+(function () {
+  'use strict';
+  var forms = document.querySelectorAll('#formCrearSolicitud');
+  Array.prototype.slice.call(forms).forEach(function (form) {
+    form.addEventListener('submit', function (event) {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  });
+})();
+</script>
+<style>
+.bg-gradient {
+  background: linear-gradient(135deg,#00616e,#00b4d8)!important;
+}
+.card {
+  border-radius: 1.5rem;
+}
+</style>

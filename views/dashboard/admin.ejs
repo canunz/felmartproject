@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador - Felmart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            /* Navigation colors - Exactos del cliente.ejs */
+            --nav-primary-color: #00616e;
+            --nav-primary-dark: #004d57;
+            --nav-primary-light: #00818f;
+            --nav-secondary-color: #6c757d;
+            --nav-white: #ffffff;
+            --nav-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --nav-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Dashboard colors */
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --purple-color: #6f42c1;
+            --orange-color: #fd7e14;
+            --light-bg: #f8f9fa;
+            --border-radius: 12px;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            --shadow-hover: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+
+        /* Header Navigation - Exacto del cliente.ejs */
+        .header-nav {
+            background: var(--nav-white);
+            box-shadow: var(--nav-shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--nav-primary-color);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--nav-secondary-color);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--nav-transition);
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--nav-primary-color);
+            background: rgba(0, 97, 110, 0.05);
+        }
+
+        .nav-link i {
+            font-size: 16px;
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-btn {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--nav-transition);
+        }
+
+        .user-btn:hover {
+            background: linear-gradient(135deg, var(--nav-primary-dark), var(--nav-primary-color));
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--nav-white);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 1000;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--nav-primary-color);
+            text-decoration: none;
+            transition: var(--nav-transition);
+            font-size: 14px;
+            border-radius: 8px;
+            margin: 0.25rem 0;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 97, 110, 0.05);
+            color: var(--nav-primary-color);
+            transform: translateX(5px);
+        }
+
+        .dropdown-item.text-danger {
+            color: var(--danger-color) !important;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color) !important;
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Dashboard Content */
+        .dashboard-container {
+            padding: 2.5rem 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        .page-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--nav-primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--nav-secondary-color);
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        /* Alert Bar */
+        .alert-bar {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 1px solid #ffc107;
+            border-radius: var(--border-radius);
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert-bar i {
+            color: #856404;
+            font-size: 1.2rem;
+        }
+
+        .alert-bar-text {
+            flex: 1;
+            color: #856404;
+            font-weight: 500;
+        }
+
+        /* Statistics Cards */
+        .stats-grid {
+            margin-bottom: 3rem;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--nav-transition);
+            border: none;
+            height: 100%;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stats-card.primary::before {
+            background: linear-gradient(90deg, var(--nav-primary-color), var(--nav-primary-light));
+        }
+
+        .stats-card.warning::before {
+            background: linear-gradient(90deg, var(--warning-color), #ffcd3c);
+        }
+
+        .stats-card.success::before {
+            background: linear-gradient(90deg, var(--success-color), #34ce57);
+        }
+
+        .stats-card.info::before {
+            background: linear-gradient(90deg, var(--info-color), #20c997);
+        }
+
+        .stats-card.danger::before {
+            background: linear-gradient(90deg, var(--danger-color), #f56565);
+        }
+
+        .stats-card.purple::before {
+            background: linear-gradient(90deg, var(--purple-color), #8b5cf6);
+        }
+
+        .stats-card.orange::before {
+            background: linear-gradient(90deg, var(--orange-color), #fb923c);
+        }
+
+        .card-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-info h6 {
+            font-size: 0.9rem;
+            color: var(--nav-secondary-color);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-info h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .card-info h2.primary { color: var(--nav-primary-color); }
+        .card-info h2.warning { color: var(--warning-color); }
+        .card-info h2.success { color: var(--success-color); }
+        .card-info h2.info { color: var(--info-color); }
+        .card-info h2.danger { color: var(--danger-color); }
+        .card-info h2.purple { color: var(--purple-color); }
+        .card-info h2.orange { color: var(--orange-color); }
+
+        .card-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+
+        .card-icon.primary { color: var(--nav-primary-color); }
+        .card-icon.warning { color: var(--warning-color); }
+        .card-icon.success { color: var(--success-color); }
+        .card-icon.info { color: var(--info-color); }
+        .card-icon.danger { color: var(--danger-color); }
+        .card-icon.purple { color: var(--purple-color); }
+        .card-icon.orange { color: var(--orange-color); }
+
+        /* Quick Actions */
+        .action-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--nav-transition);
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            color: white;
+            gap: 0.75rem;
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            box-shadow: 0 4px 15px rgba(0, 97, 110, 0.2);
+        }
+
+        .action-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 97, 110, 0.3);
+            color: white;
+        }
+
+        .action-btn.warning {
+            background: linear-gradient(135deg, var(--warning-color), #ffcd3c);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2);
+        }
+
+        .action-btn.warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
+            color: white;
+        }
+
+        .action-btn.info {
+            background: linear-gradient(135deg, var(--info-color), #20c997);
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.2);
+        }
+
+        .action-btn.info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
+            color: white;
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, var(--success-color), #34ce57);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+        }
+
+        .action-btn.success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        .action-btn.purple {
+            background: linear-gradient(135deg, var(--purple-color), #8b5cf6);
+            box-shadow: 0 4px 15px rgba(111, 66, 193, 0.2);
+        }
+
+        .action-btn.purple:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(111, 66, 193, 0.3);
+            color: white;
+        }
+
+        .action-btn.orange {
+            background: linear-gradient(135deg, var(--orange-color), #fb923c);
+            box-shadow: 0 4px 15px rgba(253, 126, 20, 0.2);
+        }
+
+        .action-btn.orange:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(253, 126, 20, 0.3);
+            color: white;
+        }
+
+        /* Chart Cards */
+        .charts-grid {
+            margin-bottom: 3rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .chart-card .card-header {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-bottom: 1px solid #e9ecef;
+            padding: 1.5rem;
+        }
+
+        .chart-card .card-body {
+            padding: 2rem;
+            height: 350px;
+            position: relative;
+        }
+
+        .chart-card .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Table Styles */
+        .table-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e9ecef;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+
+        .table-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline-custom {
+            background: transparent;
+            border: 2px solid var(--nav-primary-color);
+            color: var(--nav-primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--nav-transition);
+        }
+
+        .btn-outline-custom:hover {
+            background: var(--nav-primary-color);
+            color: white;
+        }
+
+        .table-custom {
+            margin: 0;
+        }
+
+        .table-custom thead th {
+            background-color: #f8f9fa;
+            border-top: none;
+            border-bottom: 2px solid #e9ecef;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table-custom tbody td {
+            padding: 1rem 1.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .table-custom tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .status-badge.pendiente {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.cotizada {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .status-badge.programada {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-badge.completada {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.cancelada {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-badge.activo {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.inactivo {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn-action {
+            background: var(--info-color);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: var(--nav-transition);
+            border: none;
+        }
+
+        .btn-action:hover {
+            background: #138496;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Priority Alerts */
+        .priority-alerts {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .alert-item.high {
+            background: rgba(220, 53, 69, 0.1);
+            border-left-color: var(--danger-color);
+        }
+
+        .alert-item.medium {
+            background: rgba(255, 193, 7, 0.1);
+            border-left-color: var(--warning-color);
+        }
+
+        .alert-item.low {
+            background: rgba(23, 162, 184, 0.1);
+            border-left-color: var(--info-color);
+        }
+
+        .alert-icon {
+            font-size: 1.2rem;
+        }
+
+        .alert-icon.high { color: var(--danger-color); }
+        .alert-icon.medium { color: var(--warning-color); }
+        .alert-icon.low { color: var(--info-color); }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-description {
+            font-size: 0.9rem;
+            color: var(--nav-secondary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .dashboard-container {
+                padding: 1.5rem 0;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .stats-card {
+                margin-bottom: 1rem;
+            }
+
+            .card-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .table-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid .row > div {
+                margin-bottom: 2rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.15s; }
+        .stagger-3 { animation-delay: 0.2s; }
+        .stagger-4 { animation-delay: 0.25s; }
+        .stagger-5 { animation-delay: 0.3s; }
+        .stagger-6 { animation-delay: 0.35s; }
+        .stagger-7 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header-nav">
+        <div class="container-fluid px-4">
+            <div class="nav-container">
+                <a href="/" class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                    <span class="logo-text">Felmart</span>
+                </a>
+
+                <nav>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="/dashboard/clientes" class="nav-link">
+                                <i class="fas fa-building"></i>
+                                <span>Clientes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/cotizaciones" class="nav-link">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Cotizaciones</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/solicitudes" class="nav-link">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Solicitudes</span>
+                            </a>
+                        </li>
+                     
+                        <li class="nav-item">
+                            <a href="/admin/visitas" class="nav-link">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Visitas</span>
+                            </a>
+                        </li>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/reportes" class="nav-link">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Reportes</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="user-dropdown">
+                    <button class="user-btn" id="adminDropdownBtn" type="button">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Administrador</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="adminDropdownMenu">
+                        <a href="/admin/perfil" class="dropdown-item">
+                            <i class="fas fa-user"></i> Mi Perfil
+                        </a>
+                        <a href="/admin/notificaciones" class="dropdown-item">
+                            <i class="fas fa-bell"></i> Notificaciones
+                        </a>
+                        <a href="/admin/auditoria" class="dropdown-item">
+                            <i class="fas fa-shield-alt"></i> Registro de Actividad
+                        </a>
+                        <a href="/admin/backups" class="dropdown-item">
+                            <i class="fas fa-database"></i> Respaldo de Datos
+                        </a>
+                        <a href="/admin/ayuda" class="dropdown-item">
+                            <i class="fas fa-question-circle"></i> Ayuda y Soporte
+                        </a>
+                        <div style="border-top: 1px solid #e9ecef; margin: 0.5rem 0;"></div>
+                        <a href="/" class="dropdown-item">
+                            <i class="fas fa-home"></i> Volver al Inicio
+                        </a>
+                        <a href="/logout" class="dropdown-item text-danger">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <div class="container-fluid dashboard-container px-4">
+        <!-- Page Header -->
+        <div class="page-header fade-in-up">
+            <h1 class="page-title">Panel de Administración Felmart</h1>
+            <p class="page-subtitle">Sistema integral de gestión de residuos - Sector Salmonero, Naviero, Agrícola y Forestal</p>
+        </div>
+
+        
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-card primary fade-in-up stagger-1">
+                        <div class="card-content">
+                            <div class="card-info">
+                                <h6>Total Clientes</h6>
+                                <h2 class="primary"><%= typeof totalClientes !== 'undefined' ? totalClientes : 0 %></h2>
+                            </div>
+                            <div class="card-icon primary">
+                                <i class="fas fa-building"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-card warning fade-in-up stagger-2">
+                        <div class="card-content">
+                            <div class="card-info">
+                                <h6>Solicitudes Pendientes</h6>
+                                <h2 class="warning"><%= typeof solicitudesPendientes !== 'undefined' ? solicitudesPendientes : 0 %></h2>
+                            </div>
+                            <div class="card-icon warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-card info fade-in-up stagger-3">
+                        <div class="card-content">
+                            <div class="card-info">
+                                <h6>Visitas Programadas Hoy</h6>
+                                <h2 class="info"><%= typeof visitasHoy !== 'undefined' ? visitasHoy : 0 %></h2>
+                            </div>
+                            <div class="card-icon info">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-card success fade-in-up stagger-4">
+                        <div class="card-content">
+                            <div class="card-info">
+                                <h6>Servicios Completados</h6>
+                                <h2 class="success"><%= typeof serviciosCompletados !== 'undefined' ? serviciosCompletados : 0 %></h2>
+                            </div>
+                            <div class="card-icon success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Charts Row -->
+        <div class="charts-grid">
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-card fade-in-up">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-chart-pie"></i>
+                                Solicitudes por Estado
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="solicitudesPorEstadoChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="chart-card fade-in-up">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-industry"></i>
+                                Clientes por Sector
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="clientesPorSectorChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="chart-card fade-in-up">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-recycle"></i>
+                                Tipos de Residuos
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="tiposResiduosChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tables Row -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="table-section fade-in-up">
+                    <div class="table-header">
+                        <h5 class="table-title">
+                            <i class="fas fa-clock"></i>
+                            Solicitudes Urgentes
+                        </h5>
+                        <a href="/admin/solicitudes?filter=urgentes" class="btn-outline-custom">
+                            <i class="fas fa-eye me-2"></i>
+                            Ver todas
+                        </a>
+                    </div>
+                    
+                    <div class="table-content">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Cliente</th>
+                                        <th>Tipo Residuo</th>
+                                        <th>Estado</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>#SOL-001</strong></td>
+                                        <td>Nestlé Chile</td>
+                                        <td>Aceites Contaminados</td>
+                                        <td>
+                                            <span class="status-badge pendiente">
+                                                Pendiente
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="/admin/solicitudes/detalles/1" class="btn-action">
+                                                <i class="fas fa-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#SOL-002</strong></td>
+                                        <td>Salmones Camanchaca</td>
+                                        <td>Químicos Veterinarios</td>
+                                        <td>
+                                            <span class="status-badge programada">
+                                                Programada
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="/admin/solicitudes/detalles/2" class="btn-action">
+                                                <i class="fas fa-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#SOL-003</strong></td>
+                                        <td>Forestal Arauco</td>
+                                        <td>Pesticidas Vencidos</td>
+                                        <td>
+                                            <span class="status-badge cotizada">
+                                                Cotizada
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="/admin/solicitudes/detalles/3" class="btn-action">
+                                                <i class="fas fa-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#SOL-004</strong></td>
+                                        <td>Naviera Austral</td>
+                                        <td>Lubricantes Usados</td>
+                                        <td>
+                                            <span class="status-badge completada">
+                                                Completada
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="/admin/solicitudes/detalles/4" class="btn-action">
+                                                <i class="fas fa-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="table-section fade-in-up">
+                    <div class="table-header">
+                        <h5 class="table-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Próximas Visitas
+                        </h5>
+                        <a href="/admin/visitas/calendario" class="btn-outline-custom">
+                            <i class="fas fa-calendar me-2"></i>
+                            Ver calendario
+                        </a>
+                    </div>
+                    
+                    <div class="table-content">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>Hora</th>
+                                        <th>Cliente</th>
+                                        <th>Ubicación</th>
+                                        <th>Operador</th>
+                                        <th class="text-center">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>09:00</strong></td>
+                                        <td>Nestlé Chile</td>
+                                        <td>Puerto Montt</td>
+                                        <td>Carlos Ruiz</td>
+                                        <td class="text-center">
+                                            <span class="status-badge programada">Programada</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>11:30</strong></td>
+                                        <td>Salmones Camanchaca</td>
+                                        <td>Castro, Chiloé</td>
+                                        <td>Ana López</td>
+                                        <td class="text-center">
+                                            <span class="status-badge programada">Programada</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>14:00</strong></td>
+                                        <td>Forestal Arauco</td>
+                                        <td>Osorno</td>
+                                        <td>Miguel Torres</td>
+                                        <td class="text-center">
+                                            <span class="status-badge programada">Programada</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>16:30</strong></td>
+                                        <td>Naviera Austral</td>
+                                        <td>Puerto Varas</td>
+                                        <td>Sin asignar</td>
+                                        <td class="text-center">
+                                            <span class="status-badge pendiente">Pendiente</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information Row -->
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="table-section fade-in-up">
+                    <div class="table-header">
+                        <h5 class="table-title">
+                            <i class="fas fa-building"></i>
+                            Clientes Principales
+                        </h5>
+                        <a href="/admin/clientes" class="btn-outline-custom">
+                            <i class="fas fa-list me-2"></i>
+                            Ver todos
+                        </a>
+                    </div>
+                    
+                    <div class="table-content">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>Cliente</th>
+                                        <th>Sector</th>
+                                        <th class="text-center">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Nestlé Chile</strong></td>
+                                        <td>Agrícola</td>
+                                        <td class="text-center">
+                                            <span class="status-badge activo">Activo</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Salmones Camanchaca</strong></td>
+                                        <td>Salmonero</td>
+                                        <td class="text-center">
+                                            <span class="status-badge activo">Activo</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Forestal Arauco</strong></td>
+                                        <td>Forestal</td>
+                                        <td class="text-center">
+                                            <span class="status-badge activo">Activo</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Naviera Austral</strong></td>
+                                        <td>Naviero</td>
+                                        <td class="text-center">
+                                            <span class="status-badge activo">Activo</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Dropdown funcional para el admin
+        const adminDropdownBtn = document.getElementById('adminDropdownBtn');
+        const adminDropdownMenu = document.getElementById('adminDropdownMenu');
+        adminDropdownBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            adminDropdownMenu.classList.toggle('show');
+        });
+        document.addEventListener('click', function(e) {
+            if (!adminDropdownMenu.contains(e.target) && !adminDropdownBtn.contains(e.target)) {
+                adminDropdownMenu.classList.remove('show');
+            }
+        });
+
+        // Charts initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Solicitudes por Estado Chart (Doughnut)
+            const ctxEstado = document.getElementById('solicitudesPorEstadoChart');
+            if (ctxEstado) {
+                new Chart(ctxEstado, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pendiente', 'Cotizada', 'Programada', 'Completada', 'Cancelada'],
+                        datasets: [{
+                            data: [23, 15, 18, 35, 5],
+                            backgroundColor: [
+                                '#ffc107',
+                                '#17a2b8',
+                                '#00616e',
+                                '#28a745',
+                                '#dc3545'
+                            ],
+                            borderWidth: 0,
+                            cutout: '60%'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    font: { size: 12 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Clientes por Sector Chart (Pie)
+            const ctxSector = document.getElementById('clientesPorSectorChart');
+            if (ctxSector) {
+                new Chart(ctxSector, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Salmonero', 'Naviero', 'Agrícola', 'Forestal'],
+                        datasets: [{
+                            data: [45, 25, 20, 10],
+                            backgroundColor: ['#00616e', '#17a2b8', '#28a745', '#fd7e14']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { padding: 15, usePointStyle: true, font: { size: 11 } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Tipos de Residuos Chart (Bar)
+            const ctxResiduos = document.getElementById('tiposResiduosChart');
+            if (ctxResiduos) {
+                new Chart(ctxResiduos, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Aceites', 'Químicos', 'Pesticidas', 'Lubricantes'],
+                        datasets: [{
+                            data: [35, 28, 22, 15],
+                            backgroundColor: ['#dc3545', '#ffc107', '#28a745', '#6f42c1'],
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Operadores Chart (Bar)
+            const ctxOperadores = document.getElementById('operadoresChart');
+            if (ctxOperadores) {
+                new Chart(ctxOperadores, {
+                    type: 'bar',
+                    data: {
+                        labels: ['En Servicio', 'Disponibles', 'En Ruta'],
+                        datasets: [{
+                            data: [3, 2, 3],
+                            backgroundColor: ['#28a745', '#17a2b8', '#ffc107'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, max: 5 },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Animation on page load
+            const animatedElements = document.querySelectorAll('.fade-in-up');
+            animatedElements.forEach((element, index) => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    element.style.transition = 'all 0.6s ease-out';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+
+        // Add click effect to stat cards
+        document.querySelectorAll('.stats-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Real-time updates simulation
+        function updateDashboard() {
+            console.log('Actualizando dashboard administrativo...');
+            // Aquí solo actualizaremos cuando haya datos reales del servidor
+            // No se realizarán cambios aleatorios
+        }
+
+        // Update dashboard every 30 seconds
+        setInterval(updateDashboard, 30000);
+
+        // Auto-refresh functionality
+        let autoRefreshInterval;
+        
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(() => {
+                updateDashboard();
+            }, 60000); // Every minute
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+        }
+
+        // Start auto-refresh on page load
+        startAutoRefresh();
+
+        // Stop auto-refresh when page is hidden
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                stopAutoRefresh();
+            } else {
+                startAutoRefresh();
+            }
+        });
+
+        // Keyboard shortcuts for admin efficiency
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + N for new solicitud
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                window.location.href = '/admin/solicitudes/crear';
+            }
+            
+            // Ctrl/Cmd + K for quick search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                // Focus search input or open search modal
+                console.log('Quick search activated');
+            }
+
+            // Ctrl/Cmd + D for dashboard refresh
+            if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+                e.preventDefault();
+                updateDashboard();
+                showNotification('Dashboard actualizado', 'success');
+            }
+        });
+
+        // Emergency alert system
+        function checkEmergencyAlerts() {
+            // Simulate checking for emergency situations
+            const emergencyTypes = [
+                'Derrame de químicos reportado',
+                'Vehículo de transporte con falla mecánica',
+                'Cliente reporta incidencia con residuos',
+                'Operador requiere asistencia inmediata'
+            ];
+            
+            if (Math.random() > 0.95) { // 5% chance of emergency
+                const emergencyType = emergencyTypes[Math.floor(Math.random() * emergencyTypes.length)];
+                showEmergencyAlert(emergencyType);
+            }
+        }
+
+        function showEmergencyAlert(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+            alert.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 400px; border: 2px solid #dc3545;';
+            alert.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle fa-2x me-3 text-danger"></i>
+                    <div>
+                        <h6 class="mb-1"><strong>¡ALERTA DE EMERGENCIA!</strong></h6>
+                        <p class="mb-0">${message}</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            // Play alert sound (if available)
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+H4sWUdCDOE0fPRfiwHKmm/7N2cTAwZZ7js4pkVDB1W4sS0lJLNGCwABJPqUbSHdUXbgqxUyONjwTSsQMgcKDVdCzFKMrIFjN5xxRU9FmUYUPdKmFWjF7RyYSPVdJQCbSMEkrGCCJLcQZIoqYnkQoEKBqFQXBDODxEPdwQCQUTIFNhUKMiHKpYFkXoABzECLGzIoiNpNwi8GNhPIAI1QaW3PmGCVwrDKEIHvCcPNgIDCMtJgQpCrfUFMCQD0AiOdpRkABHJdJEYADuQAIkJcCDRCEQAQuwMmPMNAEKlDyFCDDiSIGEQlCBADuA0AYqOCaFKgU2rqIhLgvDdnJHYDQrOzE2XQe+F4EYGUJbGGRZqAyFnAhBzLcxhWpMFDEiUPIANlKgQGrHwRUAz38wUkYCQW7/OJCEQGhGgQmFILDWQ8QBY9QoA4kHnBsAIBKgWuIEAJQmCEAKiSABMGUJwqAMFACGBBVQABcAEUJBpJJCHgYOGiSBJFIBFUUMCIUsIxBgJPYfADJRIAMzLYIoYBiNcGQGSqVCBWAHk2BIJVIBELkAHDpQCTYwAqaWVYAIYAAMgEAIiKJEQR7YmEFArRJeXFYlEJMCYhEiGYqJgAASQHwGFIAXEJJBmAIxWKgACQeUfAQRnKHAHCQgcMQUAGhAQYMgxB1BgIAjAJbsAIAAAFwBgABQEAQEOWQQkANSxQYQcIqEbZEsEQBYxCQCNRgIJBrI5ZwAUCrOTXJUCFQoSCQCVJQoFqBRoSCLEEQAtFQpEJCrVUDJFKFQGQIzgFQAG0RoJlwJhIFEkBSXaIJWJAhAAYABWGQCRJQAIJDIGKKBEhELQBQCKAAK1QSGIXAKRIxQYCGIAFwgCFQADQQUQIKIAHhIBBBAEKlmAEkQgRwAQRDEoaAEGRAeEQCAEQgGkVQKEQGISFQZKEhIkMQAJkgJABWAIUEDKUBwCQC4hgBQKbXjmOjwZAOKCxXsABSAAQAJGAMhZAGwEYBwAGbJnGgAKAFQCNRhYJGAAAFkIHBgACAQIkqeJlnYIUJIeIZCCdQRGIXCdQ5AkCAAEBAEQAFkQHIFWADwFKEAMsZIABgAMmkIABTkGAQGKAJExQIEAANOhAIAQJQhACGRQAJQCcRLAIAAMJBBgIAAgAMJwMjdJJNBgwYUQIAGQIAJGCTbDRIJQUAMYIAOABGAJJBIGEAABqQPADQgEEADEKADQQABwKOiAFoiOWIGqgGgCACwHgBBEAMgAEgAMlgAYAAIgwGqIQqmYgRcIQCgDESQJDgAEgCgREgIYEANABIgAygAAtNhQVVBDgAEFoAFZQAWgABwGIEAIQTCBFARCQeIAKQAqQ+CJCgICCsITADEABEKgAFIgAYABCQAFIgAIABSQAFIgAIAEFCQUBGAAAEgAIsIwAGEGAAGIwQQAGQKIkAEwcFIAKAA0BIBQCKgBE0kQgCRoAEwADMgAqQ1QDCCAADQAGEAAIGQANABAGQBAwAYAKGQABnAMEiwAFAAAEDQBnAOGSABEAHQOAIgAEQCgwAIMAQAEGABqBQABgAACAAGAAQDQANAQAMAAQADAAEAAQABAAEAAQABAAEAAQABAAEAAQ=');
+                audio.play();
+            } catch (e) {
+                // Audio not supported or failed to load
+            }
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 10000);
+        }
+
+        // Check for emergency alerts every 2 minutes
+        setInterval(checkEmergencyAlerts, 120000);
+
+        // Welcome message on first load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                showNotification('¡Bienvenido al Panel de Administración de Felmart!', 'success');
+            }, 1000);
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Felmart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #00616e;
+            --primary-dark: #004d57;
+            --primary-light: #00818f;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-hover: 0 8px 30px rgba(0,0,0,0.12);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+
+        /* Navigation - Same as cliente.ejs */
+        .navbar-custom {
+            background: white;
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .nav-link {
+            color: var(--secondary-color) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary-color) !important;
+            background: rgba(0, 97, 110, 0.05);
+        }
+
+        .user-dropdown {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            border: none;
+            font-weight: 500;
+        }
+
+        /* Profile Content */
+        .profile-container {
+            padding: 2rem 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .breadcrumb {
+            background: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .breadcrumb-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--secondary-color);
+        }
+
+        /* Profile Cards */
+        .profile-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: none;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .profile-card .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .profile-card .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-card .card-title i {
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .profile-card .card-body {
+            padding: 2rem;
+        }
+
+        /* Profile Image Section */
+        .profile-image-section {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(0, 97, 110, 0.05), rgba(0, 129, 143, 0.05));
+        }
+
+        .profile-image-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: var(--shadow);
+        }
+
+        .avatar-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+            border: 5px solid white;
+            box-shadow: var(--shadow);
+        }
+
+        .camera-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            border: 3px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .camera-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-info {
+            color: var(--secondary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-info i {
+            width: 20px;
+            text-align: center;
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        /* Form Styles */
+        .form-control,
+        .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 97, 110, 0.1);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 97, 110, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #e55a5a);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        /* Password Strength Indicator */
+        .password-strength {
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .password-strength.weak {
+            background: var(--danger-color);
+            width: 33%;
+        }
+
+        .password-strength.medium {
+            background: var(--warning-color);
+            width: 66%;
+        }
+
+        .password-strength.strong {
+            background: var(--success-color);
+            width: 100%;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .profile-container {
+                padding: 1rem 0;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .profile-card .card-body {
+                padding: 1.5rem;
+            }
+
+            .profile-image-section {
+                padding: 1.5rem;
+            }
+
+            .profile-image,
+            .avatar-circle {
+                width: 120px;
+                height: 120px;
+            }
+
+            .avatar-circle {
+                font-size: 3rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/">
+                <div class="logo-icon">
+                    <i class="fas fa-recycle"></i>
+                </div>
+                Felmart
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/cliente">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/solicitudes">
+                            <i class="fas fa-file-alt me-2"></i>Mis Solicitudes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cotizaciones">
+                            <i class="fas fa-calculator me-2"></i>Cotizaciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/visitas/calendario">
+                            <i class="fas fa-calendar-alt me-2"></i>Calendario
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/certificados">
+                            <i class="fas fa-certificate me-2"></i>Certificados
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="user-dropdown">
+                    <button class="user-btn" id="perfilDropdownBtn" type="button">
+                        <i class="fas fa-user"></i>
+                        <span>Mi Cuenta</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="perfilDropdownMenu">
+                        <a href="/perfil" class="dropdown-item"><i class="fas fa-user"></i> Mi Perfil</a>
+                        <a href="/perfil/cambiar-password" class="dropdown-item"><i class="fas fa-key"></i> Cambiar Contraseña</a>
+                        <div style="border-top: 1px solid #e9ecef; margin: 0.5rem 0;"></div>
+                        <a href="/dashboard/cliente" class="dropdown-item"><i class="fas fa-arrow-left"></i> Volver atrás</a>
+                        <a href="/logout" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Content -->
+    <div class="container-fluid profile-container px-4">
+        <!-- Page Header -->
+        <div class="page-header fade-in-up">
+            <h1 class="page-title">Mi Perfil</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard/cliente">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Mi Perfil</li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="row">
+            <!-- Profile Image and Basic Info -->
+            <div class="col-lg-4 mb-4">
+                <div class="profile-card fade-in-up stagger-1">
+                    <div class="profile-image-section">
+                        <div class="profile-image-container">
+                            <% if (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.imagen_perfil) { %>
+                                <img src="/uploads/perfiles/<%= perfilUsuario.imagen_perfil %>" class="profile-image" alt="Foto de perfil">
+                            <% } else { %>
+                                <div class="avatar-circle">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            <% } %>
+                            <button type="button" class="camera-btn" data-bs-toggle="modal" data-bs-target="#imagenPerfilModal">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        
+                        <h3 class="profile-name">
+                            <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario) ? perfilUsuario.nombre : 'Usuario' %>
+                        </h3>
+                        
+                        <div class="profile-info">
+                            <i class="fas fa-building"></i>
+                            <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario) ? (perfilUsuario.nombre_empresa || 'No especificada') : 'No especificada' %>
+                        </div>
+                        
+                        <div class="profile-info">
+                            <i class="fas fa-envelope"></i>
+                            <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario) ? perfilUsuario.email : 'email@ejemplo.com' %>
+                        </div>
+                        
+                        <div class="profile-info">
+                            <i class="fas fa-phone"></i>
+                            <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario) ? (perfilUsuario.telefono || 'No especificado') : 'No especificado' %>
+                        </div>
+                        
+                        <div class="profile-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario) ? ((perfilUsuario.comuna || 'Sin especificar') + ', ' + (perfilUsuario.ciudad || 'Sin especificar')) : 'Sin especificar' %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Form -->
+            <div class="col-lg-8">
+                <div class="profile-card fade-in-up stagger-2">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-edit"></i>
+                            Actualizar Información Personal
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="/perfil/actualizar" method="POST" id="profileForm">
+                            <!-- Campo oculto para RUT -->
+                            <input type="hidden" name="rut" value="<%= (typeof perfilUsuario !== 'undefined' && perfilUsuario) ? (perfilUsuario.rut || '11111111-1') : '11111111-1' %>">
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombre" class="form-label">
+                                        <i class="fas fa-user me-2"></i>
+                                        Nombre Completo
+                                    </label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" 
+                                        value="<%= (typeof perfilUsuario !== 'undefined' && perfilUsuario) ? perfilUsuario.nombre : '' %>" required>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">
+                                        <i class="fas fa-envelope me-2"></i>
+                                        Correo Electrónico
+                                    </label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                        value="<%= (typeof perfilUsuario !== 'undefined' && perfilUsuario) ? perfilUsuario.email : '' %>" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefono" class="form-label">
+                                        <i class="fas fa-phone me-2"></i>
+                                        Teléfono
+                                    </label>
+                                    <input type="tel" class="form-control" id="telefono" name="telefono" 
+                                        value="<%= (typeof perfilUsuario !== 'undefined' && perfilUsuario) ? (perfilUsuario.telefono || '') : '' %>">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombre_empresa" class="form-label">
+                                        <i class="fas fa-building me-2"></i>
+                                        Empresa
+                                    </label>
+                                    <input type="text" class="form-control" id="nombre_empresa" name="nombre_empresa" 
+                                        value="<%= (typeof perfilUsuario !== 'undefined' && perfilUsuario) ? (perfilUsuario.nombre_empresa || '') : '' %>">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="comuna" class="form-label">
+                                        <i class="fas fa-map-marker-alt me-2"></i>
+                                        Comuna
+                                    </label>
+                                    <select class="form-select" id="comuna" name="comuna">
+                                        <option value="">Selecciona una comuna</option>
+                                        <option value="Ancud" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.comuna === 'Ancud') ? 'selected' : '' %>>Ancud</option>
+                                        <option value="Castro" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.comuna === 'Castro') ? 'selected' : '' %>>Castro</option>
+                                        <option value="Chonchi" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.comuna === 'Chonchi') ? 'selected' : '' %>>Chonchi</option>
+                                        <option value="Concepción" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.comuna === 'Concepción') ? 'selected' : '' %>>Concepción</option>
+                                        <option value="Puerto Montt" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.comuna === 'Puerto Montt') ? 'selected' : '' %>>Puerto Montt</option>
+                                        <option value="Puerto Varas" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.comuna === 'Puerto Varas') ? 'selected' : '' %>>Puerto Varas</option>
+                                        <option value="Quellón" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.comuna === 'Quellón') ? 'selected' : '' %>>Quellón</option>
+                                        <option value="Talcahuano" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.comuna === 'Talcahuano') ? 'selected' : '' %>>Talcahuano</option>
+                                        <option value="Temuco" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.comuna === 'Temuco') ? 'selected' : '' %>>Temuco</option>
+                                        <option value="Valdivia" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.comuna === 'Valdivia') ? 'selected' : '' %>>Valdivia</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="ciudad" class="form-label">
+                                        <i class="fas fa-city me-2"></i>
+                                        Ciudad
+                                    </label>
+                                    <select class="form-select" id="ciudad" name="ciudad">
+                                        <option value="">Selecciona una ciudad</option>
+                                        <option value="Ancud" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.ciudad === 'Ancud') ? 'selected' : '' %>>Ancud</option>
+                                        <option value="Castro" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.ciudad === 'Castro') ? 'selected' : '' %>>Castro</option>
+                                        <option value="Chonchi" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.ciudad === 'Chonchi') ? 'selected' : '' %>>Chonchi</option>
+                                        <option value="Concepción" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.ciudad === 'Concepción') ? 'selected' : '' %>>Concepción</option>
+                                        <option value="Puerto Montt" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.ciudad === 'Puerto Montt') ? 'selected' : '' %>>Puerto Montt</option>
+                                        <option value="Puerto Varas" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.ciudad === 'Puerto Varas') ? 'selected' : '' %>>Puerto Varas</option>
+                                        <option value="Quellón" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.ciudad === 'Quellón') ? 'selected' : '' %>>Quellón</option>
+                                        <option value="Talcahuano" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.ciudad === 'Talcahuano') ? 'selected' : '' %>>Talcahuano</option>
+                                        <option value="Temuco" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.ciudad === 'Temuco') ? 'selected' : '' %>>Temuco</option>
+                                        <option value="Valdivia" <%= (typeof perfilUsuario !== 'undefined' && perfilUsuario && perfilUsuario.ciudad === 'Valdivia') ? 'selected' : '' %>>Valdivia</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label">
+                                    <i class="fas fa-home me-2"></i>
+                                    Dirección Completa
+                                </label>
+                                <textarea class="form-control" id="direccion" name="direccion" rows="3" placeholder="Ej: Av. Principal 123, Depto 45"><%= (typeof perfilUsuario !== 'undefined' && perfilUsuario) ? (perfilUsuario.direccion || '') : '' %></textarea>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="contacto_principal" class="form-label">
+                                    <i class="fas fa-user-tie me-2"></i>
+                                    Contacto Principal
+                                </label>
+                                <input type="text" class="form-control" id="contacto_principal" name="contacto_principal" 
+                                    placeholder="Nombre del responsable o contacto principal"
+                                    value="<%= (typeof perfilUsuario !== 'undefined' && perfilUsuario) ? (perfilUsuario.contacto_principal || '') : '' %>">
+                            </div>
+                            
+                            <div class="d-flex gap-3">
+                                <button type="submit" class="btn btn-primary btn-md">
+                                    <i class="fas fa-save me-2"></i>
+                                    Guardar Cambios
+                                </button>
+                                <button type="reset" class="btn btn-secondary btn-md">
+                                    <i class="fas fa-undo me-2"></i>
+                                    Restablecer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Change Password Section -->
+                <div class="profile-card fade-in-up stagger-3">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-key"></i>
+                            Cambiar Contraseña
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="/perfil/cambiar-password" method="POST" id="passwordForm">
+                            <div class="mb-3">
+                                <label for="password_actual" class="form-label">
+                                    <i class="fas fa-lock me-2"></i>
+                                    Contraseña Actual
+                                </label>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control" id="password_actual" name="password_actual" required>
+                                    <button type="button" class="btn btn-outline-secondary position-absolute end-0 top-0 h-100" onclick="togglePassword('password_actual')">
+                                        <i class="fas fa-eye" id="password_actual_icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password_nuevo" class="form-label">
+                                    <i class="fas fa-key me-2"></i>
+                                    Nueva Contraseña
+                                </label>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control" id="password_nuevo" name="password_nuevo" required>
+                                    <button type="button" class="btn btn-outline-secondary position-absolute end-0 top-0 h-100" onclick="togglePassword('password_nuevo')">
+                                        <i class="fas fa-eye" id="password_nuevo_icon"></i>
+                                    </button>
+                                </div>
+                                <div class="password-strength" id="passwordStrength"></div>
+                                <small class="form-text text-muted">
+                                    La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas y números.
+                                </small>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="password_confirmar" class="form-label">
+                                    <i class="fas fa-check-double me-2"></i>
+                                    Confirmar Nueva Contraseña
+                                </label>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control" id="password_confirmar" name="password_confirmar" required>
+                                    <button type="button" class="btn btn-outline-secondary position-absolute end-0 top-0 h-100" onclick="togglePassword('password_confirmar')">
+                                        <i class="fas fa-eye" id="password_confirmar_icon"></i>
+                                    </button>
+                                </div>
+                                <div id="passwordMatch" class="mt-2"></div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-key me-2"></i>
+                                Cambiar Contraseña
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para subir imagen de perfil -->
+    <div class="modal fade" id="imagenPerfilModal" tabindex="-1" aria-labelledby="imagenPerfilModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imagenPerfilModalLabel">
+                        <i class="fas fa-camera me-2"></i>
+                        Cambiar Imagen de Perfil
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/perfil/actualizar-imagen" method="POST" enctype="multipart/form-data" id="imageForm">
+                        <div class="mb-3">
+                            <label for="imagenPerfil" class="form-label">
+                                <i class="fas fa-upload me-2"></i>
+                                Selecciona una Imagen
+                            </label>
+                            <input type="file" class="form-control" id="imagenPerfil" name="imagenPerfil" accept="image/*" required>
+                            <div class="form-text text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                La imagen debe ser en formato JPG, PNG o GIF y tener un tamaño máximo de 2MB.
+                            </div>
+                        </div>
+                        
+                        <!-- Preview de la imagen -->
+                        <div id="imagePreview" class="text-center mb-3" style="display: none;">
+                            <img id="previewImg" class="img-thumbnail" style="max-width: 200px; max-height: 200px;" alt="Vista previa">
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-2"></i>
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload me-2"></i>
+                                Subir Imagen
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Sincronizar los selectores de comuna y ciudad
+        document.addEventListener('DOMContentLoaded', function() {
+            const comunaSelect = document.getElementById('comuna');
+            const ciudadSelect = document.getElementById('ciudad');
+            
+            if (comunaSelect && ciudadSelect) {
+                // Cuando cambia la comuna, actualizar la ciudad
+                comunaSelect.addEventListener('change', function() {
+                    ciudadSelect.value = comunaSelect.value;
+                });
+                
+                // Cuando cambia la ciudad, actualizar la comuna
+                ciudadSelect.addEventListener('change', function() {
+                    comunaSelect.value = ciudadSelect.value;
+                });
+            }
+
+            // Animation on page load
+            const animatedElements = document.querySelectorAll('.fade-in-up');
+            animatedElements.forEach((element, index) => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    element.style.transition = 'all 0.6s ease-out';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // Toggle password visibility
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById(fieldId + '_icon');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Password strength checker
+        const passwordInput = document.getElementById('password_nuevo');
+        const strengthBar = document.getElementById('passwordStrength');
+        
+        if (passwordInput && strengthBar) {
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+                
+                // Check password strength
+                if (password.length >= 8) strength++;
+                if (/[a-z]/.test(password)) strength++;
+                if (/[A-Z]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+                
+                // Update strength bar
+                strengthBar.className = 'password-strength';
+                if (strength < 3) {
+                    strengthBar.classList.add('weak');
+                } else if (strength < 5) {
+                    strengthBar.classList.add('medium');
+                } else {
+                    strengthBar.classList.add('strong');
+                }
+            });
+        }
+
+        // Password confirmation checker
+        const confirmInput = document.getElementById('password_confirmar');
+        const matchDiv = document.getElementById('passwordMatch');
+        
+        if (confirmInput && matchDiv && passwordInput) {
+            function checkPasswordMatch() {
+                const password = passwordInput.value;
+                const confirm = confirmInput.value;
+                
+                if (confirm === '') {
+                    matchDiv.innerHTML = '';
+                    return;
+                }
+                
+                if (password === confirm) {
+                    matchDiv.innerHTML = '<small class="text-success"><i class="fas fa-check me-1"></i>Las contraseñas coinciden</small>';
+                } else {
+                    matchDiv.innerHTML = '<small class="text-danger"><i class="fas fa-times me-1"></i>Las contraseñas no coinciden</small>';
+                }
+            }
+            
+            passwordInput.addEventListener('input', checkPasswordMatch);
+            confirmInput.addEventListener('input', checkPasswordMatch);
+        }
+
+        // Image preview
+        const imageInput = document.getElementById('imagenPerfil');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        
+        if (imageInput && imagePreview && previewImg) {
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.style.display = 'none';
+                }
+            });
+        }
+
+        // Form validation
+        const profileForm = document.getElementById('profileForm');
+        const passwordForm = document.getElementById('passwordForm');
+        
+        if (profileForm) {
+            profileForm.addEventListener('submit', function(e) {
+                // Add custom validation here if needed
+                const email = document.getElementById('email').value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                
+                if (!emailRegex.test(email)) {
+                    e.preventDefault();
+                    alert('Por favor, ingresa un email válido.');
+                    return;
+                }
+            });
+        }
+        
+        if (passwordForm) {schneider
+            passwordForm.addEventListener('submit', function(e) {
+                const newPassword = document.getElementById('password_nuevo').value;
+                const confirmPassword = document.getElementById('password_confirmar').value;
+                
+                if (newPassword !== confirmPassword) {
+                    e.preventDefault();
+                    alert('Las contraseñas no coinciden.');
+                    return;
+                }
+                
+                if (newPassword.length < 8) {
+                    e.preventDefault();
+                    alert('La contraseña debe tener al menos 8 caracteres.');
+                    return;
+                }
+            });
+        }
+
+        // Show notifications
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Example: Show success message if form was submitted successfully
+        // You can implement this based on your backend response
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'profile') {
+            showNotification('¡Perfil actualizado correctamente!', 'success');
+        } else if (urlParams.get('success') === 'password') {
+            showNotification('¡Contraseña cambiada correctamente!', 'success');
+        } else if (urlParams.get('success') === 'image') {
+            showNotification('¡Imagen de perfil actualizada!', 'success');
+        }
+
+        // Dropdown funcional para el perfil
+        const perfilDropdownBtn = document.getElementById('perfilDropdownBtn');
+        const perfilDropdownMenu = document.getElementById('perfilDropdownMenu');
+        perfilDropdownBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            perfilDropdownMenu.classList.toggle('show');
+        });
+        document.addEventListener('click', function(e) {
+            if (!perfilDropdownMenu.contains(e.target) && !perfilDropdownBtn.contains(e.target)) {
+                perfilDropdownMenu.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

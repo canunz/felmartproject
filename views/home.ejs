@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Felmart - Gestión de Residuos</title>
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+  <!-- Estilos personalizados -->
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="container-fluid p-0">
+    <!-- Header dinámico que cambia según estado de sesión -->
+    <header class="site-header">
+      <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <a href="/" class="logo-link">
+            <img src="/img/logo.png" alt="Felmart Logo" class="logo-img">
+          </a>
+          
+          <% if (!locals.usuario) { %>
+            <!-- Mostrar botones de iniciar sesión/registro cuando NO hay sesión -->
+            <div class="auth-buttons">
+              <a href="/login" class="btn btn-outline-light btn-sm">Iniciar sesión</a>
+              <a href="/registro" class="btn btn-outline-light btn-sm ms-2">Registrarse</a>
+            </div>
+          <% } else { %>
+            <!-- Mostrar información del usuario cuando hay sesión activa -->
+            <div class="user-info-container">
+              <div class="dropdown">
+                <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown"
+                        style="background: none; border: none; padding: 5px 10px;">
+                  <div class="user-avatar" style="width: 36px; height: 36px; border-radius: 50%; background: #00616e; display: flex; align-items: center; justify-content: center; margin-right: 8px;">
+                    <i class="fas fa-user" style="color: white; font-size: 16px;"></i>
+                  </div>
+                  <div style="text-align: left; margin-right: 5px;">
+                    <div style="font-size: 14px; font-weight: 600; color: #ffffff;">
+                      <span><%= usuario.nombre || 'Usuario' %></span>
+                    </div>
+                    <div style="font-size: 11px; color: #f0f0f0;">
+                      <span><%= usuario.rol || 'cliente' %></span>
+                    </div>
+                  </div>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" style="border: none; box-shadow: 0 5px 25px rgba(0,0,0,0.1); border-radius: 10px; min-width: 200px;">
+                  <li>
+                    <a class="dropdown-item" href="/dashboard" style="padding: 10px 20px; display: flex; align-items: center; color: #495057;">
+                      <i class="fas fa-tachometer-alt me-3" style="color: #00616e; width: 16px;"></i>Panel Principal
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="/perfil" style="padding: 10px 20px; display: flex; align-items: center; color: #495057;">
+                      <i class="fas fa-user-circle me-3" style="color: #00616e; width: 16px;"></i>Mi Perfil
+                    </a>
+                  </li>
+                  <li><hr class="dropdown-divider" style="margin: 5px 0;"></li>
+                  <li>
+                    <a class="dropdown-item" href="/logout" style="padding: 10px 20px; display: flex; align-items: center; color: #dc3545;">
+                      <i class="fas fa-sign-out-alt me-3" style="width: 16px;"></i>Cerrar sesión
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </header>
+
+    <!-- Carrusel de imágenes -->
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="hero-slide" style="background-image: url('/img/camion1.avif');"></div>
+        </div>
+        <div class="carousel-item">
+          <div class="hero-slide" style="background-image: url('/img/residuos1.avif');"></div>
+        </div>
+        <div class="carousel-item">
+          <div class="hero-slide" style="background-image: url('/img/puerto1.avif');"></div>
+        </div>
+      </div>
+      
+      <!-- Overlay con texto alineado a la izquierda -->
+      <div class="carousel-overlay">
+        <div class="container">
+          <div class="hero-content text-start">
+            <h5 class="hero-subtitle-top">GESTIÓN DE RESIDUOS</h5>
+            <h1 class="hero-title">GESTIÓN PROFESIONAL<br>DE RESIDUOS</h1>
+            <p class="hero-subtitle">Manejo responsable de residuos peligrosos y no peligrosos para proteger nuestro entorno.</p>
+            <a href="/sobre-nosotros" class="btn btn-eco">SOBRE NOSOTROS</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Indicadores discretos -->
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+      </div>
+    </div>
+
+    <!-- Servicios -->
+    <section class="teal-bg py-5" id="services">
+      <div class="container py-4">
+        <h2 class="text-center mb-5 section-title text-white">Nuestros Servicios</h2>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="service-box">
+              <div class="service-icon-wrapper">
+                <i class="fas fa-truck-moving service-icon"></i>
+              </div>
+              <h3 class="service-title">Retiro de Residuos</h3>
+              <p class="service-description">
+                Servicio de retiro y transporte seguro de residuos peligrosos y no peligrosos desde sus instalaciones.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="service-box">
+              <div class="service-icon-wrapper">
+                <i class="fas fa-recycle service-icon"></i>
+              </div>
+              <h3 class="service-title">Disposición Final</h3>
+              <p class="service-description">
+                Manejo responsable y conforme a la normativa para la disposición final de residuos.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="service-box">
+              <div class="service-icon-wrapper">
+                <i class="fas fa-certificate service-icon"></i>
+              </div>
+              <h3 class="service-title">Certificación</h3>
+              <p class="service-description">
+                Emisión de certificados de tratamiento y disposición final para sus reportes ambientales.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Botón de cotización -->
+        <div class="text-center mt-5">
+          <a href="/cotizaciones/cotizar" class="btn btn-eco btn-lg">
+            <i class="fas fa-calculator me-2"></i>Solicitar Cotización
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Industrias -->
+    <section class="industries-section py-5" id="industries">
+      <div class="container py-4">
+        <h2 class="section-title text-center">Industrias que Atendemos</h2>
+        <div class="title-separator"></div>
+        
+        <div class="row mt-5 justify-content-center">
+          <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+            <div class="industry-card">
+              <div class="industry-icon-wrapper">
+                <i class="fas fa-fish industry-icon"></i>
+              </div>
+              <h3 class="industry-name">Salmonera</h3>
+              <div class="industry-hover-content">
+                <p>Gestión especializada de residuos para la industria acuícola y salmonera.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+            <div class="industry-card">
+              <div class="industry-icon-wrapper">
+                <i class="fas fa-ship industry-icon"></i>
+              </div>
+              <h3 class="industry-name">Naviera</h3>
+              <div class="industry-hover-content">
+                <p>Soluciones de manejo de residuos para el sector marítimo y portuario.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+            <div class="industry-card">
+              <div class="industry-icon-wrapper">
+                <i class="fas fa-tractor industry-icon"></i>
+              </div>
+              <h3 class="industry-name">Agrícola</h3>
+              <div class="industry-hover-content">
+                <p>Tratamiento de residuos agrícolas y agropecuarios con enfoque sustentable.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+            <div class="industry-card">
+              <div class="industry-icon-wrapper">
+                <i class="fas fa-tree industry-icon"></i>
+              </div>
+              <h3 class="industry-name">Forestal</h3>
+              <div class="industry-hover-content">
+                <p>Gestión integral de residuos para el sector forestal y maderero.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Banner de Contacto -->
+    <section class="contact-banner">
+      <div class="overlay">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+              <h2 class="contact-banner-title">CONTÁCTANOS</h2>
+              <p class="contact-banner-subtitle">ESTAMOS A UN PASO DE UN PLANETA MÁS LIMPIO</p>
+              <p class="lead mb-4">¿Estás pensando en el futuro de tus hijos y en los residuos de tu empresa? Contáctanos y trabajemos juntos.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contacto -->
+    <section class="contact-section py-5" id="contact">
+      <div class="container">
+        <div class="row justify-content-center mb-5">
+          <!-- Formulario de contacto -->
+          <div class="col-lg-8">
+            <div class="contact-form-card">
+              <form id="contactForm">
+                <div class="mb-3">
+                  <label for="nombre" class="form-label">Nombre</label>
+                  <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Tu nombre completo" required>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="email" class="form-label">Correo electrónico</label>
+                  <input type="email" class="form-control" id="email" name="email" placeholder="ejemplo@correo.com" required>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="telefono" class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="+56 9 XXXX XXXX">
+                </div>
+                
+                <div class="mb-3">
+                  <label for="mensaje" class="form-label">Mensaje</label>
+                  <textarea class="form-control" id="mensaje" name="mensaje" rows="4" placeholder="Escribe tu mensaje aquí..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Enviar Mensaje</button>
+              </form>
+              <!-- Alerta de éxito/error -->
+              <div class="alert alert-success mt-3" id="alertaExito" style="display: none;">
+                Mensaje enviado correctamente. Nos pondremos en contacto contigo pronto.
+              </div>
+              <div class="alert alert-danger mt-3" id="alertaError" style="display: none;">
+                Error al enviar el mensaje. Por favor, inténtalo de nuevo.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Información de contacto -->
+        <div class="row contact-info-row mt-5">
+          <div class="col-md-4">
+            <div class="contact-info-box">
+              <div class="contact-info-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <h4>Dirección</h4>
+              <p>Ruta 5 Sur km 1036, sector Trapen</p>
+              <p>Puerto Montt, Chile</p>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="contact-info-box">
+              <div class="contact-info-icon">
+                <i class="fas fa-phone"></i>
+              </div>
+              <h4>Teléfono</h4>
+              <p>+56 65 1234567</p>
+              <p>Lunes a Viernes: 8:30 - 18:00</p>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="contact-info-box">
+              <div class="contact-info-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <h4>Correo</h4>
+              <p>contacto@felmart.cl</p>
+              <p>ventas@felmart.cl</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 mb-4 mb-md-0">
+            <img src="/img/logo-white.png" alt="Felmart Logo" class="img-fluid mb-4" style="max-height: 80px;">
+            <p>Gestión y manejo profesional de residuos peligrosos y no peligrosos, comprometidos con el medio ambiente y la sostenibilidad.</p>
+          </div>
+          <div class="col-md-4 mb-4 mb-md-0">
+            <h5 class="mb-4">Enlaces Rápidos</h5>
+            <ul class="list-unstyled">
+              <li class="mb-2"><a href="#" class="text-white text-decoration-none">Inicio</a></li>
+              <li class="mb-2"><a href="#services" class="text-white text-decoration-none">Servicios</a></li>
+              <li class="mb-2"><a href="#about" class="text-white text-decoration-none">Sobre Nosotros</a></li>
+              <li class="mb-2"><a href="#contact" class="text-white text-decoration-none">Contacto</a></li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <h5 class="mb-4">Síguenos</h5>
+            <div class="d-flex">
+              <a href="#" class="text-white me-3 fs-4"><i class="fab fa-facebook"></i></a>
+              <a href="#" class="text-white me-3 fs-4"><i class="fab fa-instagram"></i></a>
+              <a href="#" class="text-white me-3 fs-4"><i class="fab fa-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+        <hr class="my-4 bg-light">
+        <div class="row">
+          <div class="col-md-6 text-center text-md-start">
+            <p class="mb-0">&copy; <script>document.write(new Date().getFullYear())</script> Felmart. Todos los derechos reservados.</p>
+          </div>
+          <div class="col-md-6 text-center text-md-end">
+            <p class="mb-0">Diseñado con <i class="fas fa-heart text-danger"></i> para un planeta más limpio</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Iniciar el carrusel con transición automática
+    document.addEventListener('DOMContentLoaded', function() {
+      // Carrusel
+      var myCarousel = document.getElementById('heroCarousel');
+      var carousel = new bootstrap.Carousel(myCarousel, {
+        interval: 5000,
+        pause: false
+      });
+      
+      // Scroll suave para enlaces internos
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          
+          document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+          });
+        });
+      });
+      
+      // Formulario de contacto
+      const contactForm = document.getElementById('contactForm');
+      const alertaExito = document.getElementById('alertaExito');
+      const alertaError = document.getElementById('alertaError');
+
+      if (contactForm) {
+        contactForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          // Ocultar alertas previas
+          alertaExito.style.display = 'none';
+          alertaError.style.display = 'none';
+          
+          try {
+            const formData = {
+              nombre: this.nombre.value,
+              email: this.email.value,
+              telefono: this.telefono.value,
+              mensaje: this.mensaje.value
+            };
+            
+            const response = await fetch('/contacto/enviar', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+              alertaExito.style.display = 'block';
+              this.reset();
+            } else {
+              alertaError.textContent = data.message || 'Error al enviar el mensaje. Por favor, inténtalo de nuevo.';
+              alertaError.style.display = 'block';
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            alertaError.style.display = 'block';
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

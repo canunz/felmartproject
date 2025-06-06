@@ -1,0 +1,99 @@
+<!-- views/partials/navbar.ejs -->
+<header class="site-header">
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--nav-primary-color);">
+    <div class="container-fluid">
+      <!-- Logo -->
+      <a href="/" class="navbar-brand">
+        <img src="/img/logo.png" alt="Felmart Logo" style="height: 60px; width: auto;">
+      </a>
+      
+      <!-- Contenido del navbar derecha -->
+      <div class="ms-auto">
+        <% if (typeof usuario !== 'undefined' && usuario) { %>
+          <!-- Usuario logueado -->
+          <div class="d-flex align-items-center">
+            <a href="/dashboard" class="btn btn-outline-light me-3">
+              <i class="fas fa-tachometer-alt me-2"></i>Panel Principal
+            </a>
+            <% if (usuario && usuario.rol === 'administrador') { %>
+              <a href="/dashboard/clientes" class="btn btn-outline-light me-3">
+                <i class="fas fa-users me-2"></i>Gestión de Clientes
+              </a>
+            <% } %>
+            <div class="dropdown">
+              <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" 
+                      style="background: rgba(255,255,255,0.1); border: none; border-radius: 25px; padding: 5px 15px 5px 5px;">
+                <div class="avatar" style="width: 30px; height: 30px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                  <i class="fas fa-user" style="color: #004c57; font-size: 14px;"></i>
+                </div>
+                <span class="text-light me-2"><%= usuario.nombre %></span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="/dashboard">
+                  <i class="fas fa-tachometer-alt me-2"></i>Panel Principal
+                </a></li>
+                <li><a class="dropdown-item" href="/perfil">
+                  <i class="fas fa-user me-2"></i>Mi Perfil
+                </a></li>
+                <% if (usuario && usuario.rol === 'administrador') { %>
+                  <li><a class="dropdown-item" href="/dashboard/clientes">
+                    <i class="fas fa-users me-2"></i>Gestión de Clientes
+                  </a></li>
+                <% } %>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="/logout">
+                  <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión
+                </a></li>
+              </ul>
+            </div>
+          </div>
+        <% } else { %>
+          <!-- Usuario no logueado -->
+          <div class="d-flex">
+            <a href="/login" class="btn btn-outline-light me-2">
+              <i class="fas fa-sign-in-alt me-2"></i>Iniciar sesión
+            </a>
+            <a href="/registro" class="btn btn-light text-primary">
+              <i class="fas fa-user-plus me-2"></i>Registrarse
+            </a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<style>
+/* Estilos adicionales para el navbar */
+.site-header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1030;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+body {
+  padding-top: 76px; /* Espacio para el navbar fijo */
+}
+
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+  border-radius: 10px;
+}
+
+.dropdown-item {
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f7fa;
+}
+
+.dropdown-item i {
+  width: 20px;
+}
+</style>

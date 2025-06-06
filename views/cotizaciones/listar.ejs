@@ -1,0 +1,164 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><%= titulo %></h3>
+                    <div class="card-tools">
+                        <% if (usuario.rol === 'administrador' || usuario.rol === 'operador') { %>
+                            <a href="/cotizaciones/crear" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Nueva Cotización
+                            </a>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Filtros -->
+                    <form action="/cotizaciones" method="GET" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="estado">Estado</label>
+                                    <select name="estado" id="estado" class="form-control">
+                                        <option value="todos" <%= estado === 'todos' ? 'selected' : '' %>>Todos</option>
+                                        <option value="pendiente" <%= estado === 'pendiente' ? 'selected' : '' %>>Pendiente</option>
+                                        <option value="aceptada" <%= estado === 'aceptada' ? 'selected' : '' %>>Aceptada</option>
+                                        <option value="rechazada" <%= estado === 'rechazada' ? 'selected' : '' %>>Rechazada</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="fechaDesde">Fecha Desde</label>
+                                    <input type="date" name="fechaDesde" id="fechaDesde" class="form-control" value="<%= fechaDesde %>">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="fechaHasta">Fecha Hasta</label>
+                                    <input type="date" name="fechaHasta" id="fechaHasta" class="form-control" value="<%= fechaHasta %>">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary btn-block">
+                                        <i class="fas fa-search"></i> Filtrar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Tabla de Cotizaciones -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>N° Cotización</th>
+                                    <th>Cliente</th>
+                                    <th>Fecha</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (cotizaciones && cotizaciones.length > 0) { %>
+                                    <% cotizaciones.forEach(cotizacion => { %>
+                                        <tr>
+                                            <td><%= cotizacion.numeroCotizacion %></td>
+                                            <td><%= cotizacion.nombre %></td>
+                                            <td><%= new Date(cotizacion.fechaCotizacion).toLocaleDateString() %></td>
+                                            <td>$<%= cotizacion.total.toLocaleString() %></td>
+                                            <td>
+                                                <span class="badge bg-<%= 
+                                                    cotizacion.estado === 'pendiente' ? 'warning' : 
+                                                    cotizacion.estado === 'aceptada' ? 'success' : 
+                                                    cotizacion.estado === 'rechazada' ? 'danger' : 'secondary' 
+                                                %>">
+                                                    <%= cotizacion.estado.charAt(0).toUpperCase() + cotizacion.estado.slice(1) %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="/cotizaciones/detalles/<%= cotizacion.id %>" class="btn btn-sm btn-info">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="/cotizaciones/descargar/<%= cotizacion.id %>" class="btn btn-sm btn-success">
+                                                        <i class="fas fa-download"></i>
+                                                    </a>
+                                                    <% if (cotizacion.estado === 'pendiente') { %>
+                                                        <button type="button" class="btn btn-sm btn-danger" 
+                                                                onclick="rechazarCotizacion('<%= cotizacion.id %>')">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-success" 
+                                                                onclick="aceptarCotizacion('<%= cotizacion.id %>')">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <div class="alert alert-info mb-0">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                No hay cotizaciones registradas
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para rechazar cotización -->
+<div class="modal fade" id="rechazarModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rechazar Cotización</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="rechazarForm" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="motivo" class="form-label">Motivo del rechazo</label>
+                        <textarea class="form-control" id="motivo" name="motivo" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Rechazar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function rechazarCotizacion(id) {
+    const modal = new bootstrap.Modal(document.getElementById('rechazarModal'));
+    document.getElementById('rechazarForm').action = `/cotizaciones/rechazar/${id}`;
+    modal.show();
+}
+
+function aceptarCotizacion(id) {
+    if (confirm('¿Está seguro de aceptar esta cotización?')) {
+        window.location.href = `/cotizaciones/aceptar/${id}`;
+    }
+}
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotizar Residuos - Felmart</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f6fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Navigation */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c7a7b;
+        }
+
+        .logo i {
+            background: #2c7a7b;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 0;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            color: #2c7a7b;
+        }
+
+        .nav-item.active {
+            color: #2c7a7b;
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #2c7a7b;
+        }
+
+        .nav-item i {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        /* User Menu Styles with Session Detection */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8f9fa;
+            padding: 8px 16px;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .user-avatar.cliente {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .user-avatar.administrador {
+            background: linear-gradient(135deg, #dc3545, #fd7e14);
+        }
+
+        .user-avatar.operador {
+            background: linear-gradient(135deg, #17a2b8, #20c997);
+        }
+
+        .user-avatar.default {
+            background: linear-gradient(135deg, #2c7a7b, #319795);
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #212529;
+            line-height: 1.2;
+        }
+
+        .user-role {
+            font-size: 11px;
+            line-height: 1.2;
+            margin-top: 2px;
+        }
+
+        .user-role.cliente {
+            color: #28a745;
+        }
+
+        .user-role.administrador {
+            color: #dc3545;
+        }
+
+        .user-role.operador {
+            color: #17a2b8;
+        }
+
+        .user-role.default {
+            color: #6c757d;
+        }
+
+        .btn-access {
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: #2c7a7b;
+            border: 2px solid #2c7a7b;
+        }
+
+        .btn-login:hover {
+            background: #2c7a7b;
+            color: white;
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #2c7a7b, #319795);
+            color: white;
+            box-shadow: 0 2px 10px rgba(44, 122, 123, 0.2);
+        }
+
+        .btn-register:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(44, 122, 123, 0.3);
+            color: white;
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            background: transparent;
+            border: none;
+            color: #6c757d;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-toggle:hover {
+            color: #2c7a7b;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            min-width: 200px;
+            padding: 8px 0;
+            z-index: 1000;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: #495057;
+            font-size: 14px;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 0 8px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(44, 122, 123, 0.08);
+            color: #2c7a7b;
+        }
+
+        .dropdown-item i {
+            width: 18px;
+            margin-right: 12px;
+            color: #2c7a7b;
+        }
+
+        .dropdown-item.text-danger {
+            color: #dc3545;
+        }
+
+        .dropdown-item.text-danger:hover {
+            color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.08);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 8px 0;
+            border: none;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            color: #2c7a7b;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Alert for non-logged users */
+        .access-alert {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 1px solid #ffc107;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #856404;
+        }
+
+        .access-alert i {
+            font-size: 24px;
+            color: #ffc107;
+        }
+
+        .access-alert .alert-content h4 {
+            color: #856404;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .access-alert .alert-content p {
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .access-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* Cotizador Card */
+        .cotizador-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #2c7a7b 0%, #319795 100%);
+            color: white;
+            padding: 25px 30px;
+            position: relative;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f6ad55 0%, #ed8936 100%);
+        }
+
+        .card-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-body {
+            padding: 40px 30px;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #2c7a7b;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control, .form-select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+            position: relative;
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: #2c7a7b;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(44, 122, 123, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-control:disabled {
+            background: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #2c7a7b;
+            font-size: 18px;
+            pointer-events: none;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
+            border: 1px solid #81e6d9;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #234e52;
+            font-weight: 500;
+        }
+
+        .info-box i {
+            font-size: 20px;
+            color: #2c7a7b;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2c7a7b 0%, #319795 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(44, 122, 123, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(44, 122, 123, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #cbd5e0;
+            color: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #38a169 0%, #48bb78 100%);
+            color: white;
+            font-size: 16px;
+            padding: 16px 32px;
+            box-shadow: 0 4px 15px rgba(56, 161, 105, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(56, 161, 105, 0.4);
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+            font-size: 12px;
+            padding: 8px 16px;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+            transform: scale(1.05);
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Lista de Residuos Card */
+        .lista-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .lista-header {
+            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lista-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Tabla */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .table thead {
+            background: #f8fafc;
+        }
+
+        .table th {
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f3f4;
+            vertical-align: middle;
+        }
+
+        .tabla-vacia {
+            text-align: center;
+            padding: 60px 30px;
+            color: #94a3b8;
+        }
+
+        .tabla-vacia i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .tabla-vacia h4 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #64748b;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: #f8fafc;
+            transform: scale(1.005);
+        }
+
+        .table tfoot {
+            background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%);
+            font-weight: 700;
+        }
+
+        .table tfoot th {
+            border-top: 2px solid #2c7a7b;
+            color: #2c7a7b;
+            font-size: 16px;
+        }
+
+        .total-amount {
+            color: #38a169 !important;
+            font-size: 20px;
+        }
+
+        /* Formulario de Contacto */
+        .contacto-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .contacto-header {
+            background: linear-gradient(135deg, #38a169 0%, #48bb78 100%);
+            color: white;
+            padding: 25px 30px;
+        }
+
+        .contacto-header h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .empresa-section {
+            background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%);
+            border: 1px solid #9ae6b4;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .empresa-section h4 {
+            color: #22543d;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Estados de carga */
+        .btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-right-color: currentColor;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mejorar select appearance */
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px 12px;
+            padding-right: 40px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .user-menu {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .main-container {
+                padding: 20px 15px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .card-body, .contacto-header {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .table-container {
+                font-size: 14px;
+            }
+
+            .table th, .table td {
+                padding: 12px 8px;
+            }
+
+            .access-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <i class="fas fa-recycle"></i>
+                Felmart
+            </div>
+            
+            <div class="nav-menu">
+                <a href="/dashboard" class="nav-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+                <a href="/solicitudes" class="nav-item">
+                    <i class="fas fa-clipboard-list"></i>
+                    Mis Solicitudes
+                </a>
+                <a href="/cotizaciones/cotizar" class="nav-item active">
+                    <i class="fas fa-calculator"></i>
+                    Cotizaciones
+                </a>
+                <a href="/calendario" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    Calendario
+                </a>
+                <a href="/certificados" class="nav-item">
+                    <i class="fas fa-certificate"></i>
+                    Certificados
+                </a>
+            </div>
+            
+            <!-- User Menu with Session Detection -->
+            <div class="user-menu">
+                <% if (typeof usuario !== 'undefined' && usuario) { %>
+                    <!-- Usuario logueado -->
+                    <div class="user-info">
+                        <div class="user-avatar <%= usuario.rol || 'default' %>">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-details">
+                            <div class="user-name"><%= usuario.nombre %></div>
+                            <div class="user-role <%= usuario.rol || 'default' %>">
+                                <% if (usuario.rol === 'cliente') { %>
+                                    <i class="fas fa-user-tie"></i> Cliente
+                                <% } else if (usuario.rol === 'administrador') { %>
+                                    <i class="fas fa-user-shield"></i> Administrador
+                                <% } else if (usuario.rol === 'operador') { %>
+                                    <i class="fas fa-user-cog"></i> Operador
+                                <% } else { %>
+                                    Usuario
+                                <% } %>
+                            </div>
+                        </div>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="dropdown">
+                            <button class="dropdown-toggle" type="button" onclick="toggleDropdown()">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="dropdown-menu" id="userDropdown">
+                                <a class="dropdown-item" href="/dashboard">
+                                    <i class="fas fa-tachometer-alt"></i>Dashboard
+                                </a>
+                                <a class="dropdown-item" href="/perfil">
+                                    <i class="fas fa-user-edit"></i>Mi Perfil
+                                </a>
+                                <hr class="dropdown-divider">
+                                <a class="dropdown-item text-danger" href="/logout">
+                                    <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <!-- Usuario no logueado -->
+                    <a href="/login" class="btn-access btn-login">
+                        <i class="fas fa-sign-in-alt"></i>Iniciar Sesión
+                    </a>
+                    <a href="/registro" class="btn-access btn-register">
+                        <i class="fas fa-user-plus"></i>Registrarse
+                    </a>
+                <% } %>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">Cotizador de Residuos</h1>
+            <p class="page-subtitle">Obtenga una cotización precisa para el retiro de sus residuos industriales</p>
+        </div>
+
+        <!-- Alert for non-logged users -->
+        <% if (typeof usuario === 'undefined' || !usuario) { %>
+        <div class="access-alert">
+            <i class="fas fa-info-circle"></i>
+            <div class="alert-content">
+                <h4>¿Nuevo en Felmart?</h4>
+                <p>Para acceder a todas las funcionalidades y guardar sus cotizaciones, le recomendamos crear una cuenta o iniciar sesión.</p>
+                <div class="access-buttons">
+                    <a href="/login" class="btn-access btn-login">
+                        <i class="fas fa-sign-in-alt"></i>Iniciar Sesión
+                    </a>
+                    <a href="/registro" class="btn-access btn-register">
+                        <i class="fas fa-user-plus"></i>Crear Cuenta
+                    </a>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- Cotizador Form -->
+        <div class="cotizador-card">
+            <div class="card-header">
+                <h2>
+                    <i class="fas fa-calculator"></i>
+                    Calculadora de Cotización
+                </h2>
+            </div>
+            <div class="card-body">
+                <form id="cotizadorForm" autocomplete="off">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="residuoId" class="form-label">
+                                <i class="fas fa-flask"></i> Tipo de residuo
+                            </label>
+                            <select class="form-select" id="residuoId" required>
+                                <option value="">-- Seleccione un tipo --</option>
+                                <% if (typeof precios !== 'undefined' && precios) { %>
+                                    <% precios.forEach(function(residuo) { %>
+                                        <option value="<%= residuo.id %>" 
+                                                data-unidad="<%= residuo.unidad %>"
+                                                data-precio="<%= residuo.precio %>"
+                                                data-moneda="<%= residuo.moneda %>"
+                                                data-descripcion="<%= residuo.descripcion %>">
+                                            <%= residuo.descripcion %>
+                                        </option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="precio" class="form-label">
+                                <i class="fas fa-dollar-sign"></i> Precio unitario
+                            </label>
+                            <input type="text" class="form-control" id="precio" readonly placeholder="Se mostrará automáticamente">
+                            <i class="fas fa-info-circle input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div id="unidadComentario" class="info-box" style="display: none;">
+                        <i class="fas fa-info-circle"></i>
+                        <span></span>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="cantidad" class="form-label">
+                                <i class="fas fa-weight-hanging"></i> Cantidad
+                            </label>
+                            <input type="number" class="form-control" id="cantidad" min="1" disabled required placeholder="Ingrese la cantidad">
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; align-items: end;">
+                            <button type="button" id="agregarResiduo" class="btn btn-primary btn-full" disabled>
+                                <i class="fas fa-plus"></i>
+                                Agregar a la lista
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lista de Residuos -->
+        <div class="lista-card">
+            <div class="lista-header">
+                <i class="fas fa-list-alt"></i>
+                <h3>Lista de residuos a cotizar</h3>
+            </div>
+            <div class="table-container">
+                <table class="table" id="tablaResiduos">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-tag"></i> Tipo</th>
+                            <th><i class="fas fa-ruler"></i> Unidad</th>
+                            <th><i class="fas fa-sort-numeric-up"></i> Cantidad</th>
+                            <th><i class="fas fa-dollar-sign"></i> Precio unitario</th>
+                            <th><i class="fas fa-calculator"></i> Subtotal</th>
+                            <th><i class="fas fa-cogs"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="tabla-vacia">
+                            <td colspan="6">
+                                <i class="fas fa-inbox"></i>
+                                <h4>No hay residuos agregados</h4>
+                                <p>Seleccione un tipo de residuo y agregue la cantidad para comenzar</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot style="display: none;">
+                        <tr>
+                            <th colspan="4">Total General</th>
+                            <th class="total-amount" id="totalGeneral">$0</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Formulario de Contacto -->
+        <div class="contacto-card" id="contactoForm" style="display: none;">
+            <div class="contacto-header">
+                <h3>
+                    <i class="fas fa-user-check"></i>
+                    Complete sus datos de contacto
+                </h3>
+            </div>
+            <div class="card-body">
+                <form action="/cotizaciones/cotizar" method="POST" id="formEnviar">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nombre" class="form-label">
+                                <i class="fas fa-user"></i> Nombre completo
+                            </label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required
+                                   <% if (typeof usuario !== 'undefined' && usuario && usuario.nombre) { %>
+                                       value="<%= usuario.nombre %>"
+                                   <% } %>
+                                   placeholder="Ingrese su nombre completo">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="rut" class="form-label">
+                                <i class="fas fa-id-card"></i> RUT
+                            </label>
+                            <input type="text" class="form-control" id="rut" name="rut" required
+                                   placeholder="12.345.678-9" maxlength="12">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="correo" class="form-label">
+                                <i class="fas fa-envelope"></i> Correo electrónico
+                            </label>
+                            <input type="email" class="form-control" id="correo" name="correo" required
+                                   <% if (typeof usuario !== 'undefined' && usuario && usuario.correo) { %>
+                                       value="<%= usuario.correo %>"
+                                   <% } %>
+                                   placeholder="correo@ejemplo.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="telefono" class="form-label">
+                                <i class="fas fa-phone"></i> Teléfono
+                            </label>
+                            <input type="tel" class="form-control" id="telefono" name="telefono"
+                                   placeholder="+56 9 1234 5678">
+                        </div>
+                    </div>
+
+                    <div class="empresa-section">
+                        <h4>
+                            <i class="fas fa-building"></i>
+                            Información de la empresa (Opcional)
+                        </h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="empresa" class="form-label">
+                                    <i class="fas fa-industry"></i> Nombre de la empresa
+                                </label>
+                                <input type="text" class="form-control" id="empresa" name="empresa"
+                                       placeholder="Nombre de su empresa">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="rutEmpresa" class="form-label">
+                                    <i class="fas fa-building"></i> RUT de la empresa
+                                </label>
+                                <input type="text" class="form-control" id="rutEmpresa" name="rutEmpresa"
+                                       placeholder="76.123.456-7" maxlength="12">
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="direccion" class="form-label">
+                                    <i class="fas fa-map-marker-alt"></i> Dirección de retiro
+                                </label>
+                                <input type="text" class="form-control" id="direccion" name="direccion"
+                                       placeholder="Calle 123, Oficina 456">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="comuna" class="form-label">
+                                    <i class="fas fa-city"></i> Comuna
+                                </label>
+                                <select class="form-select" id="comuna" name="comuna">
+                                    <option value="">-- Seleccione comuna --</option>
+                                    <option value="Concepción">Concepción</option>
+                                    <option value="Talcahuano">Talcahuano</option>
+                                    <option value="Chiguayante">Chiguayante</option>
+                                    <option value="San Pedro de la Paz">San Pedro de la Paz</option>
+                                    <option value="Coronel">Coronel</option>
+                                    <option value="Lota">Lota</option>
+                                    <option value="Hualpén">Hualpén</option>
+                                    <option value="Penco">Penco</option>
+                                    <option value="Tomé">Tomé</option>
+                                    <option value="Florida">Florida</option>
+                                    <option value="Hualqui">Hualqui</option>
+                                    <option value="Santa Juana">Santa Juana</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ciudad" class="form-label">
+                                <i class="fas fa-map"></i> Ciudad/Región
+                            </label>
+                            <input type="text" class="form-control" id="ciudad" name="ciudad"
+                                   value="Región del Biobío" placeholder="Ciudad o región">
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="observaciones" class="form-label">
+                            <i class="fas fa-comment-alt"></i> Observaciones adicionales
+                        </label>
+                        <textarea class="form-control" id="observaciones" name="observaciones" rows="4"
+                                  placeholder="Indique cualquier información adicional sobre los residuos o el retiro"></textarea>
+                    </div>
+
+                    <input type="hidden" id="residuosCotizados" name="residuosCotizados">
+                    <input type="hidden" id="total" name="total">
+
+                    <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                        <button type="submit" class="btn btn-success btn-full">
+                            <i class="fas fa-paper-plane"></i>
+                            Enviar Cotización
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variables globales
+        let residuos = [];
+        let contadorId = 1;
+        const VALOR_UF = 37000; // Valor aproximado actual de la UF en pesos chilenos
+
+        // Elementos del DOM
+        const residuoSelect = document.getElementById('residuoId');
+        const precioInput = document.getElementById('precio');
+        const cantidadInput = document.getElementById('cantidad');
+        const agregarBtn = document.getElementById('agregarResiduo');
+        const tablaBody = document.querySelector('#tablaResiduos tbody');
+        const tablaFoot = document.querySelector('#tablaResiduos tfoot');
+        const unidadComentario = document.getElementById('unidadComentario');
+        const contactoForm = document.getElementById('contactoForm');
+
+        // Dropdown functionality
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Cerrar dropdown al hacer click fuera
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            const toggle = document.querySelector('.dropdown-toggle');
+            
+            if (dropdown && !toggle.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Formatear precios según la moneda
+        function formatearPrecio(valor, moneda) {
+            if (moneda === 'UF') {
+                return `${valor.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 4 })} UF`;
+            } else {
+                return new Intl.NumberFormat('es-CL', {
+                    style: 'currency',
+                    currency: 'CLP',
+                    minimumFractionDigits: 0
+                }).format(valor);
+            }
+        }
+
+        // Formatear números a moneda chilena (para totales)
+        function formatearMoneda(valor) {
+            return new Intl.NumberFormat('es-CL', {
+                style: 'currency',
+                currency: 'CLP',
+                minimumFractionDigits: 0
+            }).format(valor);
+        }
+
+        // Formatear RUT chileno
+        function formatearRUT(rut) {
+            // Remover puntos y guiones
+            rut = rut.replace(/\./g, '').replace(/-/g, '');
+            
+            // Si está vacío, retornar
+            if (!rut) return '';
+            
+            // Separar número y dígito verificador
+            const numero = rut.slice(0, -1);
+            const dv = rut.slice(-1);
+            
+            // Formatear el número con puntos
+            const numeroFormateado = numero.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            
+            return `${numeroFormateado}-${dv}`;
+        }
+
+        // Event listeners para RUT
+        document.addEventListener('DOMContentLoaded', function() {
+            const rutInputs = ['rut', 'rutEmpresa'];
+            
+            rutInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('input', function(e) {
+                        const cursorPos = e.target.selectionStart;
+                        const oldValue = e.target.value;
+                        const newValue = formatearRUT(e.target.value);
+                        
+                        e.target.value = newValue;
+                        
+                        // Mantener posición del cursor
+                        if (newValue.length > oldValue.length) {
+                            e.target.setSelectionRange(cursorPos + 1, cursorPos + 1);
+                        } else {
+                            e.target.setSelectionRange(cursorPos, cursorPos);
+                        }
+                    });
+                }
+            });
+        });
+
+        // Cuando cambia el tipo de residuo
+        residuoSelect.addEventListener('change', function() {
+            const option = this.options[this.selectedIndex];
+            
+            if (option.value) {
+                const precio = parseFloat(option.dataset.precio);
+                const moneda = option.dataset.moneda || 'CLP';
+                const unidad = option.dataset.unidad;
+                
+                precioInput.value = formatearPrecio(precio, moneda);
+                cantidadInput.disabled = false;
+                
+                // Mostrar comentario sobre la unidad
+                unidadComentario.style.display = 'flex';
+                unidadComentario.querySelector('span').textContent = `La cantidad se mide en ${unidad}`;
+                
+                verificarFormulario();
+            } else {
+                precioInput.value = '';
+                cantidadInput.disabled = true;
+                cantidadInput.value = '';
+                agregarBtn.disabled = true;
+                unidadComentario.style.display = 'none';
+            }
+        });
+
+        // Cuando cambia la cantidad
+        cantidadInput.addEventListener('input', verificarFormulario);
+
+        function verificarFormulario() {
+            const tieneResiduo = residuoSelect.value !== '';
+            const tieneCantidad = cantidadInput.value && parseFloat(cantidadInput.value) > 0;
+            
+            agregarBtn.disabled = !(tieneResiduo && tieneCantidad);
+        }
+
+        // Agregar residuo a la lista
+        agregarBtn.addEventListener('click', function() {
+            const option = residuoSelect.options[residuoSelect.selectedIndex];
+            const cantidad = parseFloat(cantidadInput.value);
+            const precioUnitario = parseFloat(option.dataset.precio);
+            const moneda = option.dataset.moneda || 'CLP';
+            
+            // Calcular subtotal correctamente según la moneda
+            let subtotal;
+            if (moneda === 'UF') {
+                subtotal = cantidad * precioUnitario * VALOR_UF;
+            } else {
+                subtotal = cantidad * precioUnitario;
+            }
+            
+            const residuo = {
+                id: contadorId++,
+                residuoId: option.value,
+                descripcion: option.dataset.descripcion,
+                unidad: option.dataset.unidad,
+                cantidad: cantidad,
+                precioUnitario: precioUnitario,
+                moneda: moneda,
+                subtotal: subtotal
+            };
+            
+            residuos.push(residuo);
+            actualizarTabla();
+            limpiarFormulario();
+        });
+
+        function actualizarTabla() {
+            // Limpiar tabla
+            tablaBody.innerHTML = '';
+            
+            if (residuos.length === 0) {
+                tablaBody.innerHTML = `
+                    <tr class="tabla-vacia">
+                        <td colspan="6">
+                            <i class="fas fa-inbox"></i>
+                            <h4>No hay residuos agregados</h4>
+                            <p>Seleccione un tipo de residuo y agregue la cantidad para comenzar</p>
+                        </td>
+                    </tr>
+                `;
+                tablaFoot.style.display = 'none';
+                contactoForm.style.display = 'none';
+                return;
+            }
+            
+            // Agregar filas
+            residuos.forEach(residuo => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td><strong>${residuo.descripcion}</strong></td>
+                    <td>${residuo.unidad}</td>
+                    <td>${residuo.cantidad.toLocaleString('es-CL')}</td>
+                    <td>${formatearPrecio(residuo.precioUnitario, residuo.moneda)}</td>
+                    <td><strong>${formatearMoneda(residuo.subtotal)}</strong></td>
+                    <td>
+                        <button class="btn btn-danger" onclick="eliminarResiduo(${residuo.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tablaBody.appendChild(fila);
+            });
+            
+            // Calcular y mostrar total
+            const total = residuos.reduce((sum, residuo) => sum + residuo.subtotal, 0);
+            document.getElementById('totalGeneral').textContent = formatearMoneda(total);
+            document.getElementById('total').value = total;
+            tablaFoot.style.display = 'table-footer-group';
+            
+            // Mostrar formulario de contacto
+            contactoForm.style.display = 'block';
+            contactoForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function eliminarResiduo(id) {
+            residuos = residuos.filter(residuo => residuo.id !== id);
+            actualizarTabla();
+        }
+
+        function limpiarFormulario() {
+            residuoSelect.value = '';
+            precioInput.value = '';
+            cantidadInput.value = '';
+            cantidadInput.disabled = true;
+            agregarBtn.disabled = true;
+            unidadComentario.style.display = 'none';
+        }
+
+        // Envío del formulario
+        document.getElementById('formEnviar').addEventListener('submit', function(e) {
+            if (residuos.length === 0) {
+                e.preventDefault();
+                alert('Debe agregar al menos un residuo para enviar la cotización.');
+                return;
+            }
+            
+            // Preparar datos para el servidor
+            const total = residuos.reduce((sum, residuo) => sum + residuo.subtotal, 0);
+            document.getElementById('residuosCotizados').value = JSON.stringify(residuos);
+            document.getElementById('total').value = total;
+            
+            // Mostrar estado de carga
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+        });
+
+        // Auto-guardado para usuarios logueados (cada 30 segundos)
+        const usuarioId = '<%= typeof usuario !== "undefined" && usuario && usuario.id ? usuario.id : "" %>';
+        if (usuarioId) {
+            setInterval(function() {
+                if (residuos.length > 0) {
+                    try {
+                        localStorage.setItem('cotizacion_temp_' + usuarioId, JSON.stringify({
+                            residuos: residuos,
+                            timestamp: Date.now()
+                        }));
+                        console.log('Cotización guardada automáticamente');
+                    } catch(e) {
+                        console.log('Error al guardar cotización:', e);
+                    }
+                }
+            }, 30000);
+
+            // Cargar cotización guardada al cargar la página
+            window.addEventListener('load', function() {
+                try {
+                    const cotizacionGuardada = localStorage.getItem('cotizacion_temp_' + usuarioId);
+                    if (cotizacionGuardada) {
+                        const data = JSON.parse(cotizacionGuardada);
+                        const ahora = Date.now();
+                        const tiempoLimite = 24 * 60 * 60 * 1000; // 24 horas
+                        
+                        if (ahora - data.timestamp < tiempoLimite) {
+                            if (confirm('Se encontró una cotización guardada anteriormente. ¿Desea cargarla?')) {
+                                residuos = data.residuos;
+                                if (residuos.length > 0) {
+                                    contadorId = Math.max(...residuos.map(r => r.id)) + 1;
+                                }
+                                actualizarTabla();
+                            }
+                        } else {
+                            localStorage.removeItem('cotizacion_temp_' + usuarioId);
+                        }
+                    }
+                } catch(e) {
+                    console.log('Error al cargar cotización guardada:', e);
+                }
+            });
+        }
+
+        // Validación de email en tiempo real
+        document.addEventListener('DOMContentLoaded', function() {
+            const correoInput = document.getElementById('correo');
+            if (correoInput) {
+                correoInput.addEventListener('input', function() {
+                    const email = this.value;
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    
+                    if (email && !emailRegex.test(email)) {
+                        this.style.borderColor = '#e53e3e';
+                    } else {
+                        this.style.borderColor = '#2c7a7b';
+                    }
+                });
+            }
+
+            // Validación de teléfono
+            const telefonoInput = document.getElementById('telefono');
+            if (telefonoInput) {
+                telefonoInput.addEventListener('input', function() {
+                    let valor = this.value.replace(/\D/g, '');
+                    if (valor.length > 0) {
+                        if (valor.startsWith('56')) {
+                            valor = '+' + valor;
+                        } else if (valor.startsWith('9')) {
+                            valor = '+56 ' + valor;
+                        } else {
+                            valor = '+56 9 ' + valor;
+                        }
+                    }
+                    this.value = valor;
+                });
+            }
+        });
+
+        // Actualizar enlaces
+        document.addEventListener('DOMContentLoaded', function() {
+            const enlaceCotizaciones = document.querySelector('a[href="/cotizaciones"]');
+            if (enlaceCotizaciones) {
+                enlaceCotizaciones.href = "/cotizaciones/cotizar";
+            }
+        });
+    </script>
+</body>
+</html>

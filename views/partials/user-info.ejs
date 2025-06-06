@@ -1,0 +1,17 @@
+<div class="user-info">
+    <div class="notifications">
+      <i class="fas fa-bell"></i>
+      <% if (locals.notificaciones && notificaciones.length > 0) { %>
+        <span class="notification-badge"><%= notificaciones.length %></span>
+      <% } %>
+    </div>
+    
+    <div class="user-dropdown">
+      <span><%= user.nombre %></span>
+      <img src="/img/user.png" alt="User">
+      <div class="dropdown-menu">
+        <a href="/perfil">Mi perfil</a>
+        <a href="/logout">Cerrar sesión</a>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,280 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Nueva Cotización</h3>
+                    <div class="card-tools">
+                        <a href="/cotizaciones" class="btn btn-default btn-sm">
+                            <i class="fas fa-arrow-left"></i> Volver
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form id="cotizacionForm" action="/cotizaciones/crear" method="POST">
+                        <!-- Información General -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Información de la Cotización</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <input type="hidden" name="solicitudId" value="<%= solicitud.id %>">
+                                        <div class="form-group">
+                                            <label for="numeroCotizacion">Número de Cotización *</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="numeroCotizacion" 
+                                                   name="numeroCotizacion" 
+                                                   value="<%= numeroCotizacion %>" 
+                                                   readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="validezCotizacion">Válido hasta *</label>
+                                            <input type="date" 
+                                                   class="form-control" 
+                                                   id="validezCotizacion" 
+                                                   name="validezCotizacion" 
+                                                   required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="observaciones">Observaciones</label>
+                                            <textarea class="form-control" 
+                                                      id="observaciones" 
+                                                      name="observaciones" 
+                                                      rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Información del Cliente</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th style="width: 40%">Cliente</th>
+                                                <td><%= solicitud.Cliente.nombre %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>RUC</th>
+                                                <td><%= solicitud.Cliente.ruc %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Dirección</th>
+                                                <td><%= solicitud.Cliente.direccion %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Teléfono</th>
+                                                <td><%= solicitud.Cliente.telefono %></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detalles de la Cotización -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h4 class="card-title">Detalles de la Cotización</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="detallesTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Residuo</th>
+                                                <th>Descripción</th>
+                                                <th>Cantidad</th>
+                                                <th>Precio Unit.</th>
+                                                <th>Subtotal</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% solicitud.DetalleResiduos.forEach(detalle => { %>
+                                                <tr>
+                                                    <td>
+                                                        <%= detalle.Residuo.nombre %>
+                                                        <input type="hidden" name="residuoIds[]" value="<%= detalle.residuoId %>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" 
+                                                               class="form-control" 
+                                                               name="descripciones[]" 
+                                                               value="<%= detalle.descripcion %>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" 
+                                                               class="form-control cantidad" 
+                                                               name="cantidades[]" 
+                                                               value="<%= detalle.cantidad %>" 
+                                                               step="0.01" 
+                                                               required>
+                                                        <small class="form-text text-muted"><%= detalle.Residuo.unidad %></small>
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" 
+                                                               class="form-control precio" 
+                                                               name="preciosUnitarios[]" 
+                                                               value="0" 
+                                                               step="0.01" 
+                                                               required>
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" 
+                                                               class="form-control subtotal" 
+                                                               name="subtotales[]" 
+                                                               value="0" 
+                                                               readonly>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" 
+                                                                class="btn btn-danger btn-sm" 
+                                                                onclick="eliminarFila(this)">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="4" class="text-right">Subtotal:</th>
+                                                <td>
+                                                    <input type="number" 
+                                                           class="form-control" 
+                                                           id="subtotal" 
+                                                           name="subtotal" 
+                                                           value="0" 
+                                                           readonly>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <th colspan="4" class="text-right">IGV (18%):</th>
+                                                <td>
+                                                    <input type="number" 
+                                                           class="form-control" 
+                                                           id="iva" 
+                                                           name="iva" 
+                                                           value="0" 
+                                                           readonly>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <th colspan="4" class="text-right">Total:</th>
+                                                <td>
+                                                    <input type="number" 
+                                                           class="form-control" 
+                                                           id="total" 
+                                                           name="total" 
+                                                           value="0" 
+                                                           readonly>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Cotización
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Calcular subtotal de cada fila
+function calcularSubtotal(row) {
+    const cantidad = parseFloat(row.querySelector('.cantidad').value) || 0;
+    const precio = parseFloat(row.querySelector('.precio').value) || 0;
+    const subtotal = cantidad * precio;
+    row.querySelector('.subtotal').value = subtotal.toFixed(2);
+    calcularTotales();
+}
+
+// Calcular totales generales
+function calcularTotales() {
+    let subtotal = 0;
+    document.querySelectorAll('.subtotal').forEach(input => {
+        subtotal += parseFloat(input.value) || 0;
+    });
+    
+    const iva = subtotal * 0.18;
+    const total = subtotal + iva;
+    
+    document.getElementById('subtotal').value = subtotal.toFixed(2);
+    document.getElementById('iva').value = iva.toFixed(2);
+    document.getElementById('total').value = total.toFixed(2);
+}
+
+// Eliminar fila
+function eliminarFila(button) {
+    const row = button.closest('tr');
+    if (document.querySelectorAll('#detallesTable tbody tr').length > 1) {
+        row.remove();
+        calcularTotales();
+    } else {
+        alert('Debe haber al menos un residuo en la cotización');
+    }
+}
+
+// Eventos
+document.addEventListener('DOMContentLoaded', function() {
+    // Calcular subtotales al cambiar cantidad o precio
+    document.querySelectorAll('.cantidad, .precio').forEach(input => {
+        input.addEventListener('input', function() {
+            calcularSubtotal(this.closest('tr'));
+        });
+    });
+    
+    // Validar formulario antes de enviar
+    document.getElementById('cotizacionForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validar que haya al menos un residuo
+        if (document.querySelectorAll('#detallesTable tbody tr').length === 0) {
+            alert('Debe agregar al menos un residuo a la cotización');
+            return;
+        }
+        
+        // Validar que todos los campos requeridos estén llenos
+        const requiredInputs = this.querySelectorAll('[required]');
+        let valid = true;
+        requiredInputs.forEach(input => {
+            if (!input.value) {
+                valid = false;
+                input.classList.add('is-invalid');
+            } else {
+                input.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!valid) {
+            alert('Por favor, complete todos los campos requeridos');
+            return;
+        }
+        
+        // Enviar formulario
+        this.submit();
+    });
+});
+</script>
+
+<%- include('../partials/footer') %> 

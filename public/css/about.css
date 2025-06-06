@@ -1,0 +1,595 @@
+/* Estilos para la página Sobre Nosotros */
+
+/* Variables de colores */
+:root {
+  --primary-color: #00616e;
+  --primary-dark: #004c57;
+  --secondary-color: #4a7c59;
+  --accent-color: #8BBF18;
+  --light-bg: #f8f9fa;
+  --dark-bg: #212529;
+  --text-color: #333;
+  --text-light: #666;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+}
+
+/* Header flotante */
+.site-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 15px 0;
+  background-color: transparent;
+}
+
+/* Logo */
+.logo-link {
+  display: inline-block;
+}
+
+.logo-img {
+  height: 60px;
+}
+
+/* Botones de autenticación */
+.auth-buttons .btn {
+  border-radius: 25px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-width: 1.5px;
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.auth-buttons .btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  color: white;
+  border-color: white;
+}
+
+/* Hero Banner */
+/* Hero Banner con imagen */
+.about-hero {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  height: 60vh;
+  display: flex;
+  align-items: center;
+}
+
+.about-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.2) 100%);
+  display: flex;
+  align-items: center;
+}
+
+.hero-subtitle-top {
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.about-hero-title {
+  font-size: 4rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Sección Quiénes Somos */
+.about-section {
+  padding: 5rem 0;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.section-divider {
+  width: 80px;
+  height: 3px;
+  background-color: var(--secondary-color);
+  margin-bottom: 2rem;
+}
+
+.about-image-placeholder {
+  width: 100%;
+  height: 400px;
+  background-color: #e9ecef;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  font-size: 1.2rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Misión y Visión */
+.mission-vision-section {
+  padding: 5rem 0;
+  background-color: var(--light-bg);
+}
+
+.mission-vision-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 2rem;
+  height: 100%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.mission-vision-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.mission-vision-icon {
+  width: 80px;
+  height: 80px;
+  background-color: rgba(74, 124, 89, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.mission-vision-icon i {
+  font-size: 2.5rem;
+  color: var(--secondary-color);
+}
+
+.mission-vision-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.mission-vision-divider {
+  width: 60px;
+  height: 3px;
+  background-color: var(--secondary-color);
+  margin: 1rem 0 1.5rem;
+}
+
+.mission-vision-card p {
+  color: var(--text-light);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.mission-vision-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.mission-vision-list li {
+  position: relative;
+  padding-left: 1.8rem;
+  margin-bottom: 0.7rem;
+  color: var(--text-light);
+}
+
+.mission-vision-list li::before {
+  content: "\f00c";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 0;
+  top: 2px;
+  color: var(--secondary-color);
+}
+
+/* Fundadores */
+.founders-section {
+  padding: 5rem 0;
+  background-color: white;
+}
+
+.founder-card {
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.founder-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.founder-image-placeholder {
+  width: 100%;
+  height: 300px;
+  background-color: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  font-size: 1.2rem;
+}
+
+.founder-social {
+  padding: 15px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.social-link {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.social-link.linkedin {
+  background-color: #0077b5;
+}
+
+.social-link.twitter {
+  background-color: #1da1f2;
+}
+
+.social-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.founder-info {
+  padding: 20px;
+  text-align: center;
+}
+
+.founder-info h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 5px;
+}
+
+.founder-position {
+  color: var(--secondary-color);
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+
+.founder-description {
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+/* Ubicación */
+.location-section {
+  padding: 5rem 0;
+  background-color: var(--light-bg);
+}
+
+.location-address {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--text-color);
+  margin-bottom: 1.5rem;
+}
+
+.location-icon, .contact-icon {
+  color: var(--secondary-color);
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.contact-info {
+  font-size: 1.1rem;
+  line-height: 2;
+  color: var(--text-color);
+}
+
+.map-placeholder {
+  width: 100%;
+  height: 450px;
+  background-color: #e9ecef;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  font-size: 1.2rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Footer */
+.site-footer {
+  background-color: #212529;
+  color: white;
+  padding: 4rem 0 2rem;
+}
+
+.footer-logo-placeholder {
+  width: 150px;
+  height: 60px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.footer-description {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.7;
+}
+
+.footer-heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.footer-heading:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50px;
+  height: 2px;
+  background-color: var(--secondary-color);
+}
+
+.footer-links {
+  list-style: none;
+  padding-left: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: white;
+  padding-left: 5px;
+}
+
+.social-icons {
+  display: flex;
+  gap: 15px;
+}
+
+.social-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+  transform: translateY(-3px);
+}
+
+.social-icon.facebook:hover {
+  background-color: #3b5998;
+}
+
+.social-icon.instagram:hover {
+  background-color: #e1306c;
+}
+
+.social-icon.linkedin:hover {
+  background-color: #0077b5;
+}
+
+.footer-divider {
+  margin: 2rem 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  opacity: 1;
+}
+
+.footer-bottom {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .section-title {
+    font-size: 2.2rem;
+  }
+  
+  .about-hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .mission-vision-title {
+    font-size: 1.5rem;
+  }
+  
+  .mission-vision-card {
+    margin-bottom: 2rem;
+  }
+  
+  .site-footer {
+    padding: 3rem 0 1.5rem;
+  }
+  
+  .map-placeholder {
+    height: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-hero-title {
+    font-size: 2rem;
+  }
+  
+  .section-title {
+    font-size: 1.8rem;
+  }
+  
+  .mission-vision-card {
+    padding: 1.5rem;
+  }
+  
+  .value-box {
+    margin-bottom: 1.5rem;
+  }
+  
+  .logo-img {
+    height: 45px;
+  }
+  
+  .footer-heading {
+    margin-top: 1.5rem;
+  }
+  
+  .map-placeholder {
+    height: 300px;
+  }
+  
+  .founder-image-placeholder {
+    height: 250px;
+  }
+}
+
+@media (max-width: 576px) {
+  .about-hero-title {
+    font-size: 1.8rem;
+  }
+  
+  .mission-vision-icon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .mission-vision-icon i {
+    font-size: 1.8rem;
+  }
+  
+  .location-address,
+  .contact-info {
+    font-size: 1rem;
+  }
+}
+
+.map-container {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.map-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.map-placeholder {
+  background-color: #e9ecef;
+  width: 100%;
+  height: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.map-placeholder::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/img/map-background.jpg'); /* Puedes usar una imagen de un mapa como fondo */
+  background-size: cover;
+  background-position: center;
+  opacity: 0.3;
+  z-index: 1;
+}
+
+.map-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  max-width: 80%;
+}
+
+.map-icon {
+  font-size: 3rem;
+  color: var(--primary-color);
+  margin-bottom: 15px;
+}
+
+.map-content h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.map-content p {
+  color: var(--text-light);
+}
+
+.map-placeholder:hover {
+  background-color: #dee2e6;
+}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+  <style>
+    .alert { padding: 15px; margin: 20px 0; border-radius: 4px; }
+    .alert-info { background: #d1ecf1; color: #0c5460; }
+    .form-uf { max-width: 500px; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <h1><%= title %></h1>
+
+  <% if (config.ultimoRecordatorio && config.ultimoRecordatorio.getMonth() === hoy.getMonth()) { %>
+    <div class="alert alert-info">
+      <strong>Recordatorio:</strong> Hoy es día 15 - Por favor actualice el valor UF para este mes
+    </div>
+  <% } %>
+
+  <% if (config.valorManual) { %>
+    <p>Valor actual: <strong>$<%= config.valorManual.toLocaleString('es-CL') %></strong></p>
+    <p>Última actualización: <%= config.fechaActualizacion.toLocaleDateString('es-CL') %></p>
+  <% } else { %>
+    <p>No hay valor UF configurado. Se usará API o valor por defecto.</p>
+  <% } %>
+
+  <form class="form-uf" action="/admin/uf/actualizar" method="POST">
+    <div>
+      <label>Nuevo valor UF (CLP):</label>
+      <input type="number" name="valorUF" min="1" step="1" required>
+    </div>
+    <button type="submit">Guardar Valor UF</button>
+  </form>
+
+  <% if (req.query.success) { %>
+    <script>
+      alert('Valor UF actualizado correctamente');
+    </script>
+  <% } %>
+</body>
+</html>

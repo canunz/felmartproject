@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Felmart - Gestión de Residuos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #00616e;
+            --primary-dark: #004d57;
+            --primary-light: #00818f;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-hover: 0 8px 30px rgba(0,0,0,0.12);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Navbar Styles */
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 97, 110, 0.1);
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .nav-link {
+            color: var(--secondary-color) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            background: rgba(0, 97, 110, 0.05);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-hero {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            margin: 0 10px;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary-hero {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 97, 110, 0.3);
+        }
+
+        .btn-primary-hero:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 97, 110, 0.4);
+            color: white;
+        }
+
+        .btn-outline-hero {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-outline-hero:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-3px);
+            color: white;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 100px 0;
+            background: var(--light-bg);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            height: 100%;
+            border: none;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .feature-icon.primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        }
+
+        .feature-icon.success {
+            background: linear-gradient(135deg, #28a745, #34ce57);
+        }
+
+        .feature-icon.info {
+            background: linear-gradient(135deg, #17a2b8, #20c997);
+        }
+
+        .feature-card h4 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--secondary-color);
+            line-height: 1.7;
+        }
+
+        /* Login Forms */
+        .login-section {
+            padding: 100px 0;
+            background: white;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-hover);
+            padding: 3rem;
+            border: none;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: var(--secondary-color);
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 97, 110, 0.1);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            margin-top: 1rem;
+            transition: var(--transition);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 97, 110, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer h5 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+            margin-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .btn-hero {
+                padding: 12px 30px;
+                margin: 5px;
+                font-size: 1rem;
+            }
+            
+            .feature-card {
+                margin-bottom: 2rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <div class="logo-icon">
+                    <i class="fas fa-recycle"></i>
+                </div>
+                Felmart
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#inicio">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#servicios">Servicios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#acceso">Acceso</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contacto">Contacto</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero-section">
+        <div class="container">
+            <div class="hero-content fade-in-up">
+                <h1 class="hero-title">Gestión Profesional de Residuos</h1>
+                <p class="hero-subtitle">
+                    Soluciones integrales para el manejo responsable de residuos industriales y comerciales. 
+                    Comprometidos con el medio ambiente y la sostenibilidad.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#acceso" class="btn-hero btn-primary-hero">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        Acceder al Sistema
+                    </a>
+                    <a href="#servicios" class="btn-hero btn-outline-hero">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Conocer Más
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="servicios" class="features-section">
+        <div class="container">
+            <div class="section-title fade-in-up">
+                <h2>Nuestros Servicios</h2>
+                <p>Ofrecemos soluciones completas para la gestión responsable de residuos</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="feature-card fade-in-up">
+                        <div class="feature-icon primary">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <h4>Recolección Programada</h4>
+                        <p>Servicio de recolección programada según las necesidades específicas de tu empresa, con rutas optimizadas y horarios flexibles.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="feature-card fade-in-up">
+                        <div class="feature-icon success">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <h4>Certificaciones</h4>
+                        <p>Emitimos certificados de disposición final que garantizan el cumplimiento de todas las normativas ambientales vigentes.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="feature-card fade-in-up">
+                        <div class="feature-icon info">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Seguimiento en Tiempo Real</h4>
+                        <p>Plataforma digital que permite monitorear el estado de tus solicitudes y generar reportes detallados de gestión.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Section -->
+    <section id="acceso" class="login-section">
+        <div class="container">
+            <div class="section-title fade-in-up">
+                <h2>Acceso al Sistema</h2>
+                <p>Ingresa con tu cuenta para gestionar tus solicitudes de retiro</p>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-5 col-md-8 mb-4">
+                    <div class="login-card fade-in-up">
+                        <div class="login-header">
+                            <h3>
+                                <i class="fas fa-building me-2 text-primary"></i>
+                                Acceso Cliente
+                            </h3>
+                            <p>Gestiona tus solicitudes de retiro</p>
+                        </div>
+                        
+                        <form action="/login/cliente" method="POST">
+                            <div class="mb-3">
+                                <label for="emailCliente" class="form-label">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    Correo Electrónico
+                                </label>
+                                <input type="email" class="form-control" id="emailCliente" name="email" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="passwordCliente" class="form-label">
+                                    <i class="fas fa-lock me-2"></i>
+                                    Contraseña
+                                </label>
+                                <input type="password" class="form-control" id="passwordCliente" name="password" required>
+                            </div>
+                            
+                            <button type="submit" class="btn-login">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Iniciar Sesión
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5 col-md-8 mb-4">
+                    <div class="login-card fade-in-up">
+                        <div class="login-header">
+                            <h3>
+                                <i class="fas fa-cogs me-2 text-info"></i>
+                                Acceso Administrador
+                            </h3>
+                            <p>Panel de control administrativo</p>
+                        </div>
+                        
+                        <form action="/login/admin" method="POST">
+                            <div class="mb-3">
+                                <label for="emailAdmin" class="form-label">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    Correo Electrónico
+                                </label>
+                                <input type="email" class="form-control" id="emailAdmin" name="email" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="passwordAdmin" class="form-label">
+                                    <i class="fas fa-lock me-2"></i>
+                                    Contraseña
+                                </label>
+                                <input type="password" class="form-control" id="passwordAdmin" name="password" required>
+                            </div>
+                            
+                            <button type="submit" class="btn-login">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Iniciar Sesión
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contacto" class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5>
+                        <div class="logo-icon d-inline-block me-2">
+                            <i class="fas fa-recycle"></i>
+                        </div>
+                        Felmart
+                    </h5>
+                    <p>Líderes en gestión responsable de residuos, comprometidos con el cuidado del medio ambiente y la sostenibilidad empresarial.</p>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <h5>Servicios</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#"><i class="fas fa-truck me-2"></i>Recolección de Residuos</a></li>
+                        <li><a href="#"><i class="fas fa-certificate me-2"></i>Certificaciones</a></li>
+                        <li><a href="#"><i class="fas fa-recycle me-2"></i>Reciclaje</a></li>
+                        <li><a href="#"><i class="fas fa-leaf me-2"></i>Consultoría Ambiental</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <h5>Contacto</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone me-2"></i>+1 234 567 8900</li>
+                        <li><i class="fas fa-envelope me-2"></i>info@felmart.com</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i>Dirección de la empresa</li>
+                        <li>
+                            <div class="mt-3">
+                                <a href="#" class="me-3"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="me-3"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="me-3"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#"><i class="fab fa-instagram"></i></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Felmart. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const headerOffset = 80;
+                    const elementPosition = target.offsetTop;
+                    const offsetPosition = elementPosition - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+            observer.observe(el);
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar-custom');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+            } else {
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+            }
+        });
+    </script>
+</body>
+</html>

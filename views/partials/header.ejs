@@ -1,0 +1,41 @@
+<!-- views/partials/header.ejs -->
+<header class="header">
+  <div class="d-flex align-items-center">
+    <button class="btn d-lg-none me-2 toggle-sidebar">
+      <i class="fas fa-bars"></i>
+    </button>
+    <h4 class="page-title m-0"><%= titulo %></h4>
+  </div>
+  
+  <div class="user-menu">
+    <!-- Notificaciones -->
+    <% if (usuario) { %>
+    <div class="dropdown">
+      <button class="btn position-relative" type="button" data-bs-toggle="modal" data-bs-target="#notificacionesModal">
+        <i class="fas fa-bell"></i>
+        <span id="contador-notificaciones" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+          0
+        </span>
+      </button>
+    </div>
+    
+    <!-- Usuario -->
+    <div class="dropdown ms-3">
+      <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+        <div class="d-none d-md-block me-2"><%= usuario.nombre %></div>
+        <div class="avatar">
+          <i class="fas fa-user-circle fa-lg"></i>
+        </div>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><span class="dropdown-item-text text-muted"><i class="fas fa-user-tag me-2"></i><%= usuario.rol %></span></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="/usuarios/cambiar-password"><i class="fas fa-key me-2"></i>Cambiar contraseña</a></li>
+        <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión</a></li>
+      </ul>
+    </div>
+    <% } else { %>
+      <a href="/login" class="btn btn-outline-primary">Iniciar sesión</a>
+    <% } %>
+  </div>
+</header>

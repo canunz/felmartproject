@@ -1,0 +1,100 @@
+.notification-item {
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s;
+}
+
+.notification-item:hover {
+    background-color: #f8f9fa;
+    text-decoration: none;
+}
+
+.notification-item.leida {
+    opacity: 0.7;
+}
+
+.notification-icon {
+    margin-right: 15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-icon.info {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.notification-icon.warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.notification-icon.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.notification-icon.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.notification-text {
+    font-size: 0.9em;
+    color: #6c757d;
+    margin-bottom: 3px;
+}
+
+.notification-time {
+    font-size: 0.8em;
+    color: #adb5bd;
+}
+
+#notificaciones-contador {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.75em;
+    display: none;
+}
+
+.dropdown-menu-notificaciones {
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.dropdown-header-notificaciones {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.marcar-todas-leidas {
+    font-size: 0.8em;
+    color: #007bff;
+    cursor: pointer;
+}
+
+.marcar-todas-leidas:hover {
+    text-decoration: underline;
+} 

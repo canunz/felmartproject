@@ -1,0 +1,164 @@
+<div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary mb-1"><i class="fas fa-file-alt me-2"></i>Solicitudes de Retiro</h2>
+            <p class="text-muted mb-0">Gestiona todas las solicitudes de los clientes</p>
+        </div>
+        <a href="/solicitudes/crear" class="btn btn-success btn-lg d-flex align-items-center">
+            <i class="fas fa-plus me-2"></i> Nueva Solicitud
+        </a>
+    </div>
+
+    <!-- Filtros avanzados -->
+    <form action="/solicitudes" method="GET" class="row g-3 mb-4 bg-white rounded-3 shadow-sm p-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Estado</label>
+            <select name="estado" class="form-select">
+                <option value="">Todos</option>
+                <option value="pendiente" <%= filtros && filtros.estado === 'pendiente' ? 'selected' : '' %>>Pendiente</option>
+                <option value="programada" <%= filtros && filtros.estado === 'programada' ? 'selected' : '' %>>Programada</option>
+                <option value="completada" <%= filtros && filtros.estado === 'completada' ? 'selected' : '' %>>Completada</option>
+                <option value="cancelada" <%= filtros && filtros.estado === 'cancelada' ? 'selected' : '' %>>Cancelada</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Cliente</label>
+            <select name="cliente" class="form-select">
+                <option value="">Todos</option>
+                <% clientes.forEach(function(cliente) { %>
+                    <option value="<%= cliente.id %>" <%= filtros && filtros.cliente == cliente.id ? 'selected' : '' %>><%= cliente.nombreEmpresa %></option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label fw-semibold">Fecha desde</label>
+            <input type="date" name="fechaInicio" class="form-control" value="<%= filtros && filtros.fechaInicio ? filtros.fechaInicio : '' %>">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label fw-semibold">Fecha hasta</label>
+            <input type="date" name="fechaFin" class="form-control" value="<%= filtros && filtros.fechaFin ? filtros.fechaFin : '' %>">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter me-2"></i>Filtrar</button>
+        </div>
+    </form>
+
+    <div class="bg-white rounded-3 shadow-sm overflow-x-auto">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Tipo de Residuo</th>
+                    <th>Estado</th>
+                    <th>Dirección</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (solicitudes.length === 0) { %>
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">No hay solicitudes para mostrar</td>
+                    </tr>
+                <% } else { %>
+                    <% solicitudes.forEach(function(solicitud) { %>
+                        <tr>
+                            <td><strong>#<%= solicitud.codigo %></strong></td>
+                            <td><%= solicitud.clienteNombre %></td>
+                            <td><%= solicitud.fecha %></td>
+                            <td><%= solicitud.tipoResiduo %></td>
+                            <td>
+                                <span class="badge 
+                                    <%= solicitud.estado === 'completada' ? 'bg-success' : 
+                                        solicitud.estado === 'pendiente' ? 'bg-warning text-dark' : 
+                                        solicitud.estado === 'cancelada' ? 'bg-danger' : 'bg-info' %>">
+                                    <%= solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1) %>
+                                </span>
+                            </td>
+                            <td><%= solicitud.direccion %></td>
+                            <td class="text-center">
+                                <a href="/solicitudes/<%= solicitud.id %>" class="btn btn-sm btn-info me-1" title="Ver Detalles"><i class="fas fa-eye"></i></a>
+                                <a href="/solicitudes/editar/<%= solicitud.id %>" class="btn btn-sm btn-warning me-1" title="Editar"><i class="fas fa-edit"></i></a>
+                                <form action="/solicitudes/eliminar/<%= solicitud.id %>" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-danger me-1" title="Eliminar" onclick="return confirm('¿Seguro que deseas eliminar esta solicitud?')"><i class="fas fa-trash"></i></button>
+                                </form>
+                                <% if (solicitud.estado !== 'completada' && solicitud.estado !== 'cancelada') { %>
+                                    <button 
+                                        data-id="<%= solicitud.id %>" 
+                                        class="btn btn-sm btn-outline-danger btn-cancelar" 
+                                        title="Cancelar Solicitud">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                <% } %>
+                                <form action="/solicitudes/cambiar-estado/<%= solicitud.id %>" method="POST" class="d-inline ms-1">
+                                    <select name="nuevoEstado" class="form-select form-select-sm d-inline w-auto" onchange="this.form.submit()">
+                                        <option value="">Cambiar estado</option>
+                                        <option value="pendiente">Pendiente</option>
+                                        <option value="programada">Programada</option>
+                                        <option value="completada">Completada</option>
+                                        <option value="cancelada">Cancelada</option>
+                                    </select>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <% if (solicitudes.length > 0 && paginacion) { %>
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <div class="text-muted">
+                Mostrando <span class="fw-semibold"><%= paginacion.desde %></span> a <span class="fw-semibold"><%= paginacion.hasta %></span> de <span class="fw-semibold"><%= paginacion.total %></span> resultados
+            </div>
+            <div>
+                <% if (paginacion.paginaActual > 1) { %>
+                    <a href="/solicitudes?pagina=<%= paginacion.paginaActual - 1 %>&<%= paginacion.queryParams %>" class="btn btn-outline-secondary btn-sm me-2">Anterior</a>
+                <% } %>
+                <% if (paginacion.paginaActual < paginacion.totalPaginas) { %>
+                    <a href="/solicitudes?pagina=<%= paginacion.paginaActual + 1 %>&<%= paginacion.queryParams %>" class="btn btn-outline-secondary btn-sm">Siguiente</a>
+                <% } %>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<!-- Modal de Confirmación para Cancelar -->
+<div id="modalCancelar" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Cancelación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea cancelar esta solicitud? Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <form id="formCancelar" action="/solicitudes/cancelar" method="POST">
+                    <input type="hidden" name="solicitudId" id="solicitudId">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+                    <button type="submit" class="btn btn-danger">Confirmar Cancelación</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Modal de cancelación con Bootstrap
+        const modal = new bootstrap.Modal(document.getElementById('modalCancelar'));
+        const btnsCancelar = document.querySelectorAll('.btn-cancelar');
+        const solicitudIdInput = document.getElementById('solicitudId');
+
+        btnsCancelar.forEach(btn => {
+            btn.addEventListener('click', function() {
+                solicitudIdInput.value = this.dataset.id;
+                modal.show();
+            });
+        });
+    });
+</script>
