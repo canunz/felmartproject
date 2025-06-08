@@ -1,14 +1,15 @@
 {
   "name": "felmart-project",
   "version": "1.0.0",
-  "description": "Plataforma web para la gestión de residuos de Felmart",
+  "description": "Sistema de gestión de residuos",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
     "setup": "node config/sync-db.js",
     "test:email": "node test/email.test.js",
-    "test": "jest",
+    "test": "mocha test/**/*.test.js --exit",
+    "test:watch": "mocha test/**/*.test.js --watch",
     "migrate": "sequelize-cli db:migrate",
     "seed": "sequelize-cli db:seed:all"
   },
@@ -22,10 +23,10 @@
     "body-parser": "^1.20.2",
     "connect-flash": "^0.1.1",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "ejs": "^3.1.10",
+    "dotenv": "^10.0.0",
+    "ejs": "^3.1.6",
     "exceljs": "^4.4.0",
-    "express": "^4.18.2",
+    "express": "^4.17.1",
     "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.17.3",
     "express-validator": "^7.2.1",
@@ -35,22 +36,25 @@
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
     "multer": "^1.4.5-lts.1",
-    "mysql2": "^3.6.5",
-    "nodemailer": "^6.9.7",
+    "mysql2": "^2.3.0",
+    "nodemailer": "^6.10.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "pdfkit": "^0.14.0",
     "puppeteer": "^24.9.0",
-    "sequelize": "^6.35.1",
+    "sequelize": "^6.6.5",
     "sweetalert2": "^11.10.5",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "sqlite3": "^5.0.2"
   },
   "devDependencies": {
-    "chai": "^5.2.0",
+    "chai": "^4.5.0",
     "jest": "^29.7.0",
-    "nodemon": "^3.1.10",
+    "mocha": "^10.8.2",
+    "nodemon": "^2.0.12",
     "sequelize-cli": "^6.6.2",
-    "supertest": "^6.3.3"
+    "sinon": "^15.2.0",
+    "supertest": "^6.3.4"
   }
 }

@@ -1,0 +1,63 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Panel de Administración</h2>
+            <p class="text-muted">Bienvenido al panel de administración de Felmart</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-users text-primary"></i>
+                        Gestión de Clientes
+                    </h5>
+                    <p class="card-text">Administra los clientes del sistema, sus datos y permisos.</p>
+                    <a href="/admin/clientes" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i>
+                        Ir a Clientes
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-file-alt text-success"></i>
+                        Solicitudes
+                    </h5>
+                    <p class="card-text">Gestiona las solicitudes de retiro y su estado.</p>
+                    <a href="/admin/solicitudes" class="btn btn-success">
+                        <i class="fas fa-arrow-right"></i>
+                        Ver Solicitudes
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-calendar-alt text-info"></i>
+                        Calendario
+                    </h5>
+                    <p class="card-text">Administra las visitas y el calendario de retiros.</p>
+                    <a href="/admin/calendario" class="btn btn-info">
+                        <i class="fas fa-arrow-right"></i>
+                        Ver Calendario
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %> 

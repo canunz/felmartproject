@@ -1,0 +1,75 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Gestión de Clientes</h2>
+        <a href="/admin/clientes/crear" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nuevo Cliente
+        </a>
+    </div>
+
+    <% if (messages.error) { %>
+        <div class="alert alert-danger"><%= messages.error %></div>
+    <% } %>
+    <% if (messages.success) { %>
+        <div class="alert alert-success"><%= messages.success %></div>
+    <% } %>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>RUT</th>
+                            <th>Nombre Empresa</th>
+                            <th>Email</th>
+                            <th>Dirección</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% clientes.forEach(cliente => { %>
+                            <tr>
+                                <td><%= cliente.rut %></td>
+                                <td><%= cliente.nombreEmpresa %></td>
+                                <td><%= cliente.email %></td>
+                                <td><%= cliente.direccion %></td>
+                                <td>
+                                    <span class="badge <%= cliente.estado ? 'bg-success' : 'bg-danger' %>">
+                                        <%= cliente.estado ? 'Activo' : 'Inactivo' %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="/admin/clientes/editar/<%= cliente.id %>" class="btn btn-sm btn-info">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="/admin/clientes/detalles/<%= cliente.id %>" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button class="btn btn-sm btn-danger" onclick="confirmarEliminacion('<%= cliente.id %>')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmarEliminacion(id) {
+    if (confirm('¿Está seguro que desea eliminar este cliente?')) {
+        window.location.href = `/admin/clientes/eliminar/${id}`;
+    }
+}
+</script>
+
+<%- include('../partials/footer') %> 

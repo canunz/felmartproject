@@ -237,26 +237,33 @@
               <form id="contactForm">
                 <div class="mb-3">
                   <label for="nombre" class="form-label">Nombre</label>
-                  <input type="text" class="form-control" id="nombre" placeholder="Tu nombre completo">
+                  <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Tu nombre completo" required>
                 </div>
                 
                 <div class="mb-3">
                   <label for="email" class="form-label">Correo electrónico</label>
-                  <input type="email" class="form-control" id="email" placeholder="ejemplo@correo.com">
+                  <input type="email" class="form-control" id="email" name="email" placeholder="ejemplo@correo.com" required>
                 </div>
                 
                 <div class="mb-3">
                   <label for="telefono" class="form-label">Teléfono</label>
-                  <input type="tel" class="form-control" id="telefono" placeholder="+56 9 XXXX XXXX">
+                  <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="+56 9 XXXX XXXX">
                 </div>
                 
                 <div class="mb-3">
                   <label for="mensaje" class="form-label">Mensaje</label>
-                  <textarea class="form-control" id="mensaje" rows="4" placeholder="Escribe tu mensaje aquí..."></textarea>
+                  <textarea class="form-control" id="mensaje" name="mensaje" rows="4" placeholder="Escribe tu mensaje aquí..." required></textarea>
                 </div>
                 
                 <button type="submit" class="btn btn-primary">Enviar Mensaje</button>
               </form>
+              <!-- Alerta de éxito/error -->
+              <div class="alert alert-success mt-3" id="alertaExito" style="display: none;">
+                Mensaje enviado correctamente. Nos pondremos en contacto contigo pronto.
+              </div>
+              <div class="alert alert-danger mt-3" id="alertaError" style="display: none;">
+                Error al enviar el mensaje. Por favor, inténtalo de nuevo.
+              </div>
             </div>
           </div>
         </div>
@@ -355,7 +362,7 @@
         anchor.addEventListener('click', function (e) {
           e.preventDefault();
           
-          document.querySelector(this.getAttribute('href')).scrollIntoTo({
+          document.querySelector(this.getAttribute('href')).scrollIntoView({
             behavior: 'smooth'
           });
         });
@@ -363,12 +370,46 @@
       
       // Formulario de contacto
       const contactForm = document.getElementById('contactForm');
+      const alertaExito = document.getElementById('alertaExito');
+      const alertaError = document.getElementById('alertaError');
+
       if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', async function(e) {
           e.preventDefault();
-          // Aquí iría la lógica para enviar el formulario
-          alert('Gracias por contactarnos. Te responderemos a la brevedad.');
-          this.reset();
+          
+          // Ocultar alertas previas
+          alertaExito.style.display = 'none';
+          alertaError.style.display = 'none';
+          
+          try {
+            const formData = {
+              nombre: this.nombre.value,
+              email: this.email.value,
+              telefono: this.telefono.value,
+              mensaje: this.mensaje.value
+            };
+            
+            const response = await fetch('/contacto/enviar', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+              alertaExito.style.display = 'block';
+              this.reset();
+            } else {
+              alertaError.textContent = data.message || 'Error al enviar el mensaje. Por favor, inténtalo de nuevo.';
+              alertaError.style.display = 'block';
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            alertaError.style.display = 'block';
+          }
         });
       }
     });

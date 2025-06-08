@@ -8,12 +8,25 @@ const Cotizacion = require('./Cotizacion');
 const VisitaRetiro = require('./VisitaRetiro');
 const Certificado = require('./Certificado');
 const Notificacion = require('./Notificacion');
+const PrecioResiduo = require('./PrecioResiduo');
 
 // Relaciones entre modelos
 
-// Usuario - Cliente
-Usuario.hasMany(Cliente, { foreignKey: 'usuarioId' });
-Cliente.belongsTo(Usuario, { foreignKey: 'usuarioId' });
+// Usuario - Cliente (One-to-One)
+Usuario.hasOne(Cliente, { 
+  foreignKey: {
+    name: 'usuarioId',
+    allowNull: false
+  },
+  onDelete: 'RESTRICT',
+  onUpdate: 'CASCADE'
+});
+Cliente.belongsTo(Usuario, { 
+  foreignKey: {
+    name: 'usuarioId',
+    allowNull: false
+  }
+});
 
 // Cliente - SolicitudRetiro
 Cliente.hasMany(SolicitudRetiro, { foreignKey: 'clienteId' });
@@ -56,5 +69,6 @@ module.exports = {
   Cotizacion,
   VisitaRetiro,
   Certificado,
-  Notificacion
+  Notificacion,
+  PrecioResiduo
 };

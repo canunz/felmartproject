@@ -1,9 +1,11 @@
 // controllers/usuarioController.js
 const crypto       = require('crypto');
-const { transporter } = require('../config/email.config');
+const { transporter, sendMailWithRetry } = require('../config/email.config');
 const { Usuario, Cliente, SolicitudRetiro, VisitaRetiro } = require('../models');
 const { Op, Sequelize } = require('sequelize');
 const moment       = require('moment');
+const emailTemplates = require('../templates/emailTemplates');
+const nodemailer = require('nodemailer');
 
 const usuarioController = {
   // 1) Registro / Login / Logout ----------------------------------
@@ -101,34 +103,56 @@ const usuarioController = {
   enviarResetPassword: async (req, res) => {
     try {
       const { email } = req.body;
+      
+      // Validar que se proporcionó un email
+      if (!email) {
+        req.flash('error', 'Por favor ingrese su correo electrónico');
+        return res.redirect('/usuarios/olvide-password');
+      }
+
       const usuario = await Usuario.findOne({ where: { email } });
       if (!usuario) {
         req.flash('error', 'No existe cuenta con ese correo');
-        return res.redirect('/olvide-password');
+        return res.redirect('/usuarios/olvide-password');
       }
+
+      // Generar token y establecer expiración
       const token = crypto.randomBytes(20).toString('hex');
-      usuario.resetPasswordToken   = token;
-      usuario.resetPasswordExpires = Date.now() + 2*60*60*1000; // 2h
+      const expiracion = Date.now() + 3600000; // 1 hora
+
+      // Guardar token y expiración en la base de datos
+      usuario.resetPasswordToken = token;
+      usuario.resetPasswordExpires = new Date(expiracion);
       await usuario.save();
 
-      const resetUrl = `${req.protocol}://${req.get('host')}/reset-password/${token}`;
-      await transporter.sendMail({
+      // Enviar correo electrónico
+      const resetUrl = `${req.protocol}://${req.get('host')}/usuarios/reset-password/${token}`;
+      
+      // Usar la plantilla de correo
+      const { subject, html } = emailTemplates.resetPassword(usuario.nombre, resetUrl);
+      
+      // Configuración del correo
+      const mailOptions = {
         to: usuario.email,
-        from: process.env.EMAIL_USER,
-        subject: 'Recuperación de Contraseña - Felmart',
-        html: `
-          <h2>Recuperación de Contraseña</h2>
-          <p>Hola ${usuario.nombre}, haz clic en el siguiente enlace:</p>
-          <a href="${resetUrl}">Restablecer Contraseña</a>
-          <p>Expira en 2 horas.</p>
-        `
-      });
-      req.flash('success', 'Correo enviado con instrucciones');
-      res.redirect('/login');
+        from: {
+          name: 'Felmart - Gestión de Residuos',
+          address: process.env.EMAIL_USER
+        },
+        subject,
+        html
+      };
+
+      // Enviar correo con reintentos
+      await sendMailWithRetry(mailOptions);
+      
+      // Mensaje de éxito y redirección
+      req.flash('success', 'Se ha enviado un enlace de recuperación a tu correo electrónico. Por favor revisa tu bandeja de entrada.');
+      res.redirect('/usuarios/olvide-password');
+      
     } catch (error) {
       console.error('Error al enviar correo de recuperación:', error);
-      req.flash('error', 'Error al procesar solicitud');
-      res.redirect('/olvide-password');
+      req.flash('error', 'Hubo un error al enviar el correo de recuperación. Por favor intenta nuevamente.');
+      res.redirect('/usuarios/olvide-password');
     }
   },
 
@@ -143,7 +167,7 @@ const usuarioController = {
       });
       if (!usuario) {
         req.flash('error', 'Token inválido o expirado');
-        return res.redirect('/olvide-password');
+        return res.redirect('/usuarios/olvide-password');
       }
       res.render('usuarios/reset-password', {
         titulo: 'Restablecer Contraseña',
@@ -154,7 +178,7 @@ const usuarioController = {
     } catch (error) {
       console.error('Error al mostrar reset-password:', error);
       req.flash('error', 'Error al procesar solicitud');
-      res.redirect('/olvide-password');
+      res.redirect('/usuarios/olvide-password');
     }
   },
 
@@ -164,7 +188,7 @@ const usuarioController = {
       const { password, confirmarPassword } = req.body;
       if (password !== confirmarPassword) {
         req.flash('error', 'Las contraseñas no coinciden');
-        return res.redirect(`/reset-password/${token}`);
+        return res.redirect(`/usuarios/reset-password/${token}`);
       }
       const usuario = await Usuario.findOne({
         where: {
@@ -174,7 +198,7 @@ const usuarioController = {
       });
       if (!usuario) {
         req.flash('error', 'Token inválido o expirado');
-        return res.redirect('/olvide-password');
+        return res.redirect('/usuarios/olvide-password');
       }
       usuario.password             = password;
       usuario.resetPasswordToken   = null;
@@ -185,7 +209,7 @@ const usuarioController = {
     } catch (error) {
       console.error('Error al restablecer contraseña:', error);
       req.flash('error', 'Error al procesar solicitud');
-      res.redirect(`/reset-password/${req.params.token}`);
+      res.redirect(`/usuarios/reset-password/${req.params.token}`);
     }
   },
 
@@ -206,11 +230,11 @@ const usuarioController = {
       const usuario = await Usuario.findByPk(req.session.usuario.id);
       if (!await usuario.verificarPassword(actual)) {
         req.flash('error', 'Contraseña actual incorrecta');
-        return res.redirect('/cambiar-password');
+        return res.redirect('/usuarios/cambiar-password');
       }
       if (nueva !== confirmar) {
         req.flash('error', 'Las contraseñas no coinciden');
-        return res.redirect('/cambiar-password');
+        return res.redirect('/usuarios/cambiar-password');
       }
       usuario.password = nueva;
       await usuario.save();
@@ -219,7 +243,7 @@ const usuarioController = {
     } catch (error) {
       console.error('Error al cambiar contraseña:', error);
       req.flash('error', 'Error al procesar solicitud');
-      res.redirect('/cambiar-password');
+      res.redirect('/usuarios/cambiar-password');
     }
   },
 

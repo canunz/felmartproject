@@ -45,11 +45,22 @@ module.exports = {
    * @param {Object} req - Objeto de solicitud
    * @param {Object} res - Objeto de respuesta
    */
-  mostrarAdmin: (req, res) => {
-    res.render('admin/residuos', {
-      title: 'Administrar Residuos',
-      precios: PrecioResiduo.obtenerTodos()
-    });
+  mostrarAdmin: async (req, res) => {
+    try {
+      const precios = await PrecioResiduo.findAll();
+      res.render('admin/residuos', {
+        title: 'Administrar Residuos',
+        titulo: 'Administrar Residuos',
+        precios,
+        messages: {
+          error: req.flash('error'),
+          success: req.flash('success')
+        }
+      });
+    } catch (e) {
+      req.flash('error', 'Error al cargar los residuos');
+      res.redirect('/dashboard');
+    }
   },
 
   /**
@@ -57,19 +68,18 @@ module.exports = {
    * @param {Object} req - Objeto de solicitud
    * @param {Object} res - Objeto de respuesta
    */
-  eliminarResiduos: (req, res) => {
+  eliminarResiduos: async (req, res) => {
     const { id, seleccionados } = req.body;
-    
-    if (id) {
-      // Eliminar por ID directo
-      PrecioResiduo.eliminarResiduo(parseInt(id));
-    } else if (seleccionados && seleccionados.length) {
-      // Eliminar múltiples seleccionados
-      seleccionados.forEach(id => {
-        PrecioResiduo.eliminarResiduo(parseInt(id));
-      });
+    try {
+      if (id) {
+        await PrecioResiduo.destroy({ where: { id } });
+      } else if (seleccionados && seleccionados.length) {
+        await PrecioResiduo.destroy({ where: { id: seleccionados } });
+      }
+      req.flash('success', 'Residuo(s) eliminado(s) correctamente');
+    } catch (e) {
+      req.flash('error', 'Error al eliminar el residuo');
     }
-    
     res.redirect('/admin/residuos');
   },
 
@@ -91,13 +101,18 @@ module.exports = {
    * @param {Object} req - Objeto de solicitud
    * @param {Object} res - Objeto de respuesta
    */
-  mostrarFormularioCotizacion: (req, res) => {
-    const precios = PrecioResiduo.obtenerTodos();
-    res.render('cotizaciones/cotizar', { 
-      title: 'Cotizar Residuos',
-      titulo: 'Cotizar Residuos',
-      precios 
-    });
+  mostrarFormularioCotizacion: async (req, res) => {
+    try {
+      const precios = await PrecioResiduo.findAll();
+      res.render('cotizaciones/cotizar', {
+        title: 'Cotizar Residuos',
+        titulo: 'Cotizar Residuos',
+        precios
+      });
+    } catch (e) {
+      req.flash('error', 'Error al cargar los residuos');
+      res.redirect('/dashboard');
+    }
   },
 
   /**
@@ -448,5 +463,49 @@ module.exports = {
         mensaje: 'Error al procesar la cotización' 
       });
     }
+  },
+
+  /**
+   * Crear un nuevo residuo
+   */
+  crearResiduo: async (req, res) => {
+    const { descripcion, precio, unidad, moneda } = req.body;
+    if (!descripcion || !precio || !unidad || !moneda) {
+      req.flash('error', 'Todos los campos son obligatorios');
+      return res.redirect('/admin/residuos');
+    }
+    try {
+      await PrecioResiduo.create({ descripcion, precio, unidad, moneda });
+      req.flash('success', 'Residuo creado correctamente');
+    } catch (e) {
+      req.flash('error', 'Error al crear el residuo');
+    }
+    res.redirect('/admin/residuos');
+  },
+
+  /**
+   * Editar un residuo existente
+   */
+  editarResiduo: async (req, res) => {
+    const { id } = req.params;
+    const { descripcion, precio, unidad, moneda } = req.body;
+    if (!descripcion || !precio || !unidad || !moneda) {
+      req.flash('error', 'Todos los campos son obligatorios');
+      return res.redirect('/admin/residuos');
+    }
+    try {
+      const [updated] = await PrecioResiduo.update(
+        { descripcion, precio, unidad, moneda },
+        { where: { id } }
+      );
+      if (updated) {
+        req.flash('success', 'Residuo actualizado correctamente');
+      } else {
+        req.flash('error', 'Residuo no encontrado');
+      }
+    } catch (e) {
+      req.flash('error', 'Error al actualizar el residuo');
+    }
+    res.redirect('/admin/residuos');
   },
 };

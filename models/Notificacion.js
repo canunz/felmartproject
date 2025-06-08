@@ -10,15 +10,11 @@ const Notificacion = sequelize.define('Notificacion', {
   },
   usuarioId: {
     type: DataTypes.INTEGER,
+    allowNull: false,
     references: {
       model: 'usuarios',
       key: 'id'
-    },
-    allowNull: false
-  },
-  tipo: {
-    type: DataTypes.ENUM('solicitud', 'cotizacion', 'visita', 'certificado', 'sistema'),
-    allowNull: false
+    }
   },
   titulo: {
     type: DataTypes.STRING,
@@ -28,17 +24,21 @@ const Notificacion = sequelize.define('Notificacion', {
     type: DataTypes.TEXT,
     allowNull: false
   },
+  tipo: {
+    type: DataTypes.ENUM('info', 'warning', 'success', 'error'),
+    defaultValue: 'info'
+  },
   leida: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   },
-  referenciaId: {
-    type: DataTypes.INTEGER,
-    comment: 'ID de referencia según el tipo de notificación'
+  fechaCreacion: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
   }
 }, {
-  timestamps: true,
-  tableName: 'notificaciones'
+  tableName: 'notificaciones',
+  timestamps: true
 });
 
 module.exports = Notificacion;

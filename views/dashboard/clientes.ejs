@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes | Felmart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            /* Navigation colors - Exactos del cliente.ejs */
+            --nav-primary-color: #00616e;
+            --nav-primary-dark: #004d57;
+            --nav-primary-light: #00818f;
+            --nav-secondary-color: #6c757d;
+            --nav-white: #ffffff;
+            --nav-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --nav-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Dashboard colors */
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --purple-color: #6f42c1;
+            --orange-color: #fd7e14;
+            --light-bg: #f8f9fa;
+            --border-radius: 12px;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            --shadow-hover: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+
+        /* Header Navigation - Exacto del cliente.ejs */
+        .header-nav {
+            background: var(--nav-white);
+            box-shadow: var(--nav-shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--nav-primary-color);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--nav-secondary-color);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--nav-transition);
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--nav-primary-color);
+            background: rgba(0, 97, 110, 0.05);
+        }
+
+        .nav-link i {
+            font-size: 16px;
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-btn {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--nav-transition);
+        }
+
+        .user-btn:hover {
+            background: linear-gradient(135deg, var(--nav-primary-dark), var(--nav-primary-color));
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--nav-white);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 1000;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--nav-primary-color);
+            text-decoration: none;
+            transition: var(--nav-transition);
+            font-size: 14px;
+            border-radius: 8px;
+            margin: 0.25rem 0;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 97, 110, 0.05);
+            color: var(--nav-primary-color);
+            transform: translateX(5px);
+        }
+
+        .dropdown-item.text-danger {
+            color: var(--danger-color) !important;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color) !important;
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Dashboard Content */
+        .dashboard-container {
+            padding: 2.5rem 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        .page-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--nav-primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--nav-secondary-color);
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        /* Alert Bar */
+        .alert-bar {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 1px solid #ffc107;
+            border-radius: var(--border-radius);
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert-bar i {
+            color: #856404;
+            font-size: 1.2rem;
+        }
+
+        .alert-bar-text {
+            flex: 1;
+            color: #856404;
+            font-weight: 500;
+        }
+
+        /* Statistics Cards */
+        .stats-grid {
+            margin-bottom: 3rem;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--nav-transition);
+            border: none;
+            height: 100%;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stats-card.primary::before {
+            background: linear-gradient(90deg, var(--nav-primary-color), var(--nav-primary-light));
+        }
+
+        .stats-card.warning::before {
+            background: linear-gradient(90deg, var(--warning-color), #ffcd3c);
+        }
+
+        .stats-card.success::before {
+            background: linear-gradient(90deg, var(--success-color), #34ce57);
+        }
+
+        .stats-card.info::before {
+            background: linear-gradient(90deg, var(--info-color), #20c997);
+        }
+
+        .stats-card.danger::before {
+            background: linear-gradient(90deg, var(--danger-color), #f56565);
+        }
+
+        .stats-card.purple::before {
+            background: linear-gradient(90deg, var(--purple-color), #8b5cf6);
+        }
+
+        .stats-card.orange::before {
+            background: linear-gradient(90deg, var(--orange-color), #fb923c);
+        }
+
+        .card-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-info h6 {
+            font-size: 0.9rem;
+            color: var(--nav-secondary-color);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-info h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .card-info h2.primary { color: var(--nav-primary-color); }
+        .card-info h2.warning { color: var(--warning-color); }
+        .card-info h2.success { color: var(--success-color); }
+        .card-info h2.info { color: var(--info-color); }
+        .card-info h2.danger { color: var(--danger-color); }
+        .card-info h2.purple { color: var(--purple-color); }
+        .card-info h2.orange { color: var(--orange-color); }
+
+        .card-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+
+        .card-icon.primary { color: var(--nav-primary-color); }
+        .card-icon.warning { color: var(--warning-color); }
+        .card-icon.success { color: var(--success-color); }
+        .card-icon.info { color: var(--info-color); }
+        .card-icon.danger { color: var(--danger-color); }
+        .card-icon.purple { color: var(--purple-color); }
+        .card-icon.orange { color: var(--orange-color); }
+
+        /* Quick Actions */
+        .action-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--nav-transition);
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            color: white;
+            gap: 0.75rem;
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            box-shadow: 0 4px 15px rgba(0, 97, 110, 0.2);
+        }
+
+        .action-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 97, 110, 0.3);
+            color: white;
+        }
+
+        .action-btn.warning {
+            background: linear-gradient(135deg, var(--warning-color), #ffcd3c);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2);
+        }
+
+        .action-btn.warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
+            color: white;
+        }
+
+        .action-btn.info {
+            background: linear-gradient(135deg, var(--info-color), #20c997);
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.2);
+        }
+
+        .action-btn.info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
+            color: white;
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, var(--success-color), #34ce57);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+        }
+
+        .action-btn.success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        .action-btn.purple {
+            background: linear-gradient(135deg, var(--purple-color), #8b5cf6);
+            box-shadow: 0 4px 15px rgba(111, 66, 193, 0.2);
+        }
+
+        .action-btn.purple:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(111, 66, 193, 0.3);
+            color: white;
+        }
+
+        .action-btn.orange {
+            background: linear-gradient(135deg, var(--orange-color), #fb923c);
+            box-shadow: 0 4px 15px rgba(253, 126, 20, 0.2);
+        }
+
+        .action-btn.orange:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(253, 126, 20, 0.3);
+            color: white;
+        }
+
+        /* Chart Cards */
+        .charts-grid {
+            margin-bottom: 3rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .chart-card .card-header {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-bottom: 1px solid #e9ecef;
+            padding: 1.5rem;
+        }
+
+        .chart-card .card-body {
+            padding: 2rem;
+            height: 350px;
+            position: relative;
+        }
+
+        .chart-card .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Table Styles */
+        .table-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e9ecef;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+
+        .table-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline-custom {
+            background: transparent;
+            border: 2px solid var(--nav-primary-color);
+            color: var(--nav-primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--nav-transition);
+        }
+
+        .btn-outline-custom:hover {
+            background: var(--nav-primary-color);
+            color: white;
+        }
+
+        .table-custom {
+            margin: 0;
+        }
+
+        .table-custom thead th {
+            background-color: #f8f9fa;
+            border-top: none;
+            border-bottom: 2px solid #e9ecef;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table-custom tbody td {
+            padding: 1rem 1.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .table-custom tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .status-badge.pendiente {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.cotizada {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .status-badge.programada {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-badge.completada {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.cancelada {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-badge.activo {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.inactivo {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn-action {
+            background: var(--info-color);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: var(--nav-transition);
+            border: none;
+        }
+
+        .btn-action:hover {
+            background: #138496;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Priority Alerts */
+        .priority-alerts {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .alert-item.high {
+            background: rgba(220, 53, 69, 0.1);
+            border-left-color: var(--danger-color);
+        }
+
+        .alert-item.medium {
+            background: rgba(255, 193, 7, 0.1);
+            border-left-color: var(--warning-color);
+        }
+
+        .alert-item.low {
+            background: rgba(23, 162, 184, 0.1);
+            border-left-color: var(--info-color);
+        }
+
+        .alert-icon {
+            font-size: 1.2rem;
+        }
+
+        .alert-icon.high { color: var(--danger-color); }
+        .alert-icon.medium { color: var(--warning-color); }
+        .alert-icon.low { color: var(--info-color); }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-description {
+            font-size: 0.9rem;
+            color: var(--nav-secondary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .dashboard-container {
+                padding: 1.5rem 0;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .stats-card {
+                margin-bottom: 1rem;
+            }
+
+            .card-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .table-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid .row > div {
+                margin-bottom: 2rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.15s; }
+        .stagger-3 { animation-delay: 0.2s; }
+        .stagger-4 { animation-delay: 0.25s; }
+        .stagger-5 { animation-delay: 0.3s; }
+        .stagger-6 { animation-delay: 0.35s; }
+        .stagger-7 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header-nav">
+        <div class="container-fluid px-4">
+            <div class="nav-container">
+                <a href="/" class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                    <span class="logo-text">Felmart</span>
+                </a>
+
+                <nav>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="/dashboard/clientes" class="nav-link">
+                                <i class="fas fa-building"></i>
+                                <span>Clientes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/clientes" class="nav-link">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Cotizaciones</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/solicitudes" class="nav-link">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Solicitudes</span>
+                            </a>
+                        </li>
+                     
+                        <li class="nav-item">
+                            <a href="/admin/visitas" class="nav-link">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Visitas</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/dashboard" class="nav-link">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="user-dropdown">
+                    <button class="user-btn" id="adminDropdownBtn" type="button">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Administrador</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="adminDropdownMenu">
+                        <a href="/admin/perfil" class="dropdown-item">
+                            <i class="fas fa-user"></i> Mi Perfil
+                        </a>
+                        <a href="/admin/notificaciones" class="dropdown-item">
+                            <i class="fas fa-bell"></i> Notificaciones
+                        </a>
+                        <a href="/admin/auditoria" class="dropdown-item">
+                            <i class="fas fa-shield-alt"></i> Registro de Actividad
+                        </a>
+                        <a href="/admin/backups" class="dropdown-item">
+                            <i class="fas fa-database"></i> Respaldo de Datos
+                        </a>
+                        <a href="/admin/ayuda" class="dropdown-item">
+                            <i class="fas fa-question-circle"></i> Ayuda y Soporte
+                        </a>
+                        <div style="border-top: 1px solid #e9ecef; margin: 0.5rem 0;"></div>
+                        <a href="/" class="dropdown-item">
+                            <i class="fas fa-home"></i> Volver al Inicio
+                        </a>
+                        <a href="/logout" class="dropdown-item text-danger">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="page-title">Gestión de Clientes</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Clientes</li>
+                    </ol>
+                </nav>
+            </div>
+            <button class="btn btn-primary" onclick="mostrarModalCrear()">
+                <i class="fas fa-plus me-2"></i>Nuevo Cliente
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>RUT</th>
+                                <th>Empresa</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Contacto</th>
+                                <th>Ciudad</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientesTableBody">
+                            <!-- Los datos se cargarán aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Crear/Editar Cliente -->
+    <div class="modal fade" id="clienteModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Nuevo Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="clienteForm" class="needs-validation" novalidate>
+                        <input type="hidden" id="clienteId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">RUT</label>
+                                <input type="text" class="form-control" id="rut" required>
+                                <div class="invalid-feedback">Ingrese un RUT válido</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre Empresa</label>
+                                <input type="text" class="form-control" id="nombre_empresa" required>
+                                <div class="invalid-feedback">Ingrese el nombre de la empresa</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" required>
+                                <div class="invalid-feedback">Ingrese un email válido</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="telefono" required>
+                                <div class="invalid-feedback">Ingrese un teléfono válido</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Contacto Principal</label>
+                                <input type="text" class="form-control" id="contacto_principal" required>
+                                <div class="invalid-feedback">Ingrese el nombre del contacto</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="direccion" required>
+                                <div class="invalid-feedback">Ingrese la dirección</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Comuna</label>
+                                <input type="text" class="form-control" id="comuna" required>
+                                <div class="invalid-feedback">Ingrese la comuna</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Ciudad</label>
+                                <input type="text" class="form-control" id="ciudad" required>
+                                <div class="invalid-feedback">Ingrese la ciudad</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="guardarCliente()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para notificaciones -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Notificación</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let clienteModal;
+        let notificationToast;
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            clienteModal = new bootstrap.Modal(document.getElementById('clienteModal'));
+            notificationToast = new bootstrap.Toast(document.getElementById('notificationToast'));
+            cargarClientes();
+        });
+
+        // Cargar clientes
+        async function cargarClientes() {
+            try {
+                const response = await fetch('/api/clientes');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const tbody = document.getElementById('clientesTableBody');
+                    tbody.innerHTML = '';
+                    
+                    data.clientes.forEach(cliente => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${cliente.rut}</td>
+                                <td>${cliente.nombre_empresa}</td>
+                                <td>${cliente.email}</td>
+                                <td>${cliente.telefono}</td>
+                                <td>${cliente.contacto_principal}</td>
+                                <td>${cliente.ciudad}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-info btn-sm" onclick="editarCliente(${cliente.id})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm ms-1" onclick="eliminarCliente(${cliente.id})">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    mostrarNotificacion(data.message || 'Error al cargar los clientes', 'danger');
+                }
+            } catch (error) {
+                console.error('Error al cargar clientes:', error);
+                mostrarNotificacion('Error al cargar los clientes', 'danger');
+            }
+        }
+
+        // Mostrar modal para crear
+        function mostrarModalCrear() {
+            document.getElementById('modalTitle').textContent = 'Nuevo Cliente';
+            document.getElementById('clienteForm').reset();
+            document.getElementById('clienteId').value = '';
+            clienteModal.show();
+        }
+
+        // Editar cliente
+        async function editarCliente(id) {
+            try {
+                const response = await fetch(`/api/clientes/${id}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const cliente = data.cliente;
+                    document.getElementById('modalTitle').textContent = 'Editar Cliente';
+                    document.getElementById('clienteId').value = cliente.id;
+                    document.getElementById('rut').value = cliente.rut;
+                    document.getElementById('nombre_empresa').value = cliente.nombre_empresa;
+                    document.getElementById('email').value = cliente.email;
+                    document.getElementById('telefono').value = cliente.telefono;
+                    document.getElementById('contacto_principal').value = cliente.contacto_principal;
+                    document.getElementById('direccion').value = cliente.direccion;
+                    document.getElementById('comuna').value = cliente.comuna;
+                    document.getElementById('ciudad').value = cliente.ciudad;
+                    
+                    clienteModal.show();
+                } else {
+                    mostrarNotificacion(data.message || 'Error al cargar los datos del cliente', 'danger');
+                }
+            } catch (error) {
+                console.error('Error al cargar cliente:', error);
+                mostrarNotificacion('Error al cargar los datos del cliente', 'danger');
+            }
+        }
+
+        // Guardar cliente
+        async function guardarCliente() {
+            const form = document.getElementById('clienteForm');
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+
+            const clienteId = document.getElementById('clienteId').value;
+            const cliente = {
+                rut: document.getElementById('rut').value,
+                nombreEmpresa: document.getElementById('nombre_empresa').value,
+                email: document.getElementById('email').value,
+                telefono: document.getElementById('telefono').value,
+                contactoPrincipal: document.getElementById('contacto_principal').value,
+                direccion: document.getElementById('direccion').value,
+                comuna: document.getElementById('comuna').value,
+                ciudad: document.getElementById('ciudad').value
+            };
+
+            try {
+                const url = clienteId ? `/api/clientes/${clienteId}` : '/api/clientes';
+                const method = clienteId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cliente)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    clienteModal.hide();
+                    await cargarClientes();
+                    mostrarNotificacion(data.message || 'Cliente guardado exitosamente', 'success');
+                } else {
+                    mostrarNotificacion(data.message || 'Error al guardar el cliente', 'danger');
+                }
+            } catch (error) {
+                console.error('Error al guardar cliente:', error);
+                mostrarNotificacion('Error al guardar el cliente', 'danger');
+            }
+        }
+
+        // Eliminar cliente
+        async function eliminarCliente(id) {
+            if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
+                try {
+                    const response = await fetch(`/api/clientes/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        cargarClientes();
+                        mostrarNotificacion(data.message, 'success');
+                    } else {
+                        mostrarNotificacion(data.message, 'danger');
+                    }
+                } catch (error) {
+                    console.error('Error al eliminar cliente:', error);
+                    mostrarNotificacion('Error al eliminar el cliente', 'danger');
+                }
+            }
+        }
+
+        // Mostrar notificación
+        function mostrarNotificacion(mensaje, tipo) {
+            const toast = document.getElementById('notificationToast');
+            toast.querySelector('.toast-body').textContent = mensaje;
+            toast.classList.remove('bg-success', 'bg-danger');
+            toast.classList.add(`bg-${tipo}`);
+            toast.classList.add('text-white');
+            
+            const bsToast = bootstrap.Toast.getInstance(toast);
+            if (bsToast) {
+                bsToast.show();
+            } else {
+                const newToast = new bootstrap.Toast(toast);
+                newToast.show();
+            }
+        }
+    </script>
+</body>
+</html> 

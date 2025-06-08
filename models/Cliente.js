@@ -11,27 +11,17 @@ const Cliente = sequelize.define('Cliente', {
   rut: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true
+    unique: true,
+    validate: {
+      notEmpty: true
+    }
   },
-  nombreEmpresa: {
+  nombre_empresa: {
     type: DataTypes.STRING,
-    allowNull: false
-  },
-  direccion: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  comuna: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  ciudad: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  telefono: {
-    type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
   },
   email: {
     type: DataTypes.STRING,
@@ -40,20 +30,45 @@ const Cliente = sequelize.define('Cliente', {
       isEmail: true
     }
   },
-  contactoPrincipal: {
+  telefono: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
   },
-  usuarioId: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: 'usuarios',
-      key: 'id'
+  contacto_principal: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
+  },
+  direccion: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
+  },
+  comuna: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
+  },
+  ciudad: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true
     }
   }
 }, {
-  timestamps: true,
-  tableName: 'clientes'
+  tableName: 'clientes',
+  underscored: true,
+  timestamps: true
 });
 
 module.exports = Cliente;
