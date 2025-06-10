@@ -13,6 +13,13 @@ router.post('/crear', auth.isAuthenticated, cotizacionController.crear);
 router.post('/aceptar/:id', auth.isAuthenticated, cotizacionController.aceptar);
 router.post('/rechazar/:id', auth.isAuthenticated, cotizacionController.rechazar);
 
+// ========== NUEVAS RUTAS API ==========
+// API para el frontend de gestión
+router.get('/api/listar', auth.isAuthenticated, cotizacionController.listarAPI);
+router.get('/api/:id', auth.isAuthenticated, cotizacionController.obtenerAPI);
+router.get('/api/:id/cliente-info', auth.isAuthenticated, cotizacionController.obtenerClienteAPI);
+router.put('/api/:id/estado', auth.isAuthenticated, cotizacionController.actualizarEstadoAPI);
+router.delete('/api/:id', auth.isAuthenticated, cotizacionController.eliminarAPI);
 // Rutas públicas para cotización avanzada
 router.get('/cotizar', precioresiduosController.mostrarFormularioCotizacion);
 router.post('/cotizar', precioresiduosController.calcularCotizacionAvanzada);

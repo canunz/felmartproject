@@ -1,0 +1,307 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Mis Solicitudes de Retiro</h2>
+    <a href="/clientes/solicitudes/nueva" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Nueva Solicitud
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Número</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th>Tipo de Residuo</th>
+              <th>Cantidad</th>
+              <th>Dirección</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="solicitudesTable">
+            <!-- Las solicitudes se cargarán dinámicamente aquí -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para ver detalles -->
+<div class="modal fade" id="detallesModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalles de la Solicitud</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="detallesModalBody">
+        <!-- Los detalles se cargarán dinámicamente aquí -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  cargarSolicitudes();
+});
+
+async function cargarSolicitudes() {
+  try {
+    const response = await fetch('/api/clientes/solicitudes');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al cargar las solicitudes');
+    }
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.message || 'Error al cargar las solicitudes');
+    }
+
+    const tbody = document.getElementById('solicitudesTable');
+    tbody.innerHTML = '';
+
+    if (data.solicitudes.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="text-center py-4">
+            <div class="text-muted">
+              <i class="fas fa-file-alt fa-3x mb-3"></i>
+              <p>No tienes solicitudes pendientes</p>
+              <a href="/clientes/solicitudes/nueva" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nueva Solicitud
+              </a>
+            </div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    data.solicitudes.forEach(solicitud => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${solicitud.numeroSolicitud}</td>
+        <td>${new Date(solicitud.createdAt).toLocaleDateString()}</td>
+        <td>
+          <span class="badge ${getEstadoClass(solicitud.estado)}">
+            ${getEstadoText(solicitud.estado)}
+          </span>
+        </td>
+        <td>${solicitud.tipoResiduo}</td>
+        <td>${solicitud.cantidad} ${solicitud.unidad}</td>
+        <td>${solicitud.direccionEspecifica || solicitud.ubicacion}</td>
+        <td>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-info" onclick="verDetalles(${solicitud.id})">
+              <i class="fas fa-eye"></i>
+            </button>
+            ${solicitud.estado === 'pendiente' ? `
+              <button class="btn btn-sm btn-danger" onclick="cancelarSolicitud(${solicitud.id})">
+                <i class="fas fa-times"></i>
+              </button>
+            ` : ''}
+            ${solicitud.estado === 'completada' ? `
+              <button class="btn btn-sm btn-success" onclick="descargarCertificado(${solicitud.id})">
+                <i class="fas fa-file-pdf"></i>
+              </button>
+            ` : ''}
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    const tbody = document.getElementById('solicitudesTable');
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="text-center py-4">
+          <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            ${error.message}
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+}
+
+function getEstadoClass(estado) {
+  const clases = {
+    'pendiente': 'bg-warning',
+    'confirmada': 'bg-info',
+    'completada': 'bg-success',
+    'cancelada': 'bg-danger'
+  };
+  return clases[estado] || 'bg-secondary';
+}
+
+function getEstadoText(estado) {
+  const textos = {
+    'pendiente': 'Pendiente',
+    'confirmada': 'Confirmada',
+    'completada': 'Completada',
+    'cancelada': 'Cancelada'
+  };
+  return textos[estado] || estado;
+}
+
+async function verDetalles(id) {
+  try {
+    const response = await fetch(`/api/clientes/solicitudes/${id}`);
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.message || 'Error al cargar los detalles');
+    }
+
+    const solicitud = data.solicitud;
+    const modalBody = document.getElementById('detallesModalBody');
+    
+    modalBody.innerHTML = `
+      <div class="mb-3">
+        <strong>Número de Solicitud:</strong> ${solicitud.numeroSolicitud}
+      </div>
+      <div class="mb-3">
+        <strong>Fecha:</strong> ${new Date(solicitud.createdAt).toLocaleString()}
+      </div>
+      <div class="mb-3">
+        <strong>Estado:</strong> 
+        <span class="badge ${getEstadoClass(solicitud.estado)}">
+          ${getEstadoText(solicitud.estado)}
+        </span>
+      </div>
+      <div class="mb-3">
+        <strong>Dirección de Retiro:</strong> ${solicitud.direccionEspecifica || solicitud.ubicacion}
+      </div>
+      <div class="mb-3">
+        <strong>Observaciones:</strong> ${solicitud.observaciones || 'Ninguna'}
+      </div>
+      <div class="mb-3">
+        <strong>Detalles de Residuos:</strong>
+        <ul class="list-group mt-2">
+          ${solicitud.detalles.map(detalle => `
+            <li class="list-group-item">
+              <div><strong>Residuo:</strong> ${detalle.residuo}</div>
+              <div><strong>Cantidad:</strong> ${detalle.cantidad}</div>
+              ${detalle.observaciones ? `<div><strong>Observaciones:</strong> ${detalle.observaciones}</div>` : ''}
+            </li>
+          `).join('')}
+        </ul>
+      </div>
+    `;
+
+    const modal = new bootstrap.Modal(document.getElementById('detallesModal'));
+    modal.show();
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error al cargar los detalles: ' + error.message);
+  }
+}
+
+async function cancelarSolicitud(id) {
+  if (!confirm('¿Está seguro de que desea cancelar esta solicitud?')) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/clientes/solicitudes/${id}/cancelar`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.message || 'Error al cancelar la solicitud');
+    }
+
+    alert('Solicitud cancelada exitosamente');
+    cargarSolicitudes();
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error al cancelar la solicitud: ' + error.message);
+  }
+}
+
+async function descargarCertificado(id) {
+  try {
+    const response = await fetch(`/api/clientes/certificado/${id}`);
+    
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message || 'Error al descargar el certificado');
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `certificado-${id}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error al descargar el certificado: ' + error.message);
+  }
+}
+
+async function enviarSolicitud(event) {
+  event.preventDefault();
+  
+  const form = document.getElementById('nuevaSolicitudForm');
+  const formData = new FormData(form);
+  
+  try {
+    const response = await fetch('/api/clientes/solicitudes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        tipoResiduo: formData.get('tipoResiduo'),
+        cantidad: formData.get('cantidad'),
+        unidad: formData.get('unidad'),
+        descripcion: formData.get('descripcion'),
+        fechaPreferida: formData.get('fechaPreferida'),
+        urgencia: formData.get('urgencia'),
+        ubicacion: formData.get('ubicacion'),
+        direccionEspecifica: formData.get('direccionEspecifica'),
+        contactoNombre: formData.get('contactoNombre'),
+        contactoTelefono: formData.get('contactoTelefono'),
+        observaciones: formData.get('observaciones')
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Error al crear la solicitud');
+    }
+
+    mostrarMensaje('Solicitud creada exitosamente', 'success');
+    form.reset();
+    $('#nuevaSolicitudModal').modal('hide');
+    await cargarSolicitudes();
+
+  } catch (error) {
+    console.error('Error:', error);
+    mostrarMensaje(error.message || 'Error al crear la solicitud', 'error');
+  }
+}
+</script>
+
+<%- include('../partials/footer') %> 

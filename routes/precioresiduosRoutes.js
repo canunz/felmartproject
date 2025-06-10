@@ -14,4 +14,7 @@ router.post('/editar/:id', auth.isAdmin, precioresiduosController.editarResiduo)
 // Rutas públicas
 router.get('/listar', precioresiduosController.listarPrecios);
 
+// API endpoint para obtener residuos (para dropdowns)
+router.get('/api/precios', precioresiduosController.obtenerPreciosAPI);
+
 module.exports = router;

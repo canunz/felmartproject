@@ -28,7 +28,7 @@ const contactoController = {
       // Configurar el correo para el administrador
       const mailOptions = {
         from: `"Felmart - Formulario de Contacto" <${process.env.EMAIL_USER}>`,
-        to: process.env.EMAIL_USER,
+        to: 'catasoledad256@gmail.com, fanny.andreina1@gmail.com',
         subject: 'Nuevo mensaje de contacto',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">

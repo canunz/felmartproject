@@ -27,12 +27,15 @@ router.get('/', isAuthenticated, async (req, res) => {
             // Aquí puedes agregar la lógica específica para clientes
         }
 
-        res.render('dashboard/index', datos);
+        res.render('dashboard/index', {
+            titulo: 'Dashboard - Felmart',
+            ...datos
+        });
     } catch (error) {
         console.error('Error al cargar dashboard:', error);
         req.flash('error', 'Error al cargar el dashboard');
         res.render('dashboard/index', {
-            title: 'Dashboard - Felmart',
+            titulo: 'Dashboard - Felmart',
             usuario: req.session.usuario,
             error: 'Error al cargar los datos'
         });

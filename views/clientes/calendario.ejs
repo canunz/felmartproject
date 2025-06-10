@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= titulo %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #00616e;
+            --primary-light: #00818f;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .nav-pills .nav-link {
+            color: var(--secondary-color);
+            font-weight: 500;
+            border-radius: 8px;
+            margin: 0 4px;
+            transition: var(--transition);
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: rgba(0, 97, 110, 0.1);
+            color: var(--primary-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--light-bg);
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Service Cards */
+        .services-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.75rem;
+            color: white;
+        }
+
+        .service-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .service-description {
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-service {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 30px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .btn-service:hover {
+            background: var(--primary-light);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* My Requests Section */
+        .my-requests-section {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .request-item {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .request-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .request-id {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .request-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmada {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-en_proceso {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-completada {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-cancelada {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .request-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .request-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.1);
+        }
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(0, 97, 110, 0.1), rgba(0, 129, 143, 0.1));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.25rem;
+            color: var(--primary-color);
+        }
+
+        .action-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .action-description {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            padding: 1.5rem 2rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 15px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 97, 110, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border: none;
+            padding: 12px 30px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 97, 110, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            padding: 12px 30px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--secondary-color);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: rgba(0, 97, 110, 0.2);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .request-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .request-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="/cliente/inicio" class="navbar-brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                    <span>FELMART</span>
+                </a>
+
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-home me-1"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cliente/solicitudes">
+                            <i class="fas fa-file-alt me-1"></i> Mis Solicitudes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cliente/cotizaciones">
+                            <i class="fas fa-file-invoice-dollar me-1"></i> Cotizaciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/cliente/calendario">
+                            <i class="fas fa-calendar-check me-1"></i> Calendario
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cliente/certificados">
+                            <i class="fas fa-certificate me-1"></i> Certificados
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="user-info">
+                    <i class="fas fa-building text-primary"></i>
+                    <span><%= usuario.nombre %></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">Solicita el Retiro de tus Residuos</h1>
+            <p class="welcome-subtitle">Gestión profesional de residuos peligrosos y no peligrosos para tu empresa</p>
+        </div>
+
+        <!-- Services Section -->
+        <div class="services-section">
+            <h2 class="section-title">¿Qué tipo de residuo necesitas retirar?</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-industry"></i>
+                    </div>
+                    <h3 class="service-title">Residuos Industriales</h3>
+                    <p class="service-description">Aceites contaminados, químicos industriales, solventes y otros residuos peligrosos de procesos productivos.</p>
+                    <button class="btn-service" data-bs-toggle="modal" data-bs-target="#solicitudModal" data-tipo="industrial">
+                        <i class="fas fa-calendar-plus"></i>
+                        Solicitar Retiro
+                    </button>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3 class="service-title">Residuos Agrícolas</h3>
+                    <p class="service-description">Pesticidas vencidos, envases de agroquímicos y residuos del sector forestal y agrícola.</p>
+                    <button class="btn-service" data-bs-toggle="modal" data-bs-target="#solicitudModal" data-tipo="agricola">
+                        <i class="fas fa-calendar-plus"></i>
+                        Solicitar Retiro
+                    </button>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-ship"></i>
+                    </div>
+                    <h3 class="service-title">Residuos Navieros</h3>
+                    <p class="service-description">Residuos de embarcaciones, aceites de motores marinos y desechos del sector salmonero.</p>
+                    <button class="btn-service" data-bs-toggle="modal" data-bs-target="#solicitudModal" data-tipo="naviero">
+                        <i class="fas fa-calendar-plus"></i>
+                        Solicitar Retiro
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="action-card" onclick="window.location.href='/cliente/cotizaciones'">
+                <div class="action-icon">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <h4 class="action-title">Ver Cotizaciones</h4>
+                <p class="action-description">Revisa las cotizaciones enviadas por Felmart</p>
+            </div>
+            <div class="action-card" onclick="window.location.href='/cliente/certificados'">
+                <div class="action-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <h4 class="action-title">Descargar Certificados</h4>
+                <p class="action-description">Obtén los certificados de disposición final</p>
+            </div>
+            <div class="action-card" onclick="contactarSoporte()">
+                <div class="action-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h4 class="action-title">Contactar Soporte</h4>
+                <p class="action-description">¿Necesitas ayuda? Contáctanos directamente</p>
+            </div>
+        </div>
+
+        <!-- My Requests Section -->
+        <div class="my-requests-section">
+            <div class="section-header">
+                <h3><i class="fas fa-clipboard-list me-2"></i>Mis Solicitudes de Retiro</h3>
+                <button class="btn btn-secondary" onclick="filtrarSolicitudes()">
+                    <i class="fas fa-filter me-1"></i>
+                    Filtrar
+                </button>
+            </div>
+
+            <div id="solicitudesList">
+                <!-- Las solicitudes se cargan dinámicamente desde la base de datos -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Solicitud de Retiro -->
+    <div class="modal fade" id="solicitudModal" tabindex="-1" aria-labelledby="solicitudModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="solicitudModalLabel">
+                        <i class="fas fa-clipboard-list me-2"></i>
+                        Solicitud de Retiro de Residuos
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="solicitudForm">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tipo de Residuo *</label>
+                                <select class="form-select" name="tipoResiduo" required>
+                                    <option value="">Seleccionar tipo</option>
+                                    <option value="industrial">Residuos Industriales</option>
+                                    <option value="agricola">Residuos Agrícolas</option>
+                                    <option value="naviero">Residuos Navieros</option>
+                                    <option value="otro">Otro tipo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Cantidad Estimada *</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" name="cantidad" required min="1">
+                                    <select class="form-select" name="unidad" style="max-width: 100px;">
+                                        <option value="kg">kg</option>
+                                        <option value="litros">litros</option>
+                                        <option value="toneladas">toneladas</option>
+                                        <option value="unidades">unidades</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Descripción Detallada del Residuo *</label>
+                            <textarea class="form-control" name="descripcion" rows="3" required placeholder="Ej: Aceites usados de maquinaria industrial, contenedores de químicos vacíos, etc."></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Fecha Preferida para Retiro *</label>
+                                <input type="date" class="form-control" name="fechaPreferida" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Urgencia</label>
+                                <select class="form-select" name="urgencia">
+                                    <option value="normal">Normal (5-7 días)</option>
+                                    <option value="media">Media (2-3 días)</option>
+                                    <option value="alta">Alta (24-48 horas)</option>
+                                    <option value="emergencia">Emergencia (Inmediato)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Ubicación del Retiro</label>
+                            <select class="form-select" name="ubicacion">
+                                <option value="principal">Sede Principal</option>
+                                <option value="planta">Planta Industrial</option>
+                                <option value="bodega">Bodega Central</option>
+                                <option value="otra">Otra dirección</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="direccionOtraDiv" style="display: none;">
+                            <label class="form-label">Dirección Específica</label>
+                            <input type="text" class="form-control" name="direccionOtra" placeholder="Ingrese la dirección completa">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Persona de Contacto</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" name="contactoNombre" placeholder="Nombre del responsable">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="tel" class="form-control" name="contactoTelefono" placeholder="Teléfono de contacto">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Observaciones Adicionales</label>
+                            <textarea class="form-control" name="observaciones" rows="2" placeholder="Acceso especial, horarios de funcionamiento, precauciones, etc."></textarea>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Proceso después de tu solicitud:</strong><br>
+                            1. Revisaremos tu solicitud en máximo 4 horas<br>
+                            2. Te enviaremos una cotización detallada<br>
+                            3. Una vez aprobada, programaremos el retiro<br>
+                            4. Recibirás el certificado de disposición final
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Enviar Solicitud
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div class="modal fade" id="confirmacionModal" tabindex="-1" aria-labelledby="confirmacionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-success" id="confirmacionModalLabel">
+                        <i class="fas fa-check-circle me-2"></i>
+                        ¡Solicitud Enviada!
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="text-success mb-3">¡Solicitud Recibida!</h4>
+                    <p class="mb-3">Tu solicitud de retiro de residuos ha sido enviada exitosamente a Felmart.</p>
+                    <div class="alert alert-light">
+                        <strong>Número de Solicitud:</strong> <span id="numeroSolicitud"></span>
+                    </div>
+                    <p class="text-muted">
+                        Nuestro equipo revisará tu solicitud y te contactará en un máximo de 4 horas con la cotización correspondiente.
+                    </p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                        <i class="fas fa-home"></i>
+                        Entendido
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variables globales
+        let solicitudesData = [];
+        let clienteInfo = {};
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializarEventListeners();
+            cargarSolicitudesCliente();
+            obtenerInfoCliente();
+        });
+
+        // Event Listeners
+        function inicializarEventListeners() {
+            // Formulario de solicitud
+            document.getElementById('solicitudForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                enviarSolicitud();
+            });
+
+            // Botones de servicio con tipo predefinido
+            document.querySelectorAll('[data-tipo]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tipo = this.dataset.tipo;
+                    const select = document.querySelector('select[name="tipoResiduo"]');
+                    select.value = tipo;
+                });
+            });
+
+            // Cambio de ubicación
+            document.querySelector('select[name="ubicacion"]').addEventListener('change', function() {
+                const direccionOtraDiv = document.getElementById('direccionOtraDiv');
+                const direccionOtraInput = document.querySelector('input[name="direccionOtra"]');
+                
+                if (this.value === 'otra') {
+                    direccionOtraDiv.style.display = 'block';
+                    direccionOtraInput.required = true;
+                } else {
+                    direccionOtraDiv.style.display = 'none';
+                    direccionOtraInput.required = false;
+                }
+            });
+
+            // Establecer fecha mínima (hoy)
+            const fechaInput = document.querySelector('input[name="fechaPreferida"]');
+            const hoy = new Date().toISOString().split('T')[0];
+            fechaInput.min = hoy;
+        }
+
+        // Obtener información del cliente logueado
+        async function obtenerInfoCliente() {
+            try {
+                const response = await fetch('/api/cliente/info');
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        clienteInfo = result.data;
+                        // Actualizar interfaz con info del cliente
+                        const userInfoSpan = document.querySelector('.user-info span');
+                        if (userInfoSpan && clienteInfo.nombre_empresa) {
+                            userInfoSpan.textContent = clienteInfo.nombre_empresa;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error obteniendo info del cliente:', error);
+            }
+        }
+
+        // Cargar solicitudes del cliente desde la base de datos
+        async function cargarSolicitudesCliente() {
+            try {
+                const response = await fetch('/api/cliente/solicitudes-api');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success && Array.isArray(result.data)) {
+                    solicitudesData = result.data;
+                    renderizarSolicitudes();
+                } else {
+                    console.error('Error en respuesta:', result.message || 'Formato inválido');
+                    mostrarEstadoVacio();
+                }
+            } catch (error) {
+                console.error('Error cargando solicitudes:', error);
+                mostrarEstadoVacio();
+            }
+        }
+
+        // Renderizar solicitudes en la interfaz
+        function renderizarSolicitudes() {
+            const solicitudesList = document.getElementById('solicitudesList');
+            
+            if (solicitudesData.length === 0) {
+                mostrarEstadoVacio();
+                return;
+            }
+
+            solicitudesList.innerHTML = '';
+
+            solicitudesData.forEach(solicitud => {
+                const solicitudElement = document.createElement('div');
+                solicitudElement.className = 'request-item';
+                
+                solicitudElement.innerHTML = `
+                    <div class="request-header">
+                        <div class="request-id">${solicitud.numero_solicitud || 'Solicitud #' + solicitud.id}</div>
+                        <span class="request-status status-${solicitud.estado}">${formatearEstado(solicitud.estado)}</span>
+                    </div>
+                    <div class="request-details">
+                        <div class="request-detail">
+                            <i class="fas fa-calendar text-primary"></i>
+                            <span>Solicitado: ${formatearFecha(solicitud.created_at)}</span>
+                        </div>
+                        <div class="request-detail">
+                            <i class="fas fa-industry text-primary"></i>
+                            <span>Tipo: ${formatearTipoResiduo(solicitud.tipo_residuo)}</span>
+                        </div>
+                        <div class="request-detail">
+                            <i class="fas fa-weight text-primary"></i>
+                            <span>Cantidad: ${solicitud.cantidad || 'No especificada'} ${solicitud.unidad || ''}</span>
+                        </div>
+                        <div class="request-detail">
+                            <i class="fas fa-map-marker-alt text-primary"></i>
+                            <span>Ubicación: ${solicitud.ubicacion || 'No especificada'}</span>
+                        </div>
+                        ${generarDetallesAdicionales(solicitud)}
+                    </div>
+                `;
+                
+                solicitudesList.appendChild(solicitudElement);
+            });
+        }
+
+        // Generar detalles adicionales según el estado
+        function generarDetallesAdicionales(solicitud) {
+            let detalles = '';
+            
+            if (solicitud.estado === 'confirmada' && solicitud.fecha_programada) {
+                detalles += `
+                    <div class="request-detail">
+                        <i class="fas fa-check-circle text-success"></i>
+                        <span>Retiro programado: ${formatearFecha(solicitud.fecha_programada)}</span>
+                    </div>
+                `;
+                
+                if (solicitud.hora_programada) {
+                    detalles += `
+                        <div class="request-detail">
+                            <i class="fas fa-clock text-success"></i>
+                            <span>Hora: ${solicitud.hora_programada}</span>
+                        </div>
+                    `;
+                }
+                
+                if (solicitud.tecnico_asignado) {
+                    detalles += `
+                        <div class="request-detail">
+                            <i class="fas fa-user-tie text-success"></i>
+                            <span>Técnico: ${solicitud.tecnico_asignado}</span>
+                        </div>
+                    `;
+                }
+            }
+            
+            if (solicitud.estado === 'completada') {
+                if (solicitud.fecha_completado) {
+                    detalles += `
+                        <div class="request-detail">
+                            <i class="fas fa-check-double text-success"></i>
+                            <span>Completado: ${formatearFecha(solicitud.fecha_completado)}</span>
+                        </div>
+                    `;
+                }
+                
+                if (solicitud.certificado_disponible) {
+                    detalles += `
+                        <div class="request-detail">
+                            <i class="fas fa-file-pdf text-primary"></i>
+                            <a href="/api/cliente/certificado/${solicitud.id}" class="text-primary">Descargar Certificado</a>
+                        </div>
+                    `;
+                }
+                
+                if (solicitud.monto_total) {
+                    detalles += `
+                        <div class="request-detail">
+                            <i class="fas fa-dollar-sign text-success"></i>
+                            <span>Facturado: ${parseFloat(solicitud.monto_total).toLocaleString('es-CL')}</span>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Agregar botón de cancelar si está pendiente
+            if (solicitud.estado === 'pendiente') {
+                detalles += `
+                    <div class="request-detail">
+                        <button class="btn btn-danger btn-sm" onclick="cancelarSolicitud(${solicitud.id})">
+                            <i class="fas fa-times"></i>
+                            Cancelar Solicitud
+                        </button>
+                    </div>
+                `;
+            }
+            
+            return detalles;
+        }
+
+        // Mostrar estado vacío
+        function mostrarEstadoVacio() {
+            const solicitudesList = document.getElementById('solicitudesList');
+            solicitudesList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h4>No tienes solicitudes de retiro</h4>
+                    <p>Solicita tu primera recolección de residuos para comenzar</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#solicitudModal">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Solicitar Primera Recolección
+                    </button>
+                </div>
+            `;
+        }
+
+        // Enviar solicitud a la base de datos
+        async function enviarSolicitud() {
+            const form = document.getElementById('solicitudForm');
+            const formData = new FormData(form);
+            
+            // Validaciones básicas
+            if (!formData.get('tipoResiduo') || !formData.get('cantidad') || !formData.get('descripcion') || !formData.get('fechaPreferida')) {
+                mostrarNotificacion('Por favor, completa todos los campos requeridos', 'error');
+                return;
+            }
+
+            // Validar fecha no sea en el pasado
+            const fechaSeleccionada = new Date(formData.get('fechaPreferida'));
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            
+            if (fechaSeleccionada < hoy) {
+                mostrarNotificacion('La fecha de retiro no puede ser en el pasado', 'error');
+                return;
+            }
+
+            // Mostrar loading en botón
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="loading"></div> Enviando solicitud...';
+            submitBtn.disabled = true;
+
+            try {
+                // Convertir FormData a JSON
+                const solicitudData = {};
+                for (let [key, value] of formData.entries()) {
+                    solicitudData[key] = value;
+                }
+
+                const response = await fetch('/api/cliente/solicitudes-api', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(solicitudData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    // Cerrar modal de solicitud
+                    bootstrap.Modal.getInstance(document.getElementById('solicitudModal')).hide();
+                    
+                    // Mostrar confirmación con número real
+                    document.getElementById('numeroSolicitud').textContent = result.data.numero_solicitud || `#${result.data.id}`;
+                    const confirmacionModal = new bootstrap.Modal(document.getElementById('confirmacionModal'));
+                    confirmacionModal.show();
+                    
+                    // Limpiar formulario
+                    form.reset();
+                    document.getElementById('direccionOtraDiv').style.display = 'none';
+                    
+                    // Recargar solicitudes
+                    await cargarSolicitudesCliente();
+                    
+                    mostrarNotificacion('Solicitud enviada exitosamente', 'success');
+                } else {
+                    throw new Error(result.error || result.message || 'Error al enviar la solicitud');
+                }
+            } catch (error) {
+                console.error('Error enviando solicitud:', error);
+                mostrarNotificacion(error.message || 'Error al enviar la solicitud', 'error');
+            } finally {
+                // Restaurar botón
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Cancelar solicitud
+        async function cancelarSolicitud(solicitudId) {
+            const motivo = prompt('¿Por qué deseas cancelar esta solicitud?');
+            if (!motivo) return;
+
+            try {
+                const response = await fetch(`/api/cliente/solicitudes-api/${solicitudId}/cancelar`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ motivo })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    mostrarNotificacion('Solicitud cancelada exitosamente', 'success');
+                    await cargarSolicitudesCliente(); // Recargar lista
+                } else {
+                    throw new Error(result.error || result.message || 'Error al cancelar la solicitud');
+                }
+            } catch (error) {
+                console.error('Error cancelando solicitud:', error);
+                mostrarNotificacion(error.message || 'Error al cancelar la solicitud', 'error');
+            }
+        }
+
+        // Funciones de utilidad
+        function formatearEstado(estado) {
+            const estados = {
+                'pendiente': 'Pendiente',
+                'confirmada': 'Confirmada',
+                'en_proceso': 'En Proceso',
+                'completada': 'Completada',
+                'cancelada': 'Cancelada'
+            };
+            return estados[estado] || estado;
+        }
+
+        function formatearTipoResiduo(tipo) {
+            const tipos = {
+                'industrial': 'Residuos Industriales',
+                'agricola': 'Residuos Agrícolas',
+                'naviero': 'Residuos Navieros',
+                'otro': 'Otro tipo'
+            };
+            return tipos[tipo] || tipo;
+        }
+
+        function formatearFecha(fecha) {
+            if (!fecha) return 'No especificada';
+            
+            try {
+                const date = new Date(fecha);
+                return date.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            } catch (error) {
+                return fecha;
+            }
+        }
+
+        // Filtrar solicitudes
+        function filtrarSolicitudes() {
+            // Esta función se puede implementar más adelante
+            mostrarNotificacion('Función de filtrado próximamente', 'info');
+        }
+
+        // Contactar soporte
+        function contactarSoporte() {
+            if (confirm('¿Deseas contactar a nuestro equipo de soporte?\n\nTe redirigiremos al formulario de contacto.')) {
+                window.location.href = '/cliente/contacto';
+            }
+        }
+
+        // Mostrar notificaciones
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            // Remover notificaciones existentes
+            const existingAlerts = document.querySelectorAll('.notification-alert');
+            existingAlerts.forEach(alert => alert.remove());
+
+            // Crear elemento de notificación
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${tipo === 'error' ? 'danger' : tipo} alert-dismissible fade show notification-alert`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            
+            const iconos = {
+                'success': 'fa-check-circle',
+                'error': 'fa-exclamation-triangle',
+                'info': 'fa-info-circle',
+                'warning': 'fa-exclamation-triangle'
+            };
+            
+            notification.innerHTML = `
+                <i class="fas ${iconos[tipo] || iconos.info} me-2"></i>
+                ${mensaje}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remover después de 5 segundos
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= titulo %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --nav-primary-color: #00616e;
+            --nav-primary-dark: #004d57;
+            --nav-primary-light: #00818f;
+            --nav-secondary-color: #6c757d;
+            --nav-white: #ffffff;
+            --nav-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --nav-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-bg: #f8f9fa;
+            --border-radius: 12px;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            --shadow-hover: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+
+        .header-nav {
+            background: var(--nav-white);
+            box-shadow: var(--nav-shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--nav-primary-color);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--nav-secondary-color);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--nav-transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--nav-primary-color);
+            background: rgba(0, 97, 110, 0.05);
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-btn {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--nav-transition);
+        }
+
+        .user-btn:hover {
+            background: linear-gradient(135deg, var(--nav-primary-dark), var(--nav-primary-color));
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--nav-white);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 1000;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--nav-primary-color);
+            text-decoration: none;
+            transition: var(--nav-transition);
+            font-size: 14px;
+            border-radius: 8px;
+            margin: 0.25rem 0;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 97, 110, 0.05);
+            color: var(--nav-primary-color);
+            transform: translateX(5px);
+        }
+
+        .dropdown-item.text-danger {
+            color: var(--danger-color) !important;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color) !important;
+        }
+
+        .content-wrapper {
+            padding: 2rem 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            background: var(--nav-white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid #e2e8f0;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--nav-primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .breadcrumb {
+            background: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--nav-primary-dark), var(--nav-primary-color));
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stats-cards {
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--nav-white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .stat-icon.pendientes { background: linear-gradient(135deg, var(--warning-color), #ff8c00); }
+        .stat-icon.confirmadas { background: linear-gradient(135deg, var(--success-color), #20c997); }
+        .stat-icon.completadas { background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light)); }
+        .stat-icon.canceladas { background: linear-gradient(135deg, var(--danger-color), #c82333); }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--nav-primary-color);
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--nav-secondary-color);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        .calendar-section {
+            background: var(--nav-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .calendar-header {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .calendar-nav button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .calendar-nav button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .calendar-grid {
+            padding: 2rem;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-weekday {
+            text-align: center;
+            padding: 1rem 0.5rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            background-color: var(--light-bg);
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--nav-white);
+            display: flex;
+            flex-direction: column;
+            padding: 0.5rem;
+            min-height: 60px;
+        }
+
+        .calendar-day:hover {
+            background-color: var(--light-bg);
+            border-color: var(--nav-primary-light);
+        }
+
+        .calendar-day.other-month {
+            color: #ccc;
+            background-color: #f8f9fa;
+        }
+
+        .calendar-day.today {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            color: white;
+            font-weight: bold;
+            border-color: var(--nav-primary-color);
+        }
+
+        .calendar-day.has-visits {
+            border-color: var(--nav-primary-light);
+            background-color: rgba(0, 97, 110, 0.05);
+        }
+
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .visit-dots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+
+        .visit-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .visit-dot.pendiente { background-color: var(--warning-color); }
+        .visit-dot.confirmada { background-color: var(--success-color); }
+        .visit-dot.completada { background-color: var(--nav-primary-color); }
+        .visit-dot.cancelada { background-color: var(--danger-color); }
+
+        .filter-section {
+            background: var(--nav-white);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid #e2e8f0;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            background: var(--nav-white);
+            font-weight: 500;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--nav-primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 97, 110, 0.1);
+            outline: none;
+        }
+
+        .btn-outline-primary {
+            background: transparent;
+            border: 1px solid var(--nav-primary-color);
+            color: var(--nav-primary-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--nav-primary-color);
+            border-color: var(--nav-primary-color);
+            color: white;
+        }
+
+        .visits-list {
+            background: var(--nav-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid #e2e8f0;
+        }
+
+        .visits-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .visits-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin: 0;
+        }
+
+        .visit-item {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #f1f3f4;
+            transition: all 0.3s ease;
+        }
+
+        .visit-item:hover {
+            background-color: var(--light-bg);
+        }
+
+        .visit-item:last-child {
+            border-bottom: none;
+        }
+
+        .visit-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .visit-details h6 {
+            margin: 0 0 0.5rem 0;
+            color: var(--nav-primary-color);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .visit-meta {
+            color: var(--nav-secondary-color);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .visit-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .visit-status {
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pendiente {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: #b45309;
+        }
+
+        .status-confirmada {
+            background-color: rgba(40, 167, 69, 0.15);
+            color: #166534;
+        }
+
+        .status-completada {
+            background-color: rgba(0, 97, 110, 0.15);
+            color: var(--nav-primary-dark);
+        }
+
+        .status-cancelada {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: #991b1b;
+        }
+
+        .modal-content {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            color: white;
+            border-bottom: none;
+            padding: 1.5rem 2rem;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-close {
+            filter: invert(1);
+            opacity: 0.8;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            background: #fafbfc;
+        }
+
+        .modal-footer {
+            background: var(--nav-white);
+            border-top: 1px solid #e2e8f0;
+            padding: 1.5rem 2rem;
+            gap: 1rem;
+        }
+
+        .btn-secondary {
+            background: var(--nav-secondary-color);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .stats-cards .row > div {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header-nav">
+        <div class="container-fluid px-4">
+            <div class="nav-container">
+                <a href="/" class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                    <span class="logo-text">Felmart</span>
+                </a>
+                <nav>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="/dashboard" class="nav-link">
+                                <i class="fas fa-home"></i>
+                                <span>Inicio</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/clientes" class="nav-link">
+                                <i class="fas fa-users"></i>
+                                <span>Clientes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/cotizaciones" class="nav-link">
+                                <i class="fas fa-file-invoice"></i>
+                                <span>Cotizaciones</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/solicitudes" class="nav-link">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Solicitudes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/visitas" class="nav-link active">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Visitas</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="user-dropdown">
+                    <button class="user-btn" id="adminDropdownBtn" type="button">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Administrador</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="adminDropdownMenu">
+                        <a href="/admin/perfil" class="dropdown-item">
+                            <i class="fas fa-user"></i> Mi Perfil
+                        </a>
+                        <a href="/admin/notificaciones" class="dropdown-item">
+                            <i class="fas fa-bell"></i> Notificaciones
+                        </a>
+                        <a href="/admin/configuracion" class="dropdown-item">
+                            <i class="fas fa-cog"></i> Configuración
+                        </a>
+                        <div style="border-top: 1px solid #e9ecef; margin: 0.5rem 0;"></div>
+                        <a href="/" class="dropdown-item">
+                            <i class="fas fa-home"></i> Volver al Inicio
+                        </a>
+                        <a href="/logout" class="dropdown-item text-danger">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="page-title">Gestión de Visitas</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Inicio</a></li>
+                        <li class="breadcrumb-item active">Visitas</li>
+                    </ol>
+                </nav>
+            </div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevaVisitaModal">
+                <i class="fas fa-plus me-2"></i> Nueva Visita
+            </button>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-cards">
+            <div class="row">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-icon pendientes">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-number" id="pendientesCount">0</div>
+                        </div>
+                        <div class="stat-label">Visitas Pendientes</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-icon confirmadas">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-number" id="confirmadasCount">0</div>
+                        </div>
+                        <div class="stat-label">Visitas Confirmadas</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-icon completadas">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-number" id="completadasCount">0</div>
+                        </div>
+                        <div class="stat-label">Visitas Completadas</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-icon canceladas">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                            <div class="stat-number" id="canceladasCount">0</div>
+                        </div>
+                        <div class="stat-label">Visitas Canceladas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="flex-grow-1">
+                    <label class="form-label">Buscar cliente</label>
+                    <input type="text" class="form-control" id="buscarCliente" placeholder="Nombre del cliente...">
+                </div>
+                <div>
+                    <label class="form-label">Estado</label>
+                    <select class="form-select" id="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="confirmada">Confirmada</option>
+                        <option value="completada">Completada</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Mes</label>
+                    <select class="form-select" id="filtroMes">
+                        <option value="">Todos los meses</option>
+                        <option value="0">Enero</option>
+                        <option value="1">Febrero</option>
+                        <option value="2">Marzo</option>
+                        <option value="3">Abril</option>
+                        <option value="4">Mayo</option>
+                        <option value="5">Junio</option>
+                        <option value="6">Julio</option>
+                        <option value="7">Agosto</option>
+                        <option value="8">Septiembre</option>
+                        <option value="9">Octubre</option>
+                        <option value="10">Noviembre</option>
+                        <option value="11">Diciembre</option>
+                    </select>
+                </div>
+                <div>
+                    <button class="btn btn-outline-primary" onclick="aplicarFiltros()">
+                        <i class="fas fa-filter me-2"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Calendar -->
+            <div class="col-lg-8">
+                <div class="calendar-section">
+                    <div class="calendar-header">
+                        <h3 class="calendar-title" id="currentMonth">Junio 2025</h3>
+                        <div class="calendar-nav">
+                            <button onclick="previousMonth()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button onclick="todayMonth()">Hoy</button>
+                            <button onclick="nextMonth()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="calendar-weekdays">
+                            <div class="calendar-weekday">Dom</div>
+                            <div class="calendar-weekday">Lun</div>
+                            <div class="calendar-weekday">Mar</div>
+                            <div class="calendar-weekday">Mié</div>
+                            <div class="calendar-weekday">Jue</div>
+                            <div class="calendar-weekday">Vie</div>
+                            <div class="calendar-weekday">Sáb</div>
+                        </div>
+                        <div class="calendar-days" id="calendarDays">
+                            <!-- Calendar days will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Visits -->
+            <div class="col-lg-4">
+                <div class="visits-list">
+                    <div class="visits-header">
+                        <h4 class="visits-title">Visitas de Hoy</h4>
+                        <button class="btn btn-sm btn-primary" onclick="verTodasLasVisitas()">
+                            Ver Todas
+                        </button>
+                    </div>
+                    <div id="todayVisits">
+                        <div class="text-center p-4">
+                            <div class="spinner-border text-primary mb-3" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="text-muted">Cargando visitas...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Visits List -->
+        <div class="visits-list mt-4" id="allVisitsList" style="display: none;">
+            <div class="visits-header">
+                <h4 class="visits-title">Todas las Visitas</h4>
+                <button class="btn btn-sm btn-outline-primary" onclick="ocultarTodasLasVisitas()">
+                    Ocultar
+                </button>
+            </div>
+            <div id="allVisits">
+                <!-- All visits will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva/Editar Visita -->
+    <div class="modal fade" id="nuevaVisitaModal" tabindex="-1" aria-labelledby="nuevaVisitaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nuevaVisitaModalLabel">Nueva Visita</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="visitaForm">
+                        <input type="hidden" id="visitaId" name="id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="clienteId" class="form-label">Cliente *</label>
+                                <select class="form-select" id="clienteId" name="clienteId" required>
+                                    <option value="">Seleccione un cliente</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="empleadoId" class="form-label">Empleado</label>
+                                <select class="form-select" id="empleadoId" name="empleadoId">
+                                    <option value="">Seleccione un empleado</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="tipoVisita" class="form-label">Tipo de Visita *</label>
+                                <select class="form-select" id="tipoVisita" name="tipoVisita" required>
+                                    <option value="">Seleccione tipo</option>
+                                    <option value="evaluacion">Evaluación</option>
+                                    <option value="recoleccion">Recolección</option>
+                                    <option value="seguimiento">Seguimiento</option>
+                                    <option value="inspeccion">Inspección</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="estado" class="form-label">Estado</label>
+                                <select class="form-select" id="estado" name="estado">
+                                    <option value="pendiente">Pendiente</option>
+                                    <option value="confirmada">Confirmada</option>
+                                    <option value="en_proceso">En Proceso</option>
+                                    <option value="completada">Completada</option>
+                                    <option value="cancelada">Cancelada</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="fechaVisita" class="form-label">Fecha *</label>
+                                <input type="date" class="form-control" id="fechaVisita" name="fechaVisita" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="horaVisita" class="form-label">Hora *</label>
+                                <input type="time" class="form-control" id="horaVisita" name="horaVisita" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="duracionEstimada" class="form-label">Duración Estimada (minutos)</label>
+                                <input type="number" class="form-control" id="duracionEstimada" name="duracionEstimada" value="60" min="15" step="15">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="direccionVisita" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="direccionVisita" name="direccionVisita">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="observaciones" class="form-label">Observaciones</label>
+                            <textarea class="form-control" id="observaciones" name="observaciones" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="notasTecnico" class="form-label">Notas Técnico</label>
+                            <textarea class="form-control" id="notasTecnico" name="notasTecnico" rows="2"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" onclick="guardarVisita()">
+                                <i class="fas fa-save me-2"></i> Guardar Visita
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver Detalles -->
+    <div class="modal fade" id="detallesVisitaModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-eye me-2"></i> Detalles de la Visita
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="detallesVisitaContent">
+                    <!-- Content will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="editarVisitaDesdeDetalles()">
+                        <i class="fas fa-edit me-2"></i> Editar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variables globales
+        let currentDate = new Date();
+        let currentVisits = [];
+        let allClients = [];
+        let allEmployees = [];
+        let editingVisitId = null;
+        let visitasData = [];
+        let currentPage = 1;
+        let totalPages = 1;
+        let isLoading = false;
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Inicializando aplicación de visitas...');
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            try {
+                console.log('Cargando datos iniciales...');
+                await loadClients();
+                await loadEmployees();
+                await loadVisits();
+                await loadStatistics();
+                generateCalendar();
+                loadTodayVisits();
+                initializeEventListeners();
+                console.log('Aplicación inicializada correctamente');
+            } catch (error) {
+                console.error('Error al cargar la aplicación:', error);
+                showAlert('Error al cargar la aplicación', 'error');
+            }
+        }
+
+        // Event Listeners
+        function initializeEventListeners() {
+            // Dropdown toggles
+            document.getElementById('adminDropdownBtn').addEventListener('click', function() {
+                const dropdown = document.getElementById('adminDropdownMenu');
+                dropdown.classList.toggle('show');
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(event) {
+                const userDropdown = document.getElementById('adminDropdownMenu');
+                
+                if (!event.target.closest('.user-dropdown')) {
+                    userDropdown.classList.remove('show');
+                }
+            });
+
+            // Set minimum date to today
+            const fechaInput = document.getElementById('fechaVisita');
+            if (fechaInput) {
+                fechaInput.min = new Date().toISOString().split('T')[0];
+            }
+        }
+
+        // API Functions
+        async function loadClients() {
+            try {
+                console.log('Cargando clientes...');
+                const response = await fetch('/api/visitas/clientes');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const data = await response.json();
+                allClients = Array.isArray(data) ? data : [];
+                
+                console.log(`${allClients.length} clientes cargados`);
+                
+                const select = document.getElementById('clienteId');
+                if (select) {
+                    select.innerHTML = '<option value="">Seleccionar cliente...</option>';
+                    allClients.forEach(client => {
+                        select.innerHTML += `<option value="${client.id}">${client.nombre_empresa}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading clients:', error);
+                showAlert('Error al cargar los clientes: ' + error.message, 'error');
+                allClients = [];
+            }
+        }
+
+        async function loadEmployees() {
+            try {
+                console.log('Cargando empleados...');
+                const response = await fetch('/api/visitas/empleados');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const data = await response.json();
+                allEmployees = Array.isArray(data) ? data : [];
+                
+                console.log(`${allEmployees.length} empleados cargados`);
+                
+                const select = document.getElementById('empleadoId');
+                if (select) {
+                    select.innerHTML = '<option value="">Asignar más tarde...</option>';
+                    allEmployees.forEach(employee => {
+                        const nombreCompleto = employee.apellido ? 
+                            `${employee.nombre} ${employee.apellido}` : 
+                            employee.nombre;
+                        select.innerHTML += `<option value="${employee.id}">${nombreCompleto}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading employees:', error);
+                showAlert('Error al cargar los empleados: ' + error.message, 'error');
+                allEmployees = [];
+            }
+        }
+
+        async function loadVisits() {
+            try {
+                console.log('Cargando visitas...');
+                const response = await fetch('/api/visitas');
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                if (!data.success) {
+                    throw new Error(data.message || 'Error al cargar las visitas');
+                }
+                
+                console.log(`${data.visitas.length} visitas cargadas`);
+                
+                // Guardar las visitas actuales
+                currentVisits = data.visitas;
+                
+                // Actualizar la tabla de visitas
+                updateVisitsTable(data.visitas);
+                
+                // Actualizar el calendario
+                generateCalendar();
+                
+                // Actualizar visitas de hoy
+                loadTodayVisits();
+                
+            } catch (error) {
+                console.error('Error al cargar visitas:', error);
+                showAlert('Error al cargar las visitas: ' + error.message, 'error');
+                currentVisits = [];
+            }
+        }
+
+        async function loadStatistics() {
+            try {
+                console.log('Cargando estadísticas...');
+                const response = await fetch('/api/visitas/estadisticas');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const stats = await response.json();
+                console.log('Estadísticas recibidas:', stats);
+                
+                // Actualizar contadores
+                document.getElementById('pendientesCount').textContent = stats.pendientes || 0;
+                document.getElementById('confirmadasCount').textContent = stats.confirmadas || 0;
+                document.getElementById('completadasCount').textContent = stats.completadas || 0;
+                document.getElementById('canceladasCount').textContent = stats.canceladas || 0;
+                
+                // Actualizar clases de las tarjetas según el estado
+                updateStatCardClass('pendientesCount', stats.pendientes);
+                updateStatCardClass('confirmadasCount', stats.confirmadas);
+                updateStatCardClass('completadasCount', stats.completadas);
+                updateStatCardClass('canceladasCount', stats.canceladas);
+                
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+                showAlert('Error al cargar las estadísticas: ' + error.message, 'error');
+                
+                // Establecer valores por defecto
+                document.getElementById('pendientesCount').textContent = '0';
+                document.getElementById('confirmadasCount').textContent = '0';
+                document.getElementById('completadasCount').textContent = '0';
+                document.getElementById('canceladasCount').textContent = '0';
+            }
+        }
+
+        function updateStatCardClass(elementId, value) {
+            const element = document.getElementById(elementId);
+            const card = element.closest('.stat-card');
+            if (card) {
+                if (value > 0) {
+                    card.classList.add('has-data');
+                } else {
+                    card.classList.remove('has-data');
+                }
+            }
+        }
+
+        // Calendar Functions
+        function generateCalendar() {
+            if (!currentVisits) return;
+            
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Get visits for this month
+            const monthVisits = currentVisits.filter(visit => {
+                const visitDate = new Date(visit.fecha_visita);
+                return visitDate.getMonth() === month && visitDate.getFullYear() === year;
+            });
+            
+            // Update month title
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                               'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+            
+            // Get first day and number of days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Generate calendar HTML
+            let calendarHTML = '';
+            let day = 1;
+            
+            for (let week = 0; week < 6; week++) {
+                for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
+                    if (week === 0 && dayOfWeek < firstDay) {
+                        // Previous month days
+                        const prevMonth = month === 0 ? 11 : month - 1;
+                        const prevYear = month === 0 ? year - 1 : year;
+                        const prevMonthDays = new Date(prevYear, prevMonth + 1, 0).getDate();
+                        const prevDay = prevMonthDays - firstDay + dayOfWeek + 1;
+                        calendarHTML += `<div class="calendar-day other-month"><span class="day-number">${prevDay}</span></div>`;
+                    } else if (day > daysInMonth) {
+                        // Next month days
+                        const nextDay = day - daysInMonth;
+                        calendarHTML += `<div class="calendar-day other-month"><span class="day-number">${nextDay}</span></div>`;
+                        day++;
+                    } else {
+                        // Current month days
+                        const today = new Date();
+                        const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+                        
+                        // Get visits for this day
+                        const dayVisits = monthVisits.filter(visit => {
+                            const visitDate = new Date(visit.fecha_visita);
+                            return visitDate.getDate() === day;
+                        });
+                        
+                        const hasVisits = dayVisits.length > 0;
+                        const todayClass = isToday ? 'today' : '';
+                        const visitsClass = hasVisits ? 'has-visits' : '';
+                        
+                        // Generate visit dots
+                        const visitDots = dayVisits.map(visit => 
+                            `<span class="visit-dot ${visit.estado}"></span>`
+                        ).join('');
+                        
+                        calendarHTML += `
+                            <div class="calendar-day ${todayClass} ${visitsClass}" onclick="showDayVisits(${year}, ${month}, ${day})">
+                                <span class="day-number">${day}</span>
+                                <div class="visit-dots">${visitDots}</div>
+                            </div>
+                        `;
+                        day++;
+                    }
+                }
+                if (day > daysInMonth) break;
+            }
+            
+            document.getElementById('calendarDays').innerHTML = calendarHTML;
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            generateCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            generateCalendar();
+        }
+
+        function todayMonth() {
+            currentDate = new Date();
+            generateCalendar();
+        }
+
+        function showDayVisits(year, month, day) {
+            const selectedDate = new Date(year, month, day);
+            const dayVisits = currentVisits.filter(visit => {
+                const visitDate = new Date(visit.fecha_visita);
+                return visitDate.toDateString() === selectedDate.toDateString();
+            });
+            
+            if (dayVisits.length > 0) {
+                const visitsList = dayVisits.map(visit => createVisitItemHTML(visit)).join('');
+                const modalContent = `
+                    <h6>Visitas del ${day}/${month + 1}/${year}</h6>
+                    <div class="mt-3">${visitsList}</div>
+                `;
+                document.getElementById('detallesVisitaContent').innerHTML = modalContent;
+                new bootstrap.Modal(document.getElementById('detallesVisitaModal')).show();
+            }
+        }
+
+        // Visits Functions
+        function loadTodayVisits() {
+            if (!currentVisits) return;
+            
+            const today = new Date();
+            const todayVisits = currentVisits.filter(visit => {
+                const visitDate = new Date(visit.fecha_visita);
+                return visitDate.toDateString() === today.toDateString();
+            });
+            
+            const container = document.getElementById('todayVisits');
+            
+            if (todayVisits.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center p-4">
+                        <i class="fas fa-calendar-check text-muted mb-3" style="font-size: 3rem;"></i>
+                        <p class="text-muted">No hay visitas programadas para hoy</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = todayVisits.map(visit => createVisitItemHTML(visit)).join('');
+            }
+        }
+
+        function createVisitItemHTML(visit) {
+            const statusClass = `status-${visit.estado}`;
+            const cliente = allClients.find(c => c.id === visit.cliente_id) || { nombre_empresa: visit.cliente_nombre || 'Cliente no encontrado' };
+            
+            return `
+                <div class="visit-item">
+                    <div class="visit-info">
+                        <div class="visit-details">
+                            <h6>${cliente.nombre_empresa}</h6>
+                            <div class="visit-meta">
+                                <i class="fas fa-clock me-1"></i> ${visit.hora_visita}
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-user me-1"></i> ${visit.empleado_nombre || 'Sin asignar'}
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-map-marker-alt me-1"></i> ${visit.tipo_visita}
+                            </div>
+                        </div>
+                        <div class="visit-actions">
+                            <span class="visit-status ${statusClass}">${visit.estado}</span>
+                            <button class="btn btn-sm btn-outline-primary ms-2" onclick="verDetallesVisita(${visit.id})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary ms-1" onclick="editarVisita(${visit.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function guardarVisita() {
+            const form = document.getElementById('visitaForm');
+            const formData = new FormData(form);
+            
+            // Validar campos requeridos
+            const clienteId = formData.get('clienteId');
+            const tipoVisita = formData.get('tipoVisita');
+            const fechaVisita = formData.get('fechaVisita');
+            const horaVisita = formData.get('horaVisita');
+            
+            if (!clienteId || !tipoVisita || !fechaVisita || !horaVisita) {
+                showAlert('Por favor complete todos los campos requeridos', 'warning');
+                return;
+            }
+            
+            const visitaData = {
+                cliente_id: clienteId,
+                empleado_id: formData.get('empleadoId') || null,
+                tipo_visita: tipoVisita,
+                fecha_visita: fechaVisita,
+                hora_visita: horaVisita,
+                duracion_estimada: formData.get('duracionEstimada') || 60,
+                estado: formData.get('estado') || 'pendiente',
+                direccion_visita: formData.get('direccionVisita') || null,
+                observaciones: formData.get('observaciones') || null,
+                notas_tecnico: formData.get('notasTecnico') || null
+            };
+            
+            try {
+                console.log('Enviando datos:', visitaData);
+                
+                const url = editingVisitId ? `/api/visitas/${editingVisitId}` : '/api/visitas';
+                const method = editingVisitId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(visitaData)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('Visita guardada:', result);
+                
+                showAlert(
+                    editingVisitId ? 'Visita actualizada correctamente' : 'Visita creada correctamente',
+                    'success'
+                );
+                
+                // Cerrar modal y recargar datos
+                const modal = bootstrap.Modal.getInstance(document.getElementById('nuevaVisitaModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                
+                await loadVisits();
+                await loadStatistics();
+                editingVisitId = null;
+                form.reset();
+                
+            } catch (error) {
+                console.error('Error al guardar visita:', error);
+                showAlert('Error al guardar la visita: ' + error.message, 'error');
+            }
+        }
+
+        async function eliminarVisita(id) {
+            if (!confirm('¿Está seguro de que desea eliminar esta visita?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/visitas/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                showAlert('Visita eliminada correctamente', 'success');
+                await loadVisits();
+                await loadStatistics();
+                
+            } catch (error) {
+                console.error('Error al eliminar visita:', error);
+                showAlert('Error al eliminar la visita: ' + error.message, 'error');
+            }
+        }
+
+        function editarVisita(visitId) {
+            try {
+                const visit = currentVisits.find(v => v.id === visitId);
+                if (!visit) {
+                    showAlert('Visita no encontrada', 'error');
+                    return;
+                }
+                
+                editingVisitId = visitId;
+                
+                // Actualizar título del modal
+                document.getElementById('nuevaVisitaModalLabel').textContent = 'Editar Visita';
+                
+                // Llenar el formulario
+                document.getElementById('clienteId').value = visit.cliente_id || '';
+                document.getElementById('empleadoId').value = visit.empleado_id || '';
+                document.getElementById('tipoVisita').value = visit.tipo_visita || '';
+                document.getElementById('estado').value = visit.estado || 'pendiente';
+                document.getElementById('fechaVisita').value = visit.fecha_visita_formatted || '';
+                document.getElementById('horaVisita').value = visit.hora_visita_formatted || '';
+                document.getElementById('duracionEstimada').value = visit.duracion_estimada || 60;
+                document.getElementById('direccionVisita').value = visit.direccion_visita || '';
+                document.getElementById('observaciones').value = visit.observaciones || '';
+                document.getElementById('notasTecnico').value = visit.notas_tecnico || '';
+                
+                // Mostrar el modal
+                const modal = new bootstrap.Modal(document.getElementById('nuevaVisitaModal'));
+                modal.show();
+                
+            } catch (error) {
+                console.error('Error al editar visita:', error);
+                showAlert('Error al cargar los datos de la visita', 'error');
+            }
+        }
+
+        function verDetallesVisita(visitId) {
+            const visit = currentVisits.find(v => v.id === visitId);
+            if (!visit) {
+                showAlert('Visita no encontrada', 'error');
+                return;
+            }
+            
+            const cliente = allClients.find(c => c.id === visit.cliente_id) || { nombre_empresa: visit.cliente_nombre || 'No encontrado' };
+            const empleado = allEmployees.find(e => e.id === visit.empleado_id);
+            
+            const content = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Información General</h6>
+                        <p><strong>Número:</strong> ${visit.numero_visita || `VIS-${visit.id}`}</p>
+                        <p><strong>Cliente:</strong> ${cliente.nombre_empresa}</p>
+                        <p><strong>Tipo:</strong> ${visit.tipo_visita}</p>
+                        <p><strong>Estado:</strong> <span class="visit-status status-${visit.estado}">${visit.estado}</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Programación</h6>
+                        <p><strong>Fecha:</strong> ${new Date(visit.fecha_visita).toLocaleDateString()}</p>
+                        <p><strong>Hora:</strong> ${visit.hora_visita}</p>
+                        <p><strong>Duración:</strong> ${visit.duracion_estimada} minutos</p>
+                        <p><strong>Empleado:</strong> ${visit.empleado_nombre || 'Sin asignar'}</p>
+                    </div>
+                </div>
+                ${visit.direccion_visita ? `<div class="mt-3"><h6>Dirección</h6><p>${visit.direccion_visita}</p></div>` : ''}
+                ${visit.observaciones ? `<div class="mt-3"><h6>Observaciones</h6><p>${visit.observaciones}</p></div>` : ''}
+                ${visit.notas_tecnico ? `<div class="mt-3"><h6>Notas del Técnico</h6><p>${visit.notas_tecnico}</p></div>` : ''}
+            `;
+            
+            document.getElementById('detallesVisitaContent').innerHTML = content;
+            editingVisitId = visitId;
+            new bootstrap.Modal(document.getElementById('detallesVisitaModal')).show();
+        }
+
+        function editarVisitaDesdeDetalles() {
+            bootstrap.Modal.getInstance(document.getElementById('detallesVisitaModal')).hide();
+            setTimeout(() => editarVisita(editingVisitId), 300);
+        }
+
+        // Filter Functions
+        function aplicarFiltros() {
+            const clienteFilter = document.getElementById('buscarCliente').value.toLowerCase();
+            const estadoFilter = document.getElementById('filtroEstado').value;
+            const mesFilter = document.getElementById('filtroMes').value;
+            
+            let filteredVisits = currentVisits;
+            
+            // Filter by client
+            if (clienteFilter) {
+                filteredVisits = filteredVisits.filter(visit => {
+                    const cliente = allClients.find(c => c.id === visit.cliente_id);
+                    const clienteNombre = cliente ? cliente.nombre_empresa : visit.cliente_nombre || '';
+                    return clienteNombre.toLowerCase().includes(clienteFilter);
+                });
+            }
+            
+            // Filter by status
+            if (estadoFilter) {
+                filteredVisits = filteredVisits.filter(visit => visit.estado === estadoFilter);
+            }
+            
+            // Filter by month
+            if (mesFilter !== '') {
+                filteredVisits = filteredVisits.filter(visit => {
+                    const visitDate = new Date(visit.fecha_visita);
+                    return visitDate.getMonth() === parseInt(mesFilter);
+                });
+            }
+            
+            // Update calendar with filtered visits
+            const originalVisits = currentVisits;
+            currentVisits = filteredVisits;
+            generateCalendar();
+            loadTodayVisits();
+            currentVisits = originalVisits; // Restore original for next filter
+        }
+
+        function verTodasLasVisitas() {
+            const allVisitsList = document.getElementById('allVisitsList');
+            const allVisitsContainer = document.getElementById('allVisits');
+            
+            if (currentVisits.length === 0) {
+                allVisitsContainer.innerHTML = `
+                    <div class="text-center p-4">
+                        <i class="fas fa-calendar-times text-muted mb-3" style="font-size: 3rem;"></i>
+                        <p class="text-muted">No hay visitas programadas</p>
+                    </div>
+                `;
+            } else {
+                allVisitsContainer.innerHTML = currentVisits.map(visit => createVisitItemHTML(visit)).join('');
+            }
+            
+            allVisitsList.style.display = 'block';
+        }
+
+        function ocultarTodasLasVisitas() {
+            document.getElementById('allVisitsList').style.display = 'none';
+        }
+
+        // Utility Functions
+        function validateForm() {
+            const requiredFields = ['clienteId', 'tipoVisita', 'fechaVisita', 'horaVisita'];
+            let isValid = true;
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field && !field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else if (field) {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            return isValid;
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.role = 'alert';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            const container = document.querySelector('.content-wrapper');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            // Auto cerrar después de 5 segundos
+            setTimeout(() => {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 150);
+            }, 5000);
+        }
+
+        // Función para limpiar el formulario cuando se cierra el modal
+        function limpiarFormulario() {
+            try {
+                document.getElementById('nuevaVisitaModalLabel').textContent = 'Nueva Visita';
+                document.getElementById('visitaForm').reset();
+                editingVisitId = null;
+            } catch (error) {
+                console.error('Error al limpiar formulario:', error);
+            }
+        }
+
+        // Agregar evento para limpiar el formulario cuando se cierra el modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('nuevaVisitaModal');
+            if (modal) {
+                modal.addEventListener('hidden.bs.modal', limpiarFormulario);
+            }
+        });
+
+        function updateVisitsTable(visitas) {
+            const tbody = document.querySelector('#visitsTable tbody');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+            
+            visitas.forEach(visita => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${visita.numero_visita || ''}</td>
+                    <td>${visita.cliente_nombre || ''}</td>
+                    <td>${visita.fecha_visita_formatted || ''}</td>
+                    <td>${visita.hora_visita_formatted || ''}</td>
+                    <td>${visita.tipo_visita || ''}</td>
+                    <td>${visita.cantidad || ''} ${visita.unidad || ''}</td>
+                    <td>
+                        <span class="badge bg-${getEstadoBadgeClass(visita.estado)}">
+                            ${visita.estado || ''}
+                        </span>
+                    </td>
+                    <td>${visita.empleado_nombre || 'No asignado'}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-info" onclick="editarVisita(${visita.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="eliminarVisita(${visita.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function getEstadoBadgeClass(estado) {
+            switch (estado) {
+                case 'pendiente':
+                    return 'warning';
+                case 'confirmada':
+                    return 'info';
+                case 'en_proceso':
+                    return 'primary';
+                case 'completada':
+                    return 'success';
+                case 'cancelada':
+                    return 'danger';
+                default:
+                    return 'secondary';
+            }
+        }
+
+        // Función para cargar visitas
+        async function cargarVisitas(page = 1) {
+            if (isLoading) return;
+            isLoading = true;
+
+            try {
+                const response = await fetch(`/api/visitas?page=${page}&limit=50`);
+                if (!response.ok) {
+                    throw new Error('Error al cargar las visitas');
+                }
+
+                const data = await response.json();
+                if (!data.success) {
+                    throw new Error(data.message || 'Error al cargar las visitas');
+                }
+
+                visitasData = data.visitas;
+                currentPage = data.paginacion.pagina;
+                totalPages = data.paginacion.totalPaginas;
+                
+                renderizarVisitas();
+                actualizarPaginacion();
+                actualizarEstadisticas();
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarError('Error al cargar las visitas: ' + error.message);
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        // Función para renderizar visitas
+        function renderizarVisitas() {
+            const tbody = document.getElementById('visitasList');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+
+            if (visitasData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="fas fa-calendar-check fa-3x mb-3"></i>
+                                <p>No hay visitas programadas</p>
+                                <button class="btn btn-primary" onclick="mostrarModalNuevaVisita()">
+                                    <i class="fas fa-plus"></i> Nueva Visita
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            visitasData.forEach(visita => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${visita.numero_visita}</td>
+                    <td>${visita.cliente_nombre}</td>
+                    <td>${formatearFecha(visita.fecha_visita)}</td>
+                    <td>${formatearHora(visita.hora_visita)}</td>
+                    <td>${visita.tipo_visita}</td>
+                    <td>${visita.cantidad} ${visita.unidad}</td>
+                    <td>
+                        <span class="badge ${getEstadoClass(visita.estado)}">
+                            ${visita.estado}
+                        </span>
+                    </td>
+                    <td>${visita.empleado_nombre || 'No asignado'}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-info" onclick="editarVisita(${visita.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${visita.estado === 'pendiente' ? `
+                                <button class="btn btn-sm btn-danger" onclick="cancelarVisita(${visita.id})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Función para actualizar paginación
+        function actualizarPaginacion() {
+            const paginacion = document.getElementById('paginacion');
+            if (!paginacion) return;
+
+            let html = `
+                <nav aria-label="Navegación de páginas">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                            <a class="page-link" href="#" onclick="cambiarPagina(${currentPage - 1})" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+            `;
+
+            // Mostrar páginas
+            for (let i = 1; i <= totalPages; i++) {
+                if (
+                    i === 1 || // Primera página
+                    i === totalPages || // Última página
+                    (i >= currentPage - 2 && i <= currentPage + 2) // Páginas alrededor de la actual
+                ) {
+                    html += `
+                        <li class="page-item ${i === currentPage ? 'active' : ''}">
+                            <a class="page-link" href="#" onclick="cambiarPagina(${i})">${i}</a>
+                        </li>
+                    `;
+                } else if (
+                    i === currentPage - 3 || // Antes del rango
+                    i === currentPage + 3 // Después del rango
+                ) {
+                    html += `
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">...</a>
+                        </li>
+                    `;
+                }
+            }
+
+            html += `
+                        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                            <a class="page-link" href="#" onclick="cambiarPagina(${currentPage + 1})" aria-label="Siguiente">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            `;
+
+            paginacion.innerHTML = html;
+        }
+
+        // Función para cambiar de página
+        function cambiarPagina(page) {
+            if (page < 1 || page > totalPages || page === currentPage) return;
+            cargarVisitas(page);
+        }
+
+        // Función para actualizar estadísticas
+        async function actualizarEstadisticas() {
+            try {
+                const response = await fetch('/api/visitas/estadisticas');
+                if (!response.ok) {
+                    throw new Error('Error al cargar estadísticas');
+                }
+
+                const stats = await response.json();
+                
+                document.getElementById('pendientesCount').textContent = stats.pendientes;
+                document.getElementById('confirmadasCount').textContent = stats.confirmadas;
+                document.getElementById('completadasCount').textContent = stats.completadas;
+                document.getElementById('canceladasCount').textContent = stats.canceladas;
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarError('Error al cargar estadísticas: ' + error.message);
+            }
+        }
+
+        // Funciones de utilidad
+        function getEstadoClass(estado) {
+            const estados = {
+                'pendiente': 'bg-warning',
+                'confirmada': 'bg-info',
+                'completada': 'bg-success',
+                'cancelada': 'bg-danger'
+            };
+            return estados[estado] || 'bg-secondary';
+        }
+
+        function getEstadoText(estado) {
+            const estados = {
+                'pendiente': 'Pendiente',
+                'confirmada': 'Confirmada',
+                'completada': 'Completada',
+                'cancelada': 'Cancelada'
+            };
+            return estados[estado] || estado;
+        }
+
+        function formatearFecha(fecha) {
+            if (!fecha) return 'No especificada';
+            return new Date(fecha).toLocaleDateString('es-ES');
+        }
+
+        function formatearHora(hora) {
+            if (!hora) return 'No especificada';
+            return hora;
+        }
+
+        function mostrarError(mensaje) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                <i class="fas fa-exclamation-circle me-2"></i>
+                ${mensaje}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.content-wrapper').insertBefore(alertDiv, document.querySelector('.page-header'));
+        }
+
+        function mostrarExito(mensaje) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                ${mensaje}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.content-wrapper').insertBefore(alertDiv, document.querySelector('.page-header'));
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarVisitas();
+            actualizarEstadisticas();
+        });
+    </script>
+</body>
+</html>

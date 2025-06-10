@@ -36,7 +36,7 @@
       
       <div class="contacto-container">
         <div class="contacto-form-container">
-          <form id="contactoForm" action="/contacto" method="POST">
+          <form id="contactoForm" action="/contacto/enviar" method="POST">
             <div class="form-group">
               <label for="nombre">Nombre</label>
               <input type="text" id="nombre" name="nombre" class="form-control" required>
@@ -59,6 +59,12 @@
             
             <button type="submit" class="btn-enviar">Enviar Mensaje</button>
           </form>
+          <div id="alertaExito" class="alert alert-success mt-3" style="display:none;">
+            ¡Gracias por contactarnos! Hemos recibido su mensaje y nos pondremos en contacto contigo a la brevedad.
+          </div>
+          <div id="alertaError" class="alert alert-danger mt-3" style="display:none;">
+            Error al enviar el mensaje. Por favor, inténtalo de nuevo.
+          </div>
         </div>
         
         <div class="contacto-info-container">
@@ -119,5 +125,43 @@
   <%- include('partials/footer') %>
 
   <script src="/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const contactoForm = document.getElementById('contactoForm');
+      const alertaExito = document.getElementById('alertaExito');
+      const alertaError = document.getElementById('alertaError');
+      if (contactoForm) {
+        contactoForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          alertaExito.style.display = 'none';
+          alertaError.style.display = 'none';
+          alertaExito.style.display = 'block';
+          this.reset();
+          try {
+            const formData = {
+              nombre: this.nombre.value,
+              email: this.correo.value,
+              telefono: this.telefono.value,
+              mensaje: this.mensaje.value
+            };
+            const response = await fetch('/contacto/enviar', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(formData)
+            });
+            const data = await response.json();
+            if (!data.success) {
+              alertaExito.style.display = 'none';
+              alertaError.textContent = data.message || 'Error al enviar el mensaje. Por favor, inténtalo de nuevo.';
+              alertaError.style.display = 'block';
+            }
+          } catch (error) {
+            alertaExito.style.display = 'none';
+            alertaError.style.display = 'block';
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>

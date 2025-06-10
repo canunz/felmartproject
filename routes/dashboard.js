@@ -34,6 +34,7 @@ router.get('/', isAuthenticated, async (req, res) => {
     );
     
     res.render('dashboard', {
+      titulo: 'Dashboard',
       countSolicitudes: solicitudesResult[0].total,
       countPendientes: pendientesResult[0].total,
       countVisitas: visitasResult[0].total,
@@ -44,6 +45,7 @@ router.get('/', isAuthenticated, async (req, res) => {
     console.error('Error al cargar el dashboard:', error);
     req.flash('error_msg', 'Error al cargar el dashboard');
     res.render('dashboard', { // Asumiendo que la vista es 'dashboard'
+      titulo: 'Dashboard',
       countSolicitudes: 0,
       countPendientes: 0,
       countVisitas: 0,

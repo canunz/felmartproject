@@ -10,42 +10,104 @@ const SolicitudRetiro = sequelize.define('SolicitudRetiro', {
   },
   clienteId: {
     type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'clienteId',
     references: {
       model: 'clientes',
       key: 'id'
-    },
+    }
+  },
+  numeroSolicitud: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    field: 'numero_solicitud',
+    unique: true
+  },
+  tipoResiduo: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    field: 'tipo_residuo'
+  },
+  cantidad: {
+    type: DataTypes.STRING(50),
+    allowNull: true
+  },
+  unidad: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+    defaultValue: 'kg'
+  },
+  descripcion: {
+    type: DataTypes.TEXT,
     allowNull: false
   },
-  fechaSolicitud: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
+  fechaPreferida: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    field: 'fecha_preferida'
   },
-  fechaRetiroSolicitada: {
-    type: DataTypes.DATE,
-    allowNull: false
+  urgencia: {
+    type: DataTypes.ENUM('normal', 'media', 'alta', 'emergencia'),
+    allowNull: true,
+    defaultValue: 'normal'
   },
-  direccionRetiro: {
-    type: DataTypes.STRING,
-    allowNull: false
+  ubicacion: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  direccionEspecifica: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'direccion_especifica'
   },
   contactoNombre: {
-    type: DataTypes.STRING,
-    allowNull: false
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    field: 'contacto_nombre'
   },
   contactoTelefono: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  estado: {
-    type: DataTypes.ENUM('pendiente', 'cotizada', 'programada', 'completada', 'cancelada'),
-    defaultValue: 'pendiente'
+    type: DataTypes.STRING(20),
+    allowNull: true,
+    field: 'contacto_telefono'
   },
   observaciones: {
-    type: DataTypes.TEXT
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  estado: {
+    type: DataTypes.ENUM('pendiente', 'confirmada', 'en_proceso', 'completada', 'cancelada'),
+    defaultValue: 'pendiente'
+  },
+  fechaProgramada: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    field: 'fecha_programada'
+  },
+  fechaCompletado: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    field: 'fecha_completado'
   }
 }, {
+  tableName: 'solicitudes_retiro',
   timestamps: true,
-  tableName: 'solicitudes_retiro'
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
+
+// Definir asociaciones
+SolicitudRetiro.associate = function(models) {
+  // Relación con Cliente
+  SolicitudRetiro.belongsTo(models.Cliente, {
+    foreignKey: 'clienteId',
+    as: 'cliente'
+  });
+
+  // Relación con DetalleResiduo
+  SolicitudRetiro.hasMany(models.DetalleResiduo, {
+    foreignKey: 'solicitudRetiroId',
+    as: 'DetalleResiduos'
+  });
+};
 
 module.exports = SolicitudRetiro;

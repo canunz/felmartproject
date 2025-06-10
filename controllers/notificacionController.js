@@ -1,134 +1,99 @@
 // controllers/notificacionController.js
-const { Notificacion } = require('../models');
-const { Op } = require('sequelize');
+const Notificacion = require('../models/Notificacion');
 
-const notificacionController = {
-  // Obtener notificaciones no leídas
-  obtenerNoLeidas: async (req, res) => {
-    try {
-      const usuarioId = req.session.usuario.id;
-      
-      const notificaciones = await Notificacion.findAll({
-        where: { 
-          usuarioId,
-          leida: false
-        },
-        order: [['createdAt', 'DESC']],
-        limit: 5
-      });
-      
-      // Contar total de no leídas
-      const totalNoLeidas = await Notificacion.count({
-        where: { 
-          usuarioId,
-          leida: false
-        }
-      });
-      
-      res.json({
-        success: true,
-        notificaciones,
-        totalNoLeidas
-      });
-    } catch (error) {
-      console.error('Error al obtener notificaciones:', error);
-      res.status(500).json({
-        success: false,
-        mensaje: 'Error al obtener notificaciones'
+// Obtener notificaciones no leídas
+exports.obtenerNoLeidas = async (req, res) => {
+  try {
+    if (!req.session || !req.session.usuario) {
+      return res.status(401).json({ 
+        error: 'No hay sesión activa',
+        mensaje: 'Por favor inicie sesión para ver sus notificaciones'
       });
     }
-  },
-  
-  // Listar todas las notificaciones
-  listar: async (req, res) => {
-    try {
-      const usuarioId = req.session.usuario.id;
-      
-      const notificaciones = await Notificacion.findAll({
-        where: { usuarioId },
-        order: [['createdAt', 'DESC']]
-      });
-      
-      res.render('notificaciones/listar', {
-        titulo: 'Mis Notificaciones',
-        notificaciones,
-        usuario: req.session.usuario,
-        error: req.flash('error'),
-        success: req.flash('success')
-      });
-    } catch (error) {
-      console.error('Error al listar notificaciones:', error);
-      req.flash('error', 'Error al cargar las notificaciones');
-      res.redirect('/dashboard');
-    }
-  },
-  
-  // Marcar como leída
-  marcarLeida: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const usuarioId = req.session.usuario.id;
-      
-      // Buscar notificación
-      const notificacion = await Notificacion.findOne({
-        where: { 
-          id,
-          usuarioId
-        }
-      });
-      
-      if (!notificacion) {
-        return res.status(404).json({
-          success: false,
-          mensaje: 'Notificación no encontrada'
-        });
-      }
-      
-      // Marcar como leída
-      notificacion.leida = true;
-      await notificacion.save();
-      
-      res.json({
-        success: true,
-        mensaje: 'Notificación marcada como leída'
-      });
-    } catch (error) {
-      console.error('Error al marcar notificación:', error);
-      res.status(500).json({
-        success: false,
-        mensaje: 'Error al marcar notificación'
-      });
-    }
-  },
-  
-  // Marcar todas como leídas
-  marcarTodasLeidas: async (req, res) => {
-    try {
-      const usuarioId = req.session.usuario.id;
-      
-      // Actualizar todas las notificaciones no leídas
-      await Notificacion.update(
-        { leida: true },
-        { 
-          where: { 
-            usuarioId,
-            leida: false
-          }
-        }
-      );
-      
-      res.json({
-        success: true,
-        mensaje: 'Todas las notificaciones marcadas como leídas'
-      });
-    } catch (error) {
-      console.error('Error al marcar notificaciones:', error);
-      res.status(500).json({
-        success: false,
-        mensaje: 'Error al marcar notificaciones'
-      });
-    }
+
+    const notificaciones = await Notificacion.findAll({
+      where: {
+        leida: false,
+        usuarioId: req.session.usuario.id
+      },
+      order: [['fechaCreacion', 'DESC']],
+      limit: 5
+    });
+
+    res.json({
+      notificaciones,
+      total: notificaciones.length
+    });
+  } catch (error) {
+    console.error('Error al obtener notificaciones:', error);
+    res.status(500).json({ 
+      error: 'Error al obtener notificaciones',
+      mensaje: 'Hubo un problema al cargar las notificaciones'
+    });
   }
 };
 
-module.exports = notificacionController;
+// Marcar una notificación como leída
+exports.marcarComoLeida = async (req, res) => {
+  try {
+    if (!req.session || !req.session.usuario) {
+      return res.status(401).json({ 
+        error: 'No hay sesión activa',
+        mensaje: 'Por favor inicie sesión para marcar notificaciones'
+      });
+    }
+
+    const notificacion = await Notificacion.findOne({
+      where: {
+        id: req.params.id,
+        usuarioId: req.session.usuario.id
+      }
+    });
+
+    if (!notificacion) {
+      return res.status(404).json({ 
+        error: 'Notificación no encontrada',
+        mensaje: 'La notificación que intenta marcar no existe'
+      });
+    }
+
+    await notificacion.update({ leida: true });
+    res.json({ mensaje: 'Notificación marcada como leída' });
+  } catch (error) {
+    console.error('Error al marcar notificación como leída:', error);
+    res.status(500).json({ 
+      error: 'Error al marcar notificación',
+      mensaje: 'Hubo un problema al marcar la notificación como leída'
+    });
+  }
+};
+
+// Marcar todas las notificaciones como leídas
+exports.marcarTodasLeidas = async (req, res) => {
+  try {
+    if (!req.session || !req.session.usuario) {
+      return res.status(401).json({ 
+        error: 'No hay sesión activa',
+        mensaje: 'Por favor inicie sesión para marcar notificaciones'
+      });
+    }
+
+    await Notificacion.update(
+      { leida: true },
+      {
+        where: {
+          usuarioId: req.session.usuario.id,
+          leida: false
+        }
+      }
+    );
+
+    res.json({ mensaje: 'Todas las notificaciones han sido marcadas como leídas' });
+  } catch (error) {
+    console.error('Error al marcar todas las notificaciones como leídas:', error);
+    res.status(500).json({ 
+      error: 'Error al marcar notificaciones',
+      mensaje: 'Hubo un problema al marcar las notificaciones como leídas'
+    });
+  }
+};

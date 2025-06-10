@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Cotizaciones | Felmart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --nav-primary-color: #00616e;
+            --nav-primary-dark: #004d57;
+            --nav-primary-light: #00818f;
+            --nav-secondary-color: #6c757d;
+            --nav-white: #ffffff;
+            --nav-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --nav-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --purple-color: #6f42c1;
+            --orange-color: #fd7e14;
+            --light-bg: #f8f9fa;
+            --border-radius: 12px;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            --shadow-hover: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--light-bg); line-height: 1.6; }
+        .header-nav { background: var(--nav-white); box-shadow: var(--nav-shadow); padding: 1rem 0; position: sticky; top: 0; z-index: 1000; }
+        .nav-container { display: flex; align-items: center; justify-content: space-between; padding: 0; }
+        .logo-section { display: flex; align-items: center; text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 12px; color: white; font-size: 1.2rem; }
+        .logo-text { font-size: 1.5rem; font-weight: 700; color: var(--nav-primary-color); }
+        .nav-menu { display: flex; align-items: center; gap: 0; margin: 0; padding: 0; list-style: none; }
+        .nav-item { display: flex; align-items: center; }
+        .nav-link { display: flex; align-items: center; gap: 8px; padding: 0.5rem 1rem; color: var(--nav-secondary-color); text-decoration: none; border-radius: 8px; transition: var(--nav-transition); font-weight: 500; position: relative; }
+        .nav-link:hover, .nav-link.active { color: var(--nav-primary-color); background: rgba(0, 97, 110, 0.05); }
+        .nav-link i { font-size: 16px; }
+        .user-area { display: flex; align-items: center; gap: 0.75rem; }
+        .notification-bell { position: relative; background: transparent; border: 1px solid rgba(0, 97, 110, 0.2); color: var(--nav-secondary-color); padding: 0.5rem; border-radius: 8px; cursor: pointer; transition: var(--nav-transition); display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
+        .notification-bell:hover { color: var(--nav-primary-color); border-color: var(--nav-primary-color); background: rgba(0, 97, 110, 0.05); }
+        .notification-badge { position: absolute; top: -5px; right: -5px; background: var(--danger-color); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--nav-white); }
+        .user-dropdown { position: relative; }
+        .user-btn { background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light)); color: white; border: none; padding: 0.5rem 1rem; border-radius: 50px; display: flex; align-items: center; gap: 8px; font-weight: 500; cursor: pointer; transition: var(--nav-transition); }
+        .user-btn:hover { background: linear-gradient(135deg, var(--nav-primary-dark), var(--nav-primary-color)); }
+        .dropdown-menu { position: absolute; top: calc(100% + 8px); right: 0; background: var(--nav-white); border: none; border-radius: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); min-width: 200px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.2s; z-index: 1000; padding: 0.5rem; margin-top: 0.5rem; }
+        .dropdown-menu.show { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-item { display: flex; align-items: center; gap: 8px; padding: 0.75rem 1rem; color: var(--nav-primary-color); text-decoration: none; transition: var(--nav-transition); font-size: 14px; border-radius: 8px; margin: 0.25rem 0; font-weight: 500; }
+        .dropdown-item:hover { background: rgba(0, 97, 110, 0.05); color: var(--nav-primary-color); transform: translateX(5px); }
+        .dropdown-item.text-danger { color: var(--danger-color) !important; }
+        .dropdown-item.text-danger:hover { background: rgba(220, 53, 69, 0.1); color: var(--danger-color) !important; }
+        .dropdown-item i { width: 20px; text-align: center; }
+        .notification-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: var(--nav-white); border-radius: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); width: 300px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.2s; z-index: 1001; border: 1px solid #e2e8f0; max-height: 400px; overflow-y: auto; }
+        .notification-dropdown.show { opacity: 1; visibility: visible; transform: translateY(0); }
+        .notification-header { padding: 1rem 1.25rem; border-bottom: 1px solid #e2e8f0; background: var(--light-bg); border-radius: 12px 12px 0 0; position: sticky; top: 0; z-index: 1; }
+        .notification-title { font-weight: 600; color: var(--nav-primary-color); margin: 0; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .notification-item { padding: 1rem 1.25rem; border-bottom: 1px solid #f1f3f4; transition: all 0.2s ease; cursor: pointer; }
+        .notification-item:hover { background: var(--light-bg); }
+        .notification-item:last-child { border-bottom: none; }
+        .notification-item.unread { background: rgba(0, 97, 110, 0.02); border-left: 3px solid var(--nav-primary-color); }
+        .notification-text { font-size: 0.85rem; font-weight: 600; color: var(--nav-primary-color); margin: 0 0 0.25rem 0; }
+        .notification-desc { font-size: 0.75rem; color: var(--nav-secondary-color); margin: 0 0 0.5rem 0; line-height: 1.4; }
+        .notification-time { font-size: 0.7rem; color: var(--nav-secondary-color); font-style: italic; }
+        .content-wrapper { padding: 2rem 1.5rem; max-width: 1400px; margin: 0 auto; }
+        .page-header { background: var(--nav-white); border-radius: var(--border-radius); padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow); border: 1px solid #e2e8f0; }
+        .page-title { font-size: 2rem; font-weight: 700; color: var(--nav-primary-color); margin-bottom: 0.5rem; }
+        .breadcrumb { background: none; padding: 0; margin: 0; font-size: 0.875rem; }
+        .breadcrumb-item { color: var(--nav-secondary-color); }
+        .breadcrumb-item.active { color: var(--nav-secondary-color); opacity: 0.7; }
+        .breadcrumb-item a { color: var(--nav-primary-color); text-decoration: none; transition: all 0.2s ease; }
+        .breadcrumb-item a:hover { color: var(--nav-primary-dark); }
+        .btn-primary { background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light)); border: none; padding: 0.75rem 1.5rem; border-radius: var(--border-radius); font-weight: 600; font-size: 0.875rem; transition: all 0.2s ease; box-shadow: var(--shadow); }
+        .btn-primary:hover { background: linear-gradient(135deg, var(--nav-primary-dark), var(--nav-primary-color)); transform: translateY(-1px); box-shadow: var(--shadow-hover); }
+        .btn-success { background: linear-gradient(135deg, #28a745, #20c997); border: none; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3); }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4); }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+        .stats-row { margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e9ecef; text-align: center; transition: all 0.3s ease; height: 100%; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+        .stat-number { font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1; }
+        .stat-label { font-size: 0.95rem; color: #6c757d; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-card.total .stat-number { color: #3498db; }
+        .stat-card.pendientes .stat-number { color: #f39c12; }
+        .stat-card.aceptadas .stat-number { color: #27ae60; }
+        .stat-card.rechazadas .stat-number { color: #e74c3c; }
+        .filter-section { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); margin-bottom: 2rem; border: 1px solid #e9ecef; }
+        .data-table-container { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e9ecef; overflow: hidden; }
+        .table-header { background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light)); color: white; padding: 1.5rem 2rem; }
+        .table-title { font-size: 1.25rem; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 0.75rem; }
+        .table-responsive { max-height: 600px; overflow-y: auto; }
+        .table { margin: 0; }
+        .table thead th { background: #f8f9fa; border: none; color: var(--nav-primary-color); font-weight: 600; padding: 1rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
+        .table tbody td { padding: 1rem; border-color: #f1f3f4; vertical-align: middle; }
+        .table tbody tr { transition: all 0.2s ease; }
+        .table tbody tr:hover { background: #f8f9fa; }
+        .badge { padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 600; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge.bg-warning { background: #fff3cd !important; color: #856404 !important; }
+        .badge.bg-success { background: #d1edff !important; color: #0c5460 !important; }
+        .badge.bg-danger { background: #f8d7da !important; color: #721c24 !important; }
+        .btn { border-radius: 10px; font-weight: 500; padding: 0.625rem 1.25rem; transition: all 0.3s ease; border: none; font-size: 0.9rem; }
+        .btn-group .btn { padding: 0.375rem 0.75rem; margin: 0 0.125rem; border-radius: 8px; font-size: 0.8rem; }
+        .btn-outline-primary { border: 1px solid var(--nav-primary-color); color: var(--nav-primary-color); background: transparent; }
+        .btn-outline-primary:hover { background: var(--nav-primary-color); color: white; border-color: var(--nav-primary-color); }
+        .btn-outline-warning { border: 1px solid var(--warning-color); color: var(--warning-color); background: transparent; }
+        .btn-outline-warning:hover { background: var(--warning-color); color: white; border-color: var(--warning-color); }
+        .btn-outline-danger { border: 1px solid var(--danger-color); color: var(--danger-color); background: transparent; }
+        .btn-outline-danger:hover { background: var(--danger-color); color: white; border-color: var(--danger-color); }
+        .form-control, .form-select { border: 1px solid #dee2e6; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.95rem; transition: all 0.3s ease; }
+        .form-control:focus, .form-select:focus { border-color: var(--nav-primary-color); box-shadow: 0 0 0 0.2rem rgba(0, 97, 110, 0.25); }
+        .loading { text-align: center; padding: 3rem; color: #6c757d; }
+        .loading i { font-size: 2rem; margin-bottom: 1rem; animation: spin 1s linear infinite; }
+        .readonly { background-color: #f8f9fa !important; cursor: not-allowed; }
+        
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Toast Notifications */
+        .toast-container { position: fixed; top: 80px; right: 20px; z-index: 9999; }
+        .toast { border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .content-wrapper { padding: 1rem; }
+            .page-header { padding: 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
+            .page-title { font-size: 1.5rem; }
+            .table thead th, .table tbody td { padding: 1rem; font-size: 0.8rem; }
+            .notification-dropdown { width: 280px; right: -50px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Header Navigation -->
+  <header class="header-nav">
+    <div class="container-fluid px-4">
+        <div class="nav-container">
+            <a href="/" class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-recycle"></i>
+                </div>
+                <span class="logo-text">Felmart</span>
+            </a>
+
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/dashboard/clientes" class="nav-link">
+                            <i class="fas fa-building"></i>
+                            <span>Clientes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/clientes" class="nav-link">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Cotizaciones</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/solicitudes" class="nav-link">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Solicitudes</span>
+                        </a>
+                    </li>
+                 
+                    <li class="nav-item">
+                        <a href="/admin/visitas" class="nav-link">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Visitas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-dropdown">
+                <button class="user-btn" id="adminDropdownBtn" type="button">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Administrador</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu" id="adminDropdownMenu">
+                    <a href="/admin/perfil" class="dropdown-item">
+                        <i class="fas fa-user"></i> Mi Perfil
+                    </a>
+                    <a href="/admin/notificaciones" class="dropdown-item">
+                        <i class="fas fa-bell"></i> Notificaciones
+                    </a>
+                    <a href="/admin/auditoria" class="dropdown-item">
+                        <i class="fas fa-shield-alt"></i> Registro de Actividad
+                    </a>
+                    <a href="/admin/backups" class="dropdown-item">
+                        <i class="fas fa-database"></i> Respaldo de Datos
+                    </a>
+                    <a href="/admin/ayuda" class="dropdown-item">
+                        <i class="fas fa-question-circle"></i> Ayuda y Soporte
+                    </a>
+                    <div style="border-top: 1px solid #e9ecef; margin: 0.5rem 0;"></div>
+                    <a href="/" class="dropdown-item">
+                        <i class="fas fa-home"></i> Volver al Inicio
+                    </a>
+                    <a href="/logout" class="dropdown-item text-danger">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="page-title">Gestión de Cotizaciones</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Cotizaciones</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="cargarCotizaciones()" id="btnRefresh">
+                    <i class="fas fa-sync-alt me-1"></i>Actualizar
+                </button>
+                <button class="btn btn-success" onclick="exportarCotizaciones()">
+                    <i class="fas fa-download me-1"></i>Exportar
+                </button>
+            </div>
+        </div>
+
+        <div class="row stats-row">
+            <div class="col-md-3 mb-3">
+                <div class="stat-card total">
+                    <div class="stat-number" id="totalCotizaciones">4</div>
+                    <div class="stat-label">Total</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card pendientes">
+                    <div class="stat-number" id="pendientesCotizaciones">2</div>
+                    <div class="stat-label">Pendientes</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card aceptadas">
+                    <div class="stat-number" id="aceptadasCotizaciones">1</div>
+                    <div class="stat-label">Aceptadas</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card rechazadas">
+                    <div class="stat-number" id="rechazadasCotizaciones">1</div>
+                    <div class="stat-label">Rechazadas</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Filtrar por Estado:</label>
+                    <select class="form-select" id="filtroEstado">
+                        <option value="todos">Todos los estados</option>
+                        <option value="pendiente">Pendientes</option>
+                        <option value="aceptada">Aceptadas</option>
+                        <option value="rechazada">Rechazadas</option>
+                        <option value="vencida">Vencidas</option>
+                    </select>
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label fw-semibold">Buscar:</label>
+                    <input type="text" class="form-control" id="busquedaCotizacion" placeholder="Buscar por número de cotización, cliente...">
+                </div>
+            </div>
+        </div>
+
+        <div class="data-table-container">
+            <div class="table-header">
+                <h5 class="table-title">
+                    <i class="fas fa-file-invoice me-2"></i>Lista de Cotizaciones
+                    <span class="badge bg-light text-dark ms-2" id="nuevasCotizacionesBadge" style="display: none;">0</span>
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover" id="tablaCotizaciones">
+                    <thead>
+                        <tr>
+                            <th>N° Cotización</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Observaciones</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+// Variables globales
+let cotizaciones = []; // Inicializar como array vacío
+let cotizacionActual = null;
+let residuosEditables = [];
+let residuosDisponibles = []; // Para almacenar la lista de residuos de la BD
+
+// Funciones principales
+
+// Función para cargar residuos disponibles de la BD
+async function cargarResiduosDisponibles() {
+    try {
+        const response = await fetch('/residuos/api/precios', {
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && Array.isArray(data.precios)) {
+                residuosDisponibles = data.precios.filter(residuo => residuo.activo === 1);
+                console.log('Residuos cargados:', residuosDisponibles.length);
+            } else {
+                console.warn('No se pudieron cargar los residuos:', data);
+                residuosDisponibles = [];
+            }
+        } else {
+            console.error('Error al cargar residuos:', response.status);
+            residuosDisponibles = [];
+        }
+    } catch (error) {
+        console.error('Error al cargar residuos:', error);
+        residuosDisponibles = [];
+    }
+}
+
+async function cargarCotizaciones() {
+    try {
+        mostrarCargando(true);
+        const response = await fetch('/cotizaciones/api/listar', { 
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (data.success) {
+            // Asegurar que cotizaciones sea siempre un array
+            cotizaciones = Array.isArray(data.cotizaciones) ? data.cotizaciones : [];
+            console.log('Cotizaciones cargadas:', cotizaciones); // Para debug
+            mostrarCotizaciones(cotizaciones);
+            actualizarContadores();
+            mostrarToast('Cotizaciones cargadas correctamente', 'success');
+        } else {
+            // En caso de error, usar el array de cotizaciones del response si existe, sino array vacío
+            cotizaciones = Array.isArray(data.cotizaciones) ? data.cotizaciones : [];
+            mostrarCotizaciones(cotizaciones);
+            actualizarContadores();
+            mostrarToast('Error al cargar las cotizaciones: ' + (data.message || 'Error desconocido'), 'error');
+        }
+    } catch (error) {
+        console.error('Error completo:', error);
+        // En caso de error, inicializar como array vacío
+        cotizaciones = [];
+        mostrarCotizaciones(cotizaciones);
+        mostrarToast('Error de conexión al cargar las cotizaciones: ' + error.message, 'error');
+    } finally {
+        mostrarCargando(false);
+    }
+}
+
+function mostrarCargando(mostrar) {
+    const tbody = document.querySelector('#tablaCotizaciones tbody');
+    if (!tbody) return;
+    
+    if (mostrar) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-4">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p class="mt-2 mb-0">Cargando cotizaciones...</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+function mostrarCotizaciones(lista) {
+    const tbody = document.querySelector('#tablaCotizaciones tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    // Validar que lista sea un array válido
+    if (!Array.isArray(lista)) {
+        console.warn('mostrarCotizaciones: lista no es un array válido:', lista);
+        lista = [];
+    }
+    
+    if (lista.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-4">
+                    <i class="fas fa-inbox text-muted"></i>
+                    <p class="mt-2 mb-0 text-muted">No hay cotizaciones disponibles</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    lista.forEach(cotizacion => {
+        const fecha = new Date(cotizacion.fechaCotizacion).toLocaleDateString('es-CL');
+        const estadoBadge = getEstadoBadge(cotizacion.estado);
+        const total = cotizacion.total ? `${parseInt(cotizacion.total).toLocaleString('es-CL')}` : 'N/A';
+        const clienteNombre = getClienteNombre(cotizacion);
+        
+        tbody.innerHTML += `
+            <tr>
+                <td><strong>${cotizacion.numeroCotizacion || 'N/A'}</strong></td>
+                <td>${fecha}</td>
+                <td>${clienteNombre}</td>
+                <td><strong>${total}</strong></td>
+                <td>${estadoBadge}</td>
+                <td>${cotizacion.observaciones ? cotizacion.observaciones.substring(0, 50) + '...' : 'Sin observaciones'}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="verDetalle(${cotizacion.id})" title="Ver detalle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="modificarCotizacion(${cotizacion.id})" title="Modificar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="eliminarCotizacion(${cotizacion.id})" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function getClienteNombre(cotizacion) {
+    // Debuggear la estructura de datos
+    console.log('Estructura cotización:', cotizacion);
+    
+    // Método 1: Desde detalles_json
+    if (cotizacion.detalles_json) {
+        try {
+            let detalles = typeof cotizacion.detalles_json === 'string' ? JSON.parse(cotizacion.detalles_json) : cotizacion.detalles_json;
+            if (detalles.datosContacto && detalles.datosContacto.nombre) {
+                return detalles.datosContacto.nombre;
+            }
+            if (detalles.cliente && detalles.cliente.nombre) {
+                return detalles.cliente.nombre;
+            }
+        } catch (e) {
+            console.error('Error parsing detalles_json:', e);
+        }
+    }
+    
+    // Método 2: Desde la relación de Sequelize (SolicitudRetiro -> Cliente)
+    if (cotizacion.SolicitudRetiro && cotizacion.SolicitudRetiro.Cliente) {
+        const cliente = cotizacion.SolicitudRetiro.Cliente;
+        return cliente.nombre || cliente.razonSocial || cliente.nombreCompleto;
+    }
+    
+    // Método 3: Desde observaciones
+    if (cotizacion.observaciones && cotizacion.observaciones.includes('Contacto:')) {
+        const nombreMatch = cotizacion.observaciones.match(/Contacto:\s*([^,]+)/);
+        if (nombreMatch) return nombreMatch[1].trim();
+    }
+    
+    // Método 4: Si hay email en detalles_json, extraer nombre de email
+    if (cotizacion.detalles_json) {
+        try {
+            let detalles = typeof cotizacion.detalles_json === 'string' ? JSON.parse(cotizacion.detalles_json) : cotizacion.detalles_json;
+            if (detalles.datosContacto && detalles.datosContacto.correo) {
+                const emailParts = detalles.datosContacto.correo.split('@');
+                return emailParts[0].replace(/[._]/g, ' ');
+            }
+        } catch (e) {}
+    }
+    
+    return 'Cliente sin nombre';
+}
+
+function getEstadoBadge(estado) {
+    const badges = {
+        'pendiente': '<span class="badge bg-warning">Pendiente</span>',
+        'aceptada': '<span class="badge bg-success">Aceptada</span>',
+        'rechazada': '<span class="badge bg-danger">Rechazada</span>',
+        'vencida': '<span class="badge bg-secondary">Vencida</span>'
+    };
+    return badges[estado] || '<span class="badge bg-secondary">Desconocido</span>';
+}
+
+function actualizarContadores() {
+    // Validar que cotizaciones sea un array válido
+    if (!Array.isArray(cotizaciones)) {
+        console.warn('actualizarContadores: cotizaciones no es un array válido:', cotizaciones);
+        cotizaciones = [];
+    }
+    
+    const total = cotizaciones.length;
+    const pendientes = cotizaciones.filter(c => c.estado === 'pendiente').length;
+    const aceptadas = cotizaciones.filter(c => c.estado === 'aceptada').length;
+    const rechazadas = cotizaciones.filter(c => c.estado === 'rechazada').length;
+    
+    const totalElement = document.getElementById('totalCotizaciones');
+    const pendientesElement = document.getElementById('pendientesCotizaciones');
+    const aceptadasElement = document.getElementById('aceptadasCotizaciones');
+    const rechazadasElement = document.getElementById('rechazadasCotizaciones');
+    
+    if (totalElement) totalElement.textContent = total;
+    if (pendientesElement) pendientesElement.textContent = pendientes;
+    if (aceptadasElement) aceptadasElement.textContent = aceptadas;
+    if (rechazadasElement) rechazadasElement.textContent = rechazadas;
+}
+
+// Función para ver detalle (solo lectura)
+async function verDetalle(id) {
+    try {
+        const response = await fetch(`/cotizaciones/api/${id}`, { 
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include' 
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        if (data.success && data.cotizacion) {
+            mostrarDetalleModal(data.cotizacion);
+        } else {
+            mostrarToast('Error al cargar el detalle: ' + (data.message || 'Cotización no encontrada'), 'error');
+        }
+    } catch (error) {
+        mostrarToast('Error de conexión al cargar el detalle: ' + error.message, 'error');
+    }
+}
+
+function mostrarDetalleModal(cotizacion) {
+    let detalles = {}, cliente = {};
+    
+    // Manejar diferentes formatos de datos como en el código original
+    if (cotizacion.detallesJson) {
+        try {
+            detalles = JSON.parse(cotizacion.detallesJson);
+            cliente = detalles.datosContacto || detalles.cliente || {};
+        } catch (e) {}
+    } else if (cotizacion.detalles_json) {
+        try {
+            detalles = typeof cotizacion.detalles_json === 'string' ? JSON.parse(cotizacion.detalles_json) : cotizacion.detalles_json;
+            cliente = detalles.datosContacto || detalles.cliente || {};
+        } catch (e) {}
+    } else if (cotizacion.detalles) {
+        detalles = cotizacion.detalles;
+        cliente = detalles.datosContacto || detalles.cliente || {};
+    }
+    
+    // PRIORIDAD: Usar datos directos de la cotización (campos de la BD)
+    if (cotizacion.cliente_nombre || cotizacion.cliente_email) {
+        cliente = {
+            nombre: cotizacion.cliente_nombre || cliente.nombre || null,
+            rut: cotizacion.cliente_rut || cliente.rut || null,
+            correo: cotizacion.cliente_email || cliente.correo || cliente.email || null,
+            email: cotizacion.cliente_email || cliente.email || cliente.correo || null,
+            telefono: cotizacion.cliente_telefono || cliente.telefono || null,
+            empresa: cotizacion.cliente_empresa || cliente.empresa || null,
+            direccion: cotizacion.cliente_direccion || cliente.direccion || null,
+            comuna: cotizacion.cliente_comuna || cliente.comuna || null
+        };
+        console.log('✅ DETALLE - Usando datos directos de cotización para cliente:', cliente);
+    }
+    
+    const residuos = detalles.residuos || [];
+    const fecha = new Date(cotizacion.fechaCotizacion).toLocaleDateString('es-CL');
+    
+    const modalContent = `
+        <div class="modal fade" id="detalleModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header" style="background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light)); color: white;">
+                        <h5 class="modal-title"><i class="fas fa-file-alt me-2"></i>Detalle de Cotización ${cotizacion.numeroCotizacion}</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-user me-2"></i>Información del Cliente</h6>
+                                <div class="p-3 bg-light rounded">
+                                    <p><strong>Nombre:</strong> ${cliente.nombre || 'N/A'}</p>
+                                    <p><strong>RUT:</strong> ${cliente.rut || 'N/A'}</p>
+                                    <p><strong>Email:</strong> ${cliente.correo || 'N/A'}</p>
+                                    <p><strong>Teléfono:</strong> ${cliente.telefono || 'N/A'}</p>
+                                    <p><strong>Empresa:</strong> ${cliente.empresa || 'N/A'}</p>
+                                    <p><strong>Dirección:</strong> ${cliente.direccion || detalles.direccion || 'N/A'}</p>
+                                    <p><strong>Comuna:</strong> ${cliente.comuna || detalles.comuna || 'N/A'}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-info-circle me-2"></i>Información de la Cotización</h6>
+                                <div class="p-3 bg-light rounded">
+                                    <p><strong>Número:</strong> ${cotizacion.numeroCotizacion}</p>
+                                    <p><strong>Fecha:</strong> ${fecha}</p>
+                                    <p><strong>Estado:</strong> ${getEstadoBadge(cotizacion.estado)}</p>
+                                    <p><strong>Costo Operativo:</strong> ${parseInt(detalles.costoOperativo || 0).toLocaleString('es-CL')}</p>
+                                    <p><strong>Descuento:</strong> ${detalles.descuento || 0}%</p>
+                                    <p><strong>Observaciones:</strong> ${cotizacion.observaciones || 'Sin observaciones'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h6><i class="fas fa-list me-2"></i>Detalle de Residuos</h6>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Descripción</th>
+                                            <th>Cantidad</th>
+                                            <th>Unidad</th>
+                                            <th>Precio Unitario</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${residuos.map(r => `
+                                            <tr>
+                                                <td>${r.descripcion}</td>
+                                                <td>${r.cantidad}</td>
+                                                <td>${r.unidad}</td>
+                                                <td>${parseInt(r.precioUnitario).toLocaleString('es-CL')}</td>
+                                                <td>${parseInt(r.subtotal).toLocaleString('es-CL')}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div class="row">
+                                <div class="col-md-8"></div>
+                                <div class="col-md-4">
+                                    <div class="p-3 bg-light rounded">
+                                        <p class="mb-1"><strong>Subtotal:</strong> ${parseInt(cotizacion.subtotal || 0).toLocaleString('es-CL')}</p>
+                                        <p class="mb-1"><strong>IVA (19%):</strong> ${parseInt(cotizacion.iva || 0).toLocaleString('es-CL')}</p>
+                                        <hr>
+                                        <p class="mb-0 fs-5"><strong>Total:</strong> ${parseInt(cotizacion.total || 0).toLocaleString('es-CL')}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-warning" onclick="bootstrap.Modal.getInstance(document.getElementById('detalleModal')).hide(); modificarCotizacion(${cotizacion.id})">
+                            <i class="fas fa-edit me-1"></i>Modificar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remover modal existente si existe
+    const existingModal = document.getElementById('detalleModal');
+    if (existingModal) existingModal.remove();
+    
+    // Agregar nuevo modal
+    document.body.insertAdjacentHTML('beforeend', modalContent);
+    
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('detalleModal'));
+    modal.show();
+}
+
+// Función principal para modificar cotización
+async function modificarCotizacion(id) {
+    try {
+        const response = await fetch(`/cotizaciones/api/${id}`, { 
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include' 
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        if (data.success && data.cotizacion) {
+            cotizacionActual = { ...data.cotizacion };
+            
+            // Extraer residuos según el formato de datos
+            let detalles = {};
+            if (data.cotizacion.detallesJson) {
+                try {
+                    detalles = JSON.parse(data.cotizacion.detallesJson);
+                } catch (e) {}
+            } else if (data.cotizacion.detalles_json) {
+                try {
+                    detalles = typeof data.cotizacion.detalles_json === 'string' ? JSON.parse(data.cotizacion.detalles_json) : data.cotizacion.detalles_json;
+                } catch (e) {}
+            } else if (data.cotizacion.detalles) {
+                detalles = data.cotizacion.detalles;
+            }
+            
+            residuosEditables = [...(detalles.residuos || [])];
+            await mostrarModalModificar(data.cotizacion);
+        } else {
+            mostrarToast('Error al cargar la cotización: ' + (data.message || 'Cotización no encontrada'), 'error');
+        }
+    } catch (error) {
+        mostrarToast('Error de conexión al cargar la cotización: ' + error.message, 'error');
+    }
+}
+
+async function mostrarModalModificar(cotizacion) {
+    let detalles = {}, cliente = {};
+    
+    // Manejar diferentes formatos de datos como en el código original
+    if (cotizacion.detallesJson) {
+        try {
+            detalles = JSON.parse(cotizacion.detallesJson);
+            cliente = detalles.datosContacto || detalles.cliente || {};
+        } catch (e) {}
+    } else if (cotizacion.detalles_json) {
+        try {
+            detalles = typeof cotizacion.detalles_json === 'string' ? JSON.parse(cotizacion.detalles_json) : cotizacion.detalles_json;
+            cliente = detalles.datosContacto || detalles.cliente || {};
+        } catch (e) {}
+    } else if (cotizacion.detalles) {
+        detalles = cotizacion.detalles;
+        cliente = detalles.datosContacto || detalles.cliente || {};
+    }
+    
+    // PRIORIDAD: Usar datos directos de la cotización (campos de la BD)
+    if (cotizacion.cliente_nombre || cotizacion.cliente_email) {
+        cliente = {
+            nombre: cotizacion.cliente_nombre || cliente.nombre || null,
+            rut: cotizacion.cliente_rut || cliente.rut || null,
+            correo: cotizacion.cliente_email || cliente.correo || cliente.email || null,
+            email: cotizacion.cliente_email || cliente.email || cliente.correo || null,
+            telefono: cotizacion.cliente_telefono || cliente.telefono || null,
+            empresa: cotizacion.cliente_empresa || cliente.empresa || null,
+            direccion: cotizacion.cliente_direccion || cliente.direccion || null,
+            comuna: cotizacion.cliente_comuna || cliente.comuna || null
+        };
+        console.log('✅ Usando datos directos de cotización para cliente:', cliente);
+    }
+    
+    const residuos = detalles.residuos || [];
+    const fecha = new Date(cotizacion.fechaCotizacion).toLocaleDateString('es-CL');
+    
+    // Intentar cargar información completa del cliente desde la cotización como backup
+    try {
+        console.log('🔍 Cargando información del cliente para cotización ID:', cotizacion.id);
+        const response = await fetch(`/cotizaciones/api/${cotizacion.id}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        
+        console.log('📡 Respuesta de API cotización status:', response.status);
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('📊 Datos recibidos de API:', data);
+            
+            if (data.success && data.cliente) {
+                // Solo actualizar campos que estén vacíos
+                cliente = {
+                    nombre: cliente.nombre || data.cliente.nombre || null,
+                    rut: cliente.rut || data.cliente.rut || null,
+                    correo: cliente.correo || data.cliente.correo || data.cliente.email || null,
+                    email: cliente.email || data.cliente.email || data.cliente.correo || null,
+                    telefono: cliente.telefono || data.cliente.telefono || null,
+                    empresa: cliente.empresa || data.cliente.empresa || null,
+                    direccion: cliente.direccion || data.cliente.direccion || null,
+                    comuna: cliente.comuna || data.cliente.comuna || null
+                };
+                console.log('✅ Información del cliente combinada desde BD:', cliente);
+            } else {
+                console.log('⚠️ API devolvió success=false o sin cliente:', data);
+            }
+        } else {
+            console.error('❌ Error en respuesta API cotización:', response.status, response.statusText);
+        }
+    } catch (error) {
+        console.error('❌ Error al cargar información adicional del cliente:', error);
+    }
+    
+    const modalContent = `
+        <div class="modal fade" id="modificarModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header" style="background: linear-gradient(135deg, var(--warning-color), #ffa726); color: white;">
+                        <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Modificar Cotización ${cotizacion.numeroCotizacion}</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-user me-2"></i>Información del Cliente</h6>
+                                <div class="p-3 bg-light rounded">
+                                    <p><strong>Nombre:</strong> <span id="clienteNombre">${cliente.nombre || 'Cargando...'}</span></p>
+                                    <p><strong>RUT:</strong> <span id="clienteRut">${cliente.rut || 'No disponible'}</span></p>
+                                    <p><strong>Email:</strong> <span id="clienteEmail">${cliente.correo || cliente.email || 'No disponible'}</span></p>
+                                    <p><strong>Teléfono:</strong> <span id="clienteTelefono">${cliente.telefono || 'No disponible'}</span></p>
+                                    <p><strong>Empresa:</strong> <span id="clienteEmpresa">${cliente.empresa || 'No disponible'}</span></p>
+                                    <p><strong>Dirección:</strong> <span id="clienteDireccion">${detalles.direccion || cliente.direccion || 'No disponible'}</span></p>
+                                    <p class="mb-0"><strong>Comuna:</strong> <span id="clienteComuna">${cliente.comuna || 'No disponible'}</span></p>
+                                </div>
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Si no aparece información del cliente, esta cotización no tiene cliente asociado.
+                                        El correo se enviará con los datos disponibles.
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-cogs me-2"></i>Configuración de la Cotización</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Estado:</label>
+                                    <select class="form-select" id="estadoCotizacion">
+                                        <option value="pendiente" ${cotizacion.estado === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+                                        <option value="aceptada" ${cotizacion.estado === 'aceptada' ? 'selected' : ''}>Aceptada</option>
+                                        <option value="rechazada" ${cotizacion.estado === 'rechazada' ? 'selected' : ''}>Rechazada</option>
+                                        <option value="vencida" ${cotizacion.estado === 'vencida' ? 'selected' : ''}>Vencida</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Costo Operativo ($):</label>
+                                    <input type="number" class="form-control" id="costoOperativo" value="${detalles.costoOperativo || 0}" min="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Descuento (%):</label>
+                                    <input type="number" class="form-control" id="descuento" value="${detalles.descuento || 0}" min="0" max="100">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Observaciones:</label>
+                                    <textarea class="form-control" id="observacionesModificar" rows="4">${cotizacion.observaciones || ''}</textarea>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="enviarCorreo" checked>
+                                    <label class="form-check-label" for="enviarCorreo">
+                                        <i class="fas fa-envelope me-1"></i>Enviar cotización por correo
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6><i class="fas fa-list me-2"></i>Detalle de Residuos</h6>
+                                <button type="button" class="btn btn-success btn-sm" onclick="agregarResiduo()">
+                                    <i class="fas fa-plus"></i> Agregar Residuo
+                                </button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="tablaResiduosModificar">
+                                    <thead>
+                                        <tr>
+                                            <th>Descripción</th>
+                                            <th>Cantidad</th>
+                                            <th>Unidad</th>
+                                            <th>Precio Unit. ($)</th>
+                                            <th>Subtotal ($)</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="cuerpoResiduosModificar">
+                                        ${residuos.map((r, index) => `
+                                            <tr data-index="${index}">
+                                                <td><input type="text" class="form-control" value="${r.descripcion}" onchange="actualizarResiduo(${index}, 'descripcion', this.value)"></td>
+                                                <td><input type="number" class="form-control" value="${r.cantidad}" min="0.1" step="0.1" onchange="actualizarResiduo(${index}, 'cantidad', this.value)"></td>
+                                                <td>
+                                                    <select class="form-select" onchange="actualizarResiduo(${index}, 'unidad', this.value)">
+                                                        <option value="kg" ${r.unidad === 'kg' ? 'selected' : ''}>kg</option>
+                                                        <option value="ton" ${r.unidad === 'ton' ? 'selected' : ''}>ton</option>
+                                                        <option value="m3" ${r.unidad === 'm3' ? 'selected' : ''}>m³</option>
+                                                        <option value="unidad" ${r.unidad === 'unidad' ? 'selected' : ''}>unidad</option>
+                                                    </select>
+                                                </td>
+                                                <td><input type="number" class="form-control" value="${r.precioUnitario}" min="0" onchange="actualizarResiduo(${index}, 'precioUnitario', this.value)"></td>
+                                                <td><span class="fw-bold">$<span id="subtotalModificar_${index}">${parseInt(r.subtotal || 0).toLocaleString('es-CL')}</span></span></td>
+                                                <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarResiduo(${index})"><i class="fas fa-trash"></i></button></td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <!-- Checkbox movido a la columna de configuración -->
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 bg-light rounded">
+                                        <p class="mb-1"><strong>Subtotal Residuos:</strong> $<span id="subtotalResiduosModificar">${parseInt(cotizacion.subtotal || 0).toLocaleString('es-CL')}</span></p>
+                                        <p class="mb-1"><strong>Costo Operativo:</strong> $<span id="resumenOperativoModificar">0</span></p>
+                                        <p class="mb-1"><strong>Descuento:</strong> -$<span id="resumenDescuentoModificar">0</span></p>
+                                        <p class="mb-1"><strong>Subtotal:</strong> $<span id="nuevoSubtotalModificar">${parseInt(cotizacion.subtotal || 0).toLocaleString('es-CL')}</span></p>
+                                        <p class="mb-1"><strong>IVA (19%):</strong> $<span id="nuevoIvaModificar">${parseInt(cotizacion.iva || 0).toLocaleString('es-CL')}</span></p>
+                                        <hr>
+                                        <p class="mb-0 fs-5"><strong>Total:</strong> $<span id="nuevoTotalModificar">${parseInt(cotizacion.total || 0).toLocaleString('es-CL')}</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="guardarModificaciones(${cotizacion.id})">
+                            <i class="fas fa-save me-1"></i>Guardar y Enviar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remover modal existente si existe
+    const existingModal = document.getElementById('modificarModal');
+    if (existingModal) existingModal.remove();
+    
+    // Agregar nuevo modal
+    document.body.insertAdjacentHTML('beforeend', modalContent);
+    
+    // Configurar eventos
+    document.getElementById('costoOperativo').addEventListener('input', recalcularTotalesModificar);
+    document.getElementById('descuento').addEventListener('input', recalcularTotalesModificar);
+    
+    // Calcular totales iniciales
+    recalcularTotalesModificar();
+    
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('modificarModal'));
+    modal.show();
+    
+    // Actualizar información del cliente en el DOM después de cargar el modal
+    setTimeout(() => {
+        console.log('🔄 Actualizando DOM del cliente con datos:', cliente);
+        
+        const actualizarCampo = (id, valor) => {
+            const elemento = document.getElementById(id);
+            if (elemento) {
+                elemento.textContent = valor || 'N/A';
+                console.log(`✅ Campo ${id} actualizado a:`, valor || 'N/A');
+            } else {
+                console.warn(`⚠️ No se encontró elemento con ID: ${id}`);
+            }
+        };
+        
+        actualizarCampo('clienteNombre', cliente.nombre);
+        actualizarCampo('clienteRut', cliente.rut);
+        actualizarCampo('clienteEmail', cliente.correo || cliente.email);
+        actualizarCampo('clienteTelefono', cliente.telefono);
+        actualizarCampo('clienteEmpresa', cliente.empresa);
+        actualizarCampo('clienteDireccion', cliente.direccion);
+        
+        // También actualizar el campo comuna si existe
+        const comunaElement = document.getElementById('clienteComuna');
+        if (comunaElement) {
+            comunaElement.textContent = cliente.comuna || 'N/A';
+        }
+    }, 100); // Pequeño delay para asegurar que el DOM esté completamente cargado
+}
+
+// Funciones para manejar residuos en el modal de modificar
+// Función para manejar la selección de residuo del dropdown
+async function seleccionarResiduo(index, selectElement) {
+    if (!residuosEditables[index]) return;
+    
+    const option = selectElement.options[selectElement.selectedIndex];
+    
+    if (option.value) {
+        const residuoId = option.value;
+        const precio = parseFloat(option.dataset.precio) || 0;
+        const unidad = option.dataset.unidad || 'IBC';
+        const moneda = option.dataset.moneda || 'UF';
+        const descripcion = option.textContent;
+        
+        // Calcular precio en CLP si es UF
+        let precioUnitario = precio;
+        if (moneda === 'UF') {
+            try {
+                // Obtener valor UF actual
+                const response = await fetch('/api/valor-uf', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const valorUF = data.valorUF || 37000; // Valor por defecto
+                    precioUnitario = precio * valorUF;
+                } else {
+                    precioUnitario = precio * 37000; // Valor UF por defecto
+                }
+            } catch (error) {
+                console.warn('Error al obtener valor UF:', error);
+                precioUnitario = precio * 37000; // Valor UF por defecto
+            }
+        }
+        
+        // Actualizar el objeto residuo
+        residuosEditables[index].residuoId = residuoId;
+        residuosEditables[index].descripcion = descripcion;
+        residuosEditables[index].unidad = unidad;
+        residuosEditables[index].moneda = moneda;
+        residuosEditables[index].precioUnitario = Math.round(precioUnitario);
+        
+        // Actualizar la UI
+        const fila = selectElement.closest('tr');
+        const unidadSpan = fila.querySelector('td:nth-child(3) .form-control-plaintext');
+        const precioSpan = fila.querySelector(`#precioDisplay_${index}`);
+        const unidadInput = fila.querySelector('td:nth-child(3) input[type="hidden"]');
+        const precioInput = fila.querySelector('td:nth-child(4) input[type="hidden"]');
+        
+        if (unidadSpan) unidadSpan.textContent = unidad;
+        if (precioSpan) {
+            if (moneda === 'UF') {
+                precioSpan.textContent = `${precio.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 4 })} UF (${Math.round(precioUnitario).toLocaleString('es-CL')})`;
+            } else {
+                precioSpan.textContent = `$${Math.round(precioUnitario).toLocaleString('es-CL')}`;
+            }
+        }
+        if (unidadInput) unidadInput.value = unidad;
+        if (precioInput) precioInput.value = Math.round(precioUnitario);
+        
+        // Recalcular subtotal
+        actualizarResiduo(index, 'precioUnitario', Math.round(precioUnitario));
+    } else {
+        // Si no se selecciona residuo, limpiar
+        residuosEditables[index].residuoId = '';
+        residuosEditables[index].descripcion = 'Seleccione un residuo';
+        residuosEditables[index].precioUnitario = 0;
+        
+        const fila = selectElement.closest('tr');
+        const precioSpan = fila.querySelector(`#precioDisplay_${index}`);
+        if (precioSpan) precioSpan.textContent = '$0';
+        
+        recalcularTotalesModificar();
+    }
+}
+
+function actualizarResiduo(index, campo, valor) {
+    if (!residuosEditables[index]) return;
+    
+    residuosEditables[index][campo] = valor;
+    
+    if (campo === 'cantidad' || campo === 'precioUnitario') {
+        const cantidad = parseFloat(residuosEditables[index].cantidad) || 0;
+        const precio = parseFloat(residuosEditables[index].precioUnitario) || 0;
+        // Redondear el subtotal para evitar problemas de precisión
+        const subtotal = Math.round(cantidad * precio);
+        residuosEditables[index].subtotal = subtotal;
+        
+        const subtotalElement = document.getElementById(`subtotalModificar_${index}`);
+        if (subtotalElement) {
+            subtotalElement.textContent = subtotal.toLocaleString('es-CL');
+        }
+    }
+    
+    recalcularTotalesModificar();
+}
+
+function agregarResiduo() {
+    const nuevoResiduo = {
+        residuoId: '',
+        descripcion: 'Seleccione un residuo',
+        cantidad: 1,
+        unidad: 'IBC',
+        moneda: 'UF',
+        precioUnitario: 0,
+        subtotal: 0
+    };
+    
+    residuosEditables.push(nuevoResiduo);
+    const index = residuosEditables.length - 1;
+    
+    // Generar opciones para el select de residuos
+    const opcionesResiduos = residuosDisponibles.map(residuo => 
+        `<option value="${residuo.id}" data-precio="${residuo.precio}" data-unidad="${residuo.unidad}" data-moneda="${residuo.moneda}">
+            ${residuo.descripcion}
+        </option>`
+    ).join('');
+    
+    const cuerpoResiduos = document.getElementById('cuerpoResiduosModificar');
+    const nuevaFila = `
+        <tr data-index="${index}">
+            <td>
+                <select class="form-select" onchange="seleccionarResiduo(${index}, this)">
+                    <option value="">-- Seleccione un residuo --</option>
+                    ${opcionesResiduos}
+                </select>
+            </td>
+            <td><input type="number" class="form-control" value="${nuevoResiduo.cantidad}" min="0.1" step="0.1" onchange="actualizarResiduo(${index}, 'cantidad', this.value)"></td>
+            <td>
+                <span class="form-control-plaintext">${nuevoResiduo.unidad}</span>
+                <input type="hidden" value="${nuevoResiduo.unidad}" onchange="actualizarResiduo(${index}, 'unidad', this.value)">
+            </td>
+            <td>
+                <span class="form-control-plaintext" id="precioDisplay_${index}">$0</span>
+                <input type="hidden" value="${nuevoResiduo.precioUnitario}" onchange="actualizarResiduo(${index}, 'precioUnitario', this.value)">
+            </td>
+            <td><span class="fw-bold">$<span id="subtotalModificar_${index}">0</span></span></td>
+            <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarResiduo(${index})"><i class="fas fa-trash"></i></button></td>
+        </tr>
+    `;
+    
+    cuerpoResiduos.insertAdjacentHTML('beforeend', nuevaFila);
+    recalcularTotalesModificar();
+}
+
+function eliminarResiduo(index) {
+    if (residuosEditables.length <= 1) {
+        mostrarToast('Debe mantener al menos un residuo en la cotización', 'warning');
+        return;
+    }
+    
+    if (confirm('¿Está seguro de eliminar este residuo?')) {
+        residuosEditables.splice(index, 1);
+        actualizarTablaResiduos();
+        recalcularTotalesModificar();
+    }
+}
+
+function actualizarTablaResiduos() {
+    const cuerpoResiduos = document.getElementById('cuerpoResiduosModificar');
+    cuerpoResiduos.innerHTML = '';
+    
+    residuosEditables.forEach((r, index) => {
+        // Generar opciones para el select de residuos
+        const opcionesResiduos = residuosDisponibles.map(residuo => 
+            `<option value="${residuo.id}" data-precio="${residuo.precio}" data-unidad="${residuo.unidad}" data-moneda="${residuo.moneda}" 
+                ${r.residuoId == residuo.id ? 'selected' : ''}>
+                ${residuo.descripcion}
+            </option>`
+        ).join('');
+        
+        // Formatear precio según moneda
+        let precioDisplay;
+        if (r.moneda === 'UF') {
+            const precioUF = r.precioUnitario / 37000; // Estimación para mostrar
+            precioDisplay = `${precioUF.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 4 })} UF ($${Math.round(r.precioUnitario).toLocaleString('es-CL')})`;
+        } else {
+            precioDisplay = `$${Math.round(r.precioUnitario).toLocaleString('es-CL')}`;
+        }
+        
+        const fila = `
+            <tr data-index="${index}">
+                <td>
+                    <select class="form-select" onchange="seleccionarResiduo(${index}, this)">
+                        <option value="">-- Seleccione un residuo --</option>
+                        ${opcionesResiduos}
+                    </select>
+                </td>
+                <td><input type="number" class="form-control" value="${r.cantidad}" min="0.1" step="0.1" onchange="actualizarResiduo(${index}, 'cantidad', this.value)"></td>
+                <td>
+                    <span class="form-control-plaintext">${r.unidad || 'IBC'}</span>
+                    <input type="hidden" value="${r.unidad || 'IBC'}" onchange="actualizarResiduo(${index}, 'unidad', this.value)">
+                </td>
+                <td>
+                    <span class="form-control-plaintext" id="precioDisplay_${index}">${precioDisplay}</span>
+                    <input type="hidden" value="${r.precioUnitario}" onchange="actualizarResiduo(${index}, 'precioUnitario', this.value)">
+                </td>
+                <td><span class="fw-bold">$<span id="subtotalModificar_${index}">${Math.round(r.subtotal || 0).toLocaleString('es-CL')}</span></span></td>
+                <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarResiduo(${index})"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `;
+        cuerpoResiduos.insertAdjacentHTML('beforeend', fila);
+    });
+}
+
+function recalcularTotalesModificar() {
+    // Redondear números para evitar problemas de precisión de punto flotante
+    const subtotalResiduos = Math.round(residuosEditables.reduce((sum, residuo) => sum + (parseFloat(residuo.subtotal) || 0), 0));
+    const costoOperativo = Math.round(parseFloat(document.getElementById('costoOperativo')?.value) || 0);
+    const descuentoPorcentaje = parseFloat(document.getElementById('descuento')?.value) || 0;
+    
+    // Calcular descuento y redondear
+    const descuentoDinero = Math.round((subtotalResiduos + costoOperativo) * (descuentoPorcentaje / 100));
+    const subtotalFinal = Math.round(subtotalResiduos + costoOperativo - descuentoDinero);
+    const iva = Math.round(subtotalFinal * 0.19);
+    const total = Math.round(subtotalFinal + iva);
+    
+    // Actualizar elementos del DOM con números redondeados
+    const elementos = {
+        'subtotalResiduosModificar': subtotalResiduos,
+        'resumenOperativoModificar': costoOperativo,
+        'resumenDescuentoModificar': descuentoDinero,
+        'nuevoSubtotalModificar': subtotalFinal,
+        'nuevoIvaModificar': iva,
+        'nuevoTotalModificar': total
+    };
+    
+    Object.keys(elementos).forEach(id => {
+        const elemento = document.getElementById(id);
+        if (elemento) {
+            elemento.textContent = elementos[id].toLocaleString('es-CL');
+        }
+    });
+}
+
+// Función para guardar todas las modificaciones
+async function guardarModificaciones(id) {
+    try {
+        const estado = document.getElementById('estadoCotizacion').value;
+        const costoOperativo = parseFloat(document.getElementById('costoOperativo').value) || 0;
+        const descuento = parseFloat(document.getElementById('descuento').value) || 0;
+        const observaciones = document.getElementById('observacionesModificar').value;
+        const enviarCorreo = document.getElementById('enviarCorreo').checked;
+        
+        // Obtener email del cliente desde la información mostrada (solo lectura)
+        const emailCliente = document.getElementById('clienteEmail').textContent;
+        
+        // Calcular totales con redondeo para evitar problemas de precisión
+        const subtotalResiduos = Math.round(residuosEditables.reduce((sum, residuo) => sum + (parseFloat(residuo.subtotal) || 0), 0));
+        const descuentoDinero = Math.round((subtotalResiduos + costoOperativo) * (descuento / 100));
+        const subtotalFinal = Math.round(subtotalResiduos + costoOperativo - descuentoDinero);
+        const iva = Math.round(subtotalFinal * 0.19);
+        const total = Math.round(subtotalFinal + iva);
+        
+        // Datos a enviar (formato compatible con tu backend)
+        const datosActualizados = {
+            estado: estado,
+            detalles: JSON.stringify({
+                residuos: residuosEditables,
+                costoOperativo: costoOperativo,
+                descuento: descuento,
+                datosContacto: {
+                    correo: emailCliente,
+                    email: emailCliente
+                },
+                ...cotizacionActual.detalles
+            }),
+            subtotal: subtotalFinal,
+            iva: iva,
+            total: total,
+            observaciones: observaciones,
+            enviarCorreo: enviarCorreo,
+            emailCliente: emailCliente
+        };
+        
+        // Intentar primero con la ruta de estado (que probablemente ya existe)
+        let response;
+        try {
+            response = await fetch(`/cotizaciones/api/${id}/estado`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(datosActualizados)
+            });
+        } catch (error) {
+            // Si no existe esa ruta, intentar con una ruta genérica
+            response = await fetch(`/cotizaciones/api/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(datosActualizados)
+            });
+        }
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (data.success) {
+            // Cerrar modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modificarModal'));
+            modal.hide();
+            
+            // Recargar cotizaciones
+            await cargarCotizaciones();
+            
+            // Mostrar mensaje de éxito
+            let mensaje = 'Cotización actualizada correctamente';
+            if (enviarCorreo && data.correoEnviado) {
+                mensaje += ' y enviada por correo al cliente';
+            } else if (enviarCorreo && !data.correoEnviado) {
+                mensaje += ', pero hubo un error al enviar el correo';
+            }
+            
+            mostrarToast(mensaje, 'success');
+        } else {
+            mostrarToast('Error al actualizar cotización: ' + (data.message || 'Error desconocido'), 'error');
+        }
+        
+    } catch (error) {
+        // Si es un error de JSON, es probable que el servidor devuelva HTML
+        if (error.message.includes('JSON') || error.message.includes('Unexpected token')) {
+            mostrarToast('Error de comunicación con el servidor. Verifica que la ruta API existe.', 'error');
+        } else {
+            mostrarToast('Error de conexión al actualizar la cotización: ' + error.message, 'error');
+        }
+        console.error('Error completo:', error);
+    }
+}
+
+// Función para simular envío de correo
+function enviarCorreoCliente(cotizacion) {
+    console.log('Enviando correo a:', cotizacion.detalles?.datosContacto?.correo || 'email no disponible');
+    console.log('Cotización:', cotizacion);
+    // Aquí implementarías la lógica real de envío de correo
+}
+
+// Función para eliminar cotización
+async function eliminarCotizacion(id) {
+    if (!confirm('¿Está seguro de que desea eliminar esta cotización? Esta acción no se puede deshacer.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/cotizaciones/api/${id}`, { 
+            method: 'DELETE',
+            credentials: 'include' 
+        });
+        const data = await response.json();
+        if (data.success) {
+            mostrarToast('Cotización eliminada correctamente', 'success');
+            await cargarCotizaciones();
+        } else {
+            mostrarToast('Error al eliminar cotización: ' + data.message, 'error');
+        }
+    } catch (error) {
+        mostrarToast('Error de conexión al eliminar la cotización', 'error');
+    }
+}
+
+// Funciones de filtrado y búsqueda
+function filtrarCotizaciones() {
+    const filtro = document.getElementById('filtroEstado')?.value;
+    const busqueda = document.getElementById('busquedaCotizacion')?.value?.toLowerCase();
+    
+    // Validar que cotizaciones sea un array válido
+    if (!Array.isArray(cotizaciones)) {
+        console.warn('filtrarCotizaciones: cotizaciones no es un array válido:', cotizaciones);
+        cotizaciones = [];
+    }
+    
+    let cotizacionesFiltradas = [...cotizaciones];
+    
+    // Filtrar por estado
+    if (filtro && filtro !== 'todos') {
+        cotizacionesFiltradas = cotizacionesFiltradas.filter(c => c.estado === filtro);
+    }
+    
+    // Filtrar por búsqueda
+    if (busqueda) {
+        cotizacionesFiltradas = cotizacionesFiltradas.filter(c => 
+            (c.numeroCotizacion && c.numeroCotizacion.toLowerCase().includes(busqueda)) ||
+            getClienteNombre(c).toLowerCase().includes(busqueda) ||
+            (c.observaciones && c.observaciones.toLowerCase().includes(busqueda))
+        );
+    }
+    
+    mostrarCotizaciones(cotizacionesFiltradas);
+}
+
+// Función para exportar cotizaciones
+function exportarCotizaciones() {
+    // Validar que cotizaciones sea un array válido
+    if (!Array.isArray(cotizaciones) || cotizaciones.length === 0) {
+        mostrarToast('No hay cotizaciones para exportar', 'warning');
+        return;
+    }
+    
+    const headers = ['Número', 'Fecha', 'Cliente', 'Estado', 'Total', 'Observaciones'];
+    const csvContent = [headers.join(',')];
+    
+    cotizaciones.forEach(cotizacion => {
+        const fila = [
+            cotizacion.numeroCotizacion || '',
+            new Date(cotizacion.fechaCotizacion).toLocaleDateString('es-CL'),
+            getClienteNombre(cotizacion).replace(/,/g, ';'),
+            cotizacion.estado || '',
+            cotizacion.total || 0,
+            (cotizacion.observaciones || '').replace(/,/g, ';')
+        ];
+        csvContent.push(fila.join(','));
+    });
+    
+    // Crear y descargar archivo
+    const blob = new Blob([csvContent.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cotizaciones_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    mostrarToast('Archivo exportado correctamente', 'success');
+}
+
+// Sistema de notificaciones toast
+function mostrarToast(mensaje, tipo = 'info') {
+    const toastContainer = document.getElementById('toastContainer');
+    
+    const iconos = {
+        success: 'fas fa-check-circle',
+        error: 'fas fa-exclamation-circle',
+        warning: 'fas fa-exclamation-triangle',
+        info: 'fas fa-info-circle'
+    };
+    
+    const colores = {
+        success: 'text-success',
+        error: 'text-danger',
+        warning: 'text-warning',
+        info: 'text-info'
+    };
+    
+    const toastId = 'toast-' + Date.now();
+    
+    const toastHTML = `
+        <div class="toast" id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+            <div class="toast-header">
+                <i class="${iconos[tipo]} ${colores[tipo]} me-2"></i>
+                <strong class="me-auto">Felmart</strong>
+                <small>ahora</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                ${mensaje}
+            </div>
+        </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+    
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement);
+    
+    toast.show();
+    
+    // Remover toast después de que se oculte
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', async function() {
+    // Cargar residuos disponibles primero
+    await cargarResiduosDisponibles();
+    // Luego cargar cotizaciones al inicio
+    cargarCotizaciones();
+    
+    // Configurar filtros
+    document.getElementById('filtroEstado')?.addEventListener('change', filtrarCotizaciones);
+    document.getElementById('busquedaCotizacion')?.addEventListener('input', filtrarCotizaciones);
+    
+    // Configurar botón de actualizar
+    document.getElementById('btnRefresh')?.addEventListener('click', cargarCotizaciones);
+    
+    // Configurar dropdowns
+    const dropdownBtn = document.getElementById('adminDropdownBtn');
+    const dropdownMenu = document.getElementById('adminDropdownMenu');
+    const notificationBell = document.getElementById('notificationBell');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    
+    if (dropdownBtn && dropdownMenu) {
+        dropdownBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('show');
+            if (notificationDropdown) notificationDropdown.classList.remove('show');
+        });
+    }
+
+    if (notificationBell && notificationDropdown) {
+        notificationBell.addEventListener('click', function(e) {
+            e.stopPropagation();
+            notificationDropdown.classList.toggle('show');
+            if (dropdownMenu) dropdownMenu.classList.remove('show');
+            
+            // Marcar notificaciones como leídas
+            if (notificationDropdown.classList.contains('show')) {
+                document.querySelectorAll('.notification-item.unread').forEach(item => {
+                    item.classList.remove('unread');
+                });
+                const badge = document.getElementById('notificationBadge');
+                if (badge) badge.style.display = 'none';
+            }
+        });
+    }
+    
+    // Cerrar dropdowns al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (dropdownBtn && dropdownMenu && !dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.remove('show');
+        }
+        if (notificationBell && notificationDropdown && !notificationBell.contains(e.target) && !notificationDropdown.contains(e.target)) {
+            notificationDropdown.classList.remove('show');
+        }
+    });
+});
+    </script>
+</body>
+</html>
