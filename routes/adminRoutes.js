@@ -5,6 +5,7 @@ const Cliente = require('../models/Cliente');
 const Usuario = require('../models/Usuario');
 const solicitudController = require('../controllers/solicitudController');
 const auth = require('../middlewares/auth');
+const visitasController = require('../controllers/visitasController');
 
 // Middleware para verificar si es administrador
 router.use(isAdmin);
@@ -178,4 +179,22 @@ router.get('/clientes/eliminar/:id', async (req, res) => {
 // Ruta para ver la lista de solicitudes (solo administrador)
 router.get('/solicitudes', auth.hasRole(['administrador']), solicitudController.listar);
 
-module.exports = router; 
+// === RUTA PARA VISITAS ===
+router.get('/visitas', auth.isAdmin, async (req, res) => {
+    try {
+        res.render('admin/visitas', {
+            titulo: 'Gestión de Visitas',
+            usuario: req.session.usuario,
+            messages: {
+                error: req.flash('error'),
+                success: req.flash('success')
+            }
+        });
+    } catch (error) {
+        console.error('Error al cargar página de visitas:', error);
+        req.flash('error', 'Error al cargar la página de visitas');
+        res.redirect('/admin');
+    }
+});
+
+module.exports = router;

@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= titulo %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #00616e;
+            --primary-light: #00818f;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .nav-pills .nav-link {
+            color: var(--secondary-color);
+            font-weight: 500;
+            border-radius: 8px;
+            margin: 0 4px;
+            transition: var(--transition);
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: rgba(0, 97, 110, 0.1);
+            color: var(--primary-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--light-bg);
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Certificates Section */
+        .certificates-section {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .filter-section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+        }
+
+        .certificate-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .certificate-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .certificate-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .certificate-number {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .certificate-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-disponible {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-procesando {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .certificate-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .certificate-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .certificate-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-download {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .btn-download:hover {
+            background: #218838;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-view {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .btn-view:hover {
+            background: var(--primary-light);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--secondary-color);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: rgba(0, 97, 110, 0.2);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Form Styles */
+        .form-label {
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 15px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 97, 110, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border: none;
+            padding: 12px 30px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 97, 110, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            padding: 12px 30px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            padding: 1.5rem 2rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+
+            .certificate-header {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+
+            .certificate-details {
+                grid-template-columns: 1fr;
+            }
+
+            .certificate-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="/cliente/inicio" class="navbar-brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                    <span>FELMART</span>
+                </a>
+
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cliente/inicio">
+                            <i class="fas fa-home me-1"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cliente/solicitudes">
+                            <i class="fas fa-file-alt me-1"></i> Mis Solicitudes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cliente/cotizaciones">
+                            <i class="fas fa-file-invoice-dollar me-1"></i> Cotizaciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cliente/calendario">
+                            <i class="fas fa-calendar-check me-1"></i> Calendario
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/clientes/certificados">
+                            <i class="fas fa-certificate me-1"></i> Certificados
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="user-info">
+                    <i class="fas fa-building text-primary"></i>
+                    <span><%= usuario ? usuario.nombre : 'Cliente' %></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">Mis Certificados de Disposición Final</h1>
+            <p class="welcome-subtitle">Descarga y consulta los certificados de tus residuos gestionados por Felmart</p>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">Buscar Certificado</label>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Número de certificado o solicitud...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Estado</label>
+                    <select class="form-select" id="filterEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="disponible">Disponibles</option>
+                        <option value="procesando">En Proceso</option>
+                        <option value="pendiente">Pendientes</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Fecha</label>
+                    <input type="month" class="form-control" id="filterFecha">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-secondary w-100" onclick="limpiarFiltros()">
+                        <i class="fas fa-eraser me-2"></i>Limpiar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certificates Section -->
+        <div class="certificates-section">
+            <div class="section-header">
+                <h3><i class="fas fa-certificate me-2"></i>Mis Certificados</h3>
+                <button class="btn btn-primary" onclick="exportarListado()">
+                    <i class="fas fa-download me-2"></i>Exportar Listado
+                </button>
+            </div>
+
+            <div id="certificadosList">
+                <!-- Los certificados se cargan dinámicamente desde la base de datos -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver Certificado -->
+    <div class="modal fade" id="modalVerCertificado" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-eye me-2"></i>Certificado de Disposición Final</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="certificadoContent">
+                        <!-- Contenido del certificado se carga aquí -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="btnDescargarModal">
+                        <i class="fas fa-download me-2"></i>Descargar PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variables globales
+        let certificadosData = [];
+        let clienteInfo = {};
+        let filtroActual = {
+            busqueda: '',
+            estado: '',
+            fecha: ''
+        };
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializarEventListeners();
+            cargarCertificados();
+            obtenerInfoCliente();
+        });
+
+        // Event Listeners
+        function inicializarEventListeners() {
+            // Filtros
+            document.getElementById('searchInput').addEventListener('input', function() {
+                filtroActual.busqueda = this.value;
+                aplicarFiltros();
+            });
+
+            document.getElementById('filterEstado').addEventListener('change', function() {
+                filtroActual.estado = this.value;
+                aplicarFiltros();
+            });
+
+            document.getElementById('filterFecha').addEventListener('change', function() {
+                filtroActual.fecha = this.value;
+                aplicarFiltros();
+            });
+        }
+
+        // Obtener información del cliente logueado
+        async function obtenerInfoCliente() {
+            try {
+                const response = await fetch('/api/cliente/info');
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        clienteInfo = result.data;
+                    }
+                }
+            } catch (error) {
+                console.error('Error obteniendo info del cliente:', error);
+            }
+        }
+
+        // Cargar certificados del cliente desde la base de datos
+        async function cargarCertificados() {
+            try {
+                const response = await fetch('/api/cliente/certificados');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success && Array.isArray(result.data)) {
+                    certificadosData = result.data;
+                    renderizarCertificados();
+                } else {
+                    console.error('Error en respuesta:', result.message || 'Formato inválido');
+                    mostrarEstadoVacio();
+                }
+            } catch (error) {
+                console.error('Error cargando certificados:', error);
+                mostrarEstadoVacio();
+            }
+        }
+
+        // Renderizar certificados en la interfaz
+        function renderizarCertificados(datos = certificadosData) {
+            const certificadosList = document.getElementById('certificadosList');
+            
+            if (datos.length === 0) {
+                mostrarEstadoVacio();
+                return;
+            }
+
+            certificadosList.innerHTML = '';
+
+            datos.forEach(certificado => {
+                const certificadoElement = document.createElement('div');
+                certificadoElement.className = 'certificate-item';
+                
+                certificadoElement.innerHTML = `
+                    <div class="certificate-header">
+                        <div class="certificate-number">
+                            Certificado ${certificado.numero_certificado || `#${certificado.id}`}
+                        </div>
+                        <span class="certificate-status status-${determinarEstado(certificado)}">
+                            ${formatearEstado(determinarEstado(certificado))}
+                        </span>
+                    </div>
+                    <div class="certificate-details">
+                        <div class="certificate-detail">
+                            <i class="fas fa-file-alt text-primary"></i>
+                            <span>Solicitud: ${certificado.SolicitudRetiro?.numero_solicitud || 'N/A'}</span>
+                        </div>
+                        <div class="certificate-detail">
+                            <i class="fas fa-calendar text-primary"></i>
+                            <span>Fecha disposición: ${formatearFecha(certificado.fecha_disposicion)}</span>
+                        </div>
+                        <div class="certificate-detail">
+                            <i class="fas fa-industry text-primary"></i>
+                            <span>Tipo: ${formatearTipoResiduo(certificado.SolicitudRetiro?.tipo_residuo)}</span>
+                        </div>
+                        <div class="certificate-detail">
+                            <i class="fas fa-weight text-primary"></i>
+                            <span>Cantidad: ${certificado.SolicitudRetiro?.cantidad || 'N/A'} ${certificado.SolicitudRetiro?.unidad || ''}</span>
+                        </div>
+                        <div class="certificate-detail">
+                            <i class="fas fa-building text-primary"></i>
+                            <span>Planta: ${certificado.planta_disposicion || 'No especificada'}</span>
+                        </div>
+                        <div class="certificate-detail">
+                            <i class="fas fa-cogs text-primary"></i>
+                            <span>Método: ${certificado.metodo_disposicion || 'No especificado'}</span>
+                        </div>
+                    </div>
+                    <div class="certificate-actions">
+                        ${generarBotonesCertificado(certificado)}
+                    </div>
+                `;
+                
+                certificadosList.appendChild(certificadoElement);
+            });
+        }
+
+        // Determinar estado del certificado
+        function determinarEstado(certificado) {
+            if (certificado.archivo_pdf) {
+                return 'disponible';
+            } else if (certificado.fecha_disposicion && new Date(certificado.fecha_disposicion) <= new Date()) {
+                return 'procesando';
+            } else {
+                return 'pendiente';
+            }
+        }
+
+        // Generar botones según el estado del certificado
+        function generarBotonesCertificado(certificado) {
+            const estado = determinarEstado(certificado);
+            let botones = '';
+            
+            if (estado === 'disponible') {
+                botones += `
+                    <button class="btn btn-download btn-sm" onclick="descargarCertificado(${certificado.id})">
+                        <i class="fas fa-download me-1"></i>Descargar PDF
+                    </button>
+                    <button class="btn btn-view btn-sm" onclick="verCertificado(${certificado.id})">
+                        <i class="fas fa-eye me-1"></i>Ver Detalles
+                    </button>
+                `;
+            } else if (estado === 'procesando') {
+                botones += `
+                    <button class="btn btn-secondary btn-sm" disabled>
+                        <i class="fas fa-clock me-1"></i>Generando PDF...
+                    </button>
+                    <button class="btn btn-view btn-sm" onclick="verCertificado(${certificado.id})">
+                        <i class="fas fa-eye me-1"></i>Ver Detalles
+                    </button>
+                `;
+            } else {
+                botones += `
+                    <button class="btn btn-secondary btn-sm" disabled>
+                        <i class="fas fa-hourglass-half me-1"></i>Pendiente
+                    </button>
+                `;
+            }
+            
+            return botones;
+        }
+
+        // Aplicar filtros
+        function aplicarFiltros() {
+            let datosFiltrados = certificadosData;
+
+            // Filtro por búsqueda
+            if (filtroActual.busqueda) {
+                const busqueda = filtroActual.busqueda.toLowerCase();
+                datosFiltrados = datosFiltrados.filter(cert => 
+                    (cert.numero_certificado && cert.numero_certificado.toLowerCase().includes(busqueda)) ||
+                    (cert.SolicitudRetiro?.numero_solicitud && cert.SolicitudRetiro.numero_solicitud.toLowerCase().includes(busqueda)) ||
+                    (cert.SolicitudRetiro?.tipo_residuo && cert.SolicitudRetiro.tipo_residuo.toLowerCase().includes(busqueda))
+                );
+            }
+
+            // Filtro por estado
+            if (filtroActual.estado) {
+                datosFiltrados = datosFiltrados.filter(cert => 
+                    determinarEstado(cert) === filtroActual.estado
+                );
+            }
+
+            // Filtro por fecha
+            if (filtroActual.fecha) {
+                const [año, mes] = filtroActual.fecha.split('-');
+                datosFiltrados = datosFiltrados.filter(cert => {
+                    if (!cert.fecha_disposicion) return false;
+                    const fechaCert = new Date(cert.fecha_disposicion);
+                    return fechaCert.getFullYear() == año && (fechaCert.getMonth() + 1) == mes;
+                });
+            }
+
+            renderizarCertificados(datosFiltrados);
+        }
+
+        // Limpiar filtros
+        function limpiarFiltros() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterEstado').value = '';
+            document.getElementById('filterFecha').value = '';
+            
+            filtroActual = {
+                busqueda: '',
+                estado: '',
+                fecha: ''
+            };
+            
+            renderizarCertificados();
+        }
+
+        // Mostrar estado vacío
+        function mostrarEstadoVacio() {
+            const certificadosList = document.getElementById('certificadosList');
+            certificadosList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-certificate"></i>
+                    <h4>No tienes certificados disponibles</h4>
+                    <p>Los certificados aparecerán aquí una vez que Felmart complete la disposición de tus residuos</p>
+                    <button class="btn btn-primary" onclick="window.location.href='/cliente/calendario'">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Solicitar Retiro de Residuos
+                    </button>
+                </div>
+            `;
+        }
+
+        // Descargar certificado
+        async function descargarCertificado(certificadoId) {
+            try {
+                const response = await fetch(`/api/cliente/certificados/${certificadoId}/descargar`);
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `certificado_${certificadoId}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    mostrarNotificacion('Certificado descargado exitosamente', 'success');
+                } else {
+                    throw new Error('Error al descargar el certificado');
+                }
+            } catch (error) {
+                console.error('Error descargando certificado:', error);
+                mostrarNotificacion('Error al descargar el certificado', 'error');
+            }
+        }
+
+        // Ver certificado en modal
+        async function verCertificado(certificadoId) {
+            try {
+                const response = await fetch(`/api/cliente/certificados/${certificadoId}`);
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    const certificado = result.data;
+                    mostrarModalCertificado(certificado);
+                } else {
+                    throw new Error(result.message || 'Error al cargar el certificado');
+                }
+            } catch (error) {
+                console.error('Error cargando certificado:', error);
+                mostrarNotificacion('Error al cargar los detalles del certificado', 'error');
+            }
+        }
+
+        // Mostrar modal con detalles del certificado
+        function mostrarModalCertificado(certificado) {
+            const content = document.getElementById('certificadoContent');
+            
+            content.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary mb-3">Información del Certificado</h6>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Número:</strong></td>
+                                <td>${certificado.numero_certificado || `#${certificado.id}`}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fecha de Disposición:</strong></td>
+                                <td>${formatearFecha(certificado.fecha_disposicion)}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Planta de Disposición:</strong></td>
+                                <td>${certificado.planta_disposicion || 'No especificada'}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Método de Disposición:</strong></td>
+                                <td>${certificado.metodo_disposicion || 'No especificado'}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Técnico Responsable:</strong></td>
+                                <td>${certificado.tecnico_responsable || 'No asignado'}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary mb-3">Información del Residuo</h6>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Solicitud:</strong></td>
+                                <td>${certificado.SolicitudRetiro?.numero_solicitud || 'N/A'}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tipo de Residuo:</strong></td>
+                                <td>${formatearTipoResiduo(certificado.SolicitudRetiro?.tipo_residuo)}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cantidad:</strong></td>
+                                <td>${certificado.SolicitudRetiro?.cantidad || 'N/A'} ${certificado.SolicitudRetiro?.unidad || ''}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Descripción:</strong></td>
+                                <td>${certificado.SolicitudRetiro?.descripcion || 'No disponible'}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fecha de Retiro:</strong></td>
+                                <td>${formatearFecha(certificado.SolicitudRetiro?.fecha_programada)}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                ${certificado.observaciones_disposicion ? `
+                <div class="mt-4">
+                    <h6 class="text-primary mb-3">Observaciones de Disposición</h6>
+                    <div class="alert alert-light">
+                        ${certificado.observaciones_disposicion}
+                    </div>
+                </div>
+                ` : ''}
+
+                <div class="mt-4">
+                    <h6 class="text-primary mb-3">Autorizaciones y Cumplimiento</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" ${certificado.autorizacion_sag ? 'checked' : ''} disabled>
+                                <label class="form-check-label">
+                                    Autorización SAG
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" ${certificado.autorizacion_sernageomin ? 'checked' : ''} disabled>
+                                <label class="form-check-label">
+                                    Autorización SERNAGEOMIN
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" ${certificado.cumplimiento_ds148 ? 'checked' : ''} disabled>
+                                <label class="form-check-label">
+                                    Cumplimiento DS 148/2003
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Validez del Certificado:</strong> Este certificado es válido ante las autoridades ambientales y sanitarias correspondientes.
+                    </div>
+                </div>
+            `;
+            
+            // Configurar botón de descarga en el modal
+            const btnDescargar = document.getElementById('btnDescargarModal');
+            btnDescargar.onclick = () => descargarCertificado(certificado.id);
+            
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('modalVerCertificado'));
+            modal.show();
+        }
+
+        // Exportar listado de certificados
+        async function exportarListado() {
+            try {
+                const response = await fetch('/api/cliente/certificados/exportar');
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `listado_certificados_${new Date().toISOString().split('T')[0]}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    mostrarNotificacion('Listado exportado exitosamente', 'success');
+                } else {
+                    throw new Error('Error al exportar el listado');
+                }
+            } catch (error) {
+                console.error('Error exportando listado:', error);
+                mostrarNotificacion('Error al exportar el listado', 'error');
+            }
+        }
+
+        // Funciones de utilidad
+        function formatearEstado(estado) {
+            const estados = {
+                'disponible': 'Disponible',
+                'procesando': 'En Proceso',
+                'pendiente': 'Pendiente'
+            };
+            return estados[estado] || estado;
+        }
+
+        function formatearTipoResiduo(tipo) {
+            const tipos = {
+                'industrial': 'Residuos Industriales',
+                'agricola': 'Residuos Agrícolas',
+                'naviero': 'Residuos Navieros',
+                'otro': 'Otro tipo'
+            };
+            return tipos[tipo] || tipo || 'No especificado';
+        }
+
+        function formatearFecha(fecha) {
+            if (!fecha) return 'No especificada';
+            
+            try {
+                const date = new Date(fecha);
+                return date.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } catch (error) {
+                return fecha;
+            }
+        }
+
+        // Mostrar notificaciones
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            // Remover notificaciones existentes
+            const existingAlerts = document.querySelectorAll('.notification-alert');
+            existingAlerts.forEach(alert => alert.remove());
+
+            // Crear elemento de notificación
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${tipo === 'error' ? 'danger' : tipo} alert-dismissible fade show notification-alert`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            
+            const iconos = {
+                'success': 'fa-check-circle',
+                'error': 'fa-exclamation-triangle',
+                'info': 'fa-info-circle',
+                'warning': 'fa-exclamation-triangle'
+            };
+            
+            notification.innerHTML = `
+                <i class="fas ${iconos[tipo] || iconos.info} me-2"></i>
+                ${mensaje}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remover después de 5 segundos
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

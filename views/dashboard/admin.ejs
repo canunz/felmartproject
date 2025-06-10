@@ -1485,6 +1485,135 @@
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
+
+        // Función para cargar notificaciones
+        async function cargarNotificaciones() {
+            try {
+                const response = await fetch('/notificaciones/no-leidas', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin' // Importante para enviar las cookies de sesión
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Actualizar contador
+                    const contador = document.getElementById('contador-notificaciones');
+                    if (contador) {
+                        contador.textContent = data.totalNoLeidas > 0 ? data.totalNoLeidas : '';
+                        contador.classList.toggle('d-none', data.totalNoLeidas === 0);
+                    }
+                    
+                    // Actualizar lista
+                    actualizarListaNotificaciones(data.notificaciones);
+                }
+            } catch (error) {
+                console.error('Error al cargar notificaciones:', error);
+                // No mostrar el error al usuario para no interrumpir la experiencia
+            }
+        }
+
+        // Función para actualizar la lista de notificaciones
+        function actualizarListaNotificaciones(notificaciones) {
+            const listaNotificaciones = document.getElementById('listaNotificaciones');
+            if (!listaNotificaciones) return;
+            
+            listaNotificaciones.innerHTML = '';
+            
+            if (!notificaciones || notificaciones.length === 0) {
+                listaNotificaciones.innerHTML = '<div class="text-center py-4">No tienes notificaciones nuevas</div>';
+                return;
+            }
+            
+            notificaciones.forEach(notif => {
+                const fecha = new Date(notif.createdAt);
+                const fechaFormateada = fecha.toLocaleDateString('es-ES') + ' ' + 
+                                        fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                
+                let icono = 'bell';
+                switch (notif.tipo) {
+                    case 'solicitud': icono = 'file-alt'; break;
+                    case 'cotizacion': icono = 'file-invoice-dollar'; break;
+                    case 'visita': icono = 'calendar-check'; break;
+                    case 'certificado': icono = 'certificate'; break;
+                    case 'sistema': icono = 'cog'; break;
+                }
+                
+                const item = document.createElement('div');
+                item.className = `notificacion-item p-3 border-bottom ${notif.leida ? '' : 'bg-light'}`;
+                item.innerHTML = `
+                    <div class="d-flex">
+                        <div class="flex-shrink-0 me-3">
+                            <i class="fas fa-${icono} fa-lg text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">${notif.titulo}</h6>
+                            <p class="mb-0 text-muted small">${notif.mensaje}</p>
+                            <small class="text-muted">${fechaFormateada}</small>
+                        </div>
+                    </div>
+                `;
+                
+                item.addEventListener('click', function() {
+                    marcarComoLeida(notif.id, obtenerEnlaceNotificacion(notif));
+                });
+                
+                listaNotificaciones.appendChild(item);
+            });
+        }
+
+        // Función para obtener enlace según tipo de notificación
+        function obtenerEnlaceNotificacion(notif) {
+            switch (notif.tipo) {
+                case 'solicitud': return `/solicitudes/detalles/${notif.referenciaId}`;
+                case 'cotizacion': return `/cotizaciones/detalles/${notif.referenciaId}`;
+                case 'visita': return `/visitas/detalles/${notif.referenciaId}`;
+                case 'certificado': return `/certificados/detalles/${notif.referenciaId}`;
+                default: return '/notificaciones';
+            }
+        }
+
+        // Función para marcar como leída
+        async function marcarComoLeida(id, redirectUrl) {
+            try {
+                const response = await fetch(`/notificaciones/marcar-leida/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    window.location.href = redirectUrl;
+                }
+            } catch (error) {
+                console.error('Error al marcar notificación:', error);
+                // No mostrar el error al usuario para no interrumpir la experiencia
+            }
+        }
+
+        // Inicializar notificaciones
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar notificaciones iniciales
+            cargarNotificaciones();
+            
+            // Actualizar cada minuto
+            setInterval(cargarNotificaciones, 60000);
+        });
     </script>
 </body>
 </html>

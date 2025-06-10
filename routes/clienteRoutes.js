@@ -1,7 +1,7 @@
 // routes/api/clientesRoutes.js
 const express = require('express');
 const router = express.Router();
-const clienteController = require('../../controllers/clienteController');
+const clienteController = require('../controllers/clienteController');
 
 // Middleware de autenticación simple
 const requireAuth = (req, res, next) => {
@@ -31,5 +31,6 @@ router.get('/clientes/:id', requireAuth, clienteController.obtenerCliente);
 router.post('/clientes', requireAdmin, clienteController.crearCliente);
 router.put('/clientes/:id', requireAdmin, clienteController.actualizarCliente);
 router.delete('/clientes/:id', requireAdmin, clienteController.eliminarCliente);
+router.get('/clientes/certificados', clienteController.renderCertificadosCliente);
 
 module.exports = router;

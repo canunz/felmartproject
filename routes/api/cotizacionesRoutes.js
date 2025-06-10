@@ -345,12 +345,22 @@ router.get('/api/listar', auth.isAdmin, async (req, res) => {
       ORDER BY fecha_cotizacion DESC
     `);
     
-    console.log(`✅ API: Encontradas ${cotizaciones.length} cotizaciones`);
+    // Asegurar que cotizaciones sea siempre un array válido
+    const cotizacionesValidas = Array.isArray(cotizaciones) ? cotizaciones : [];
+    
+    console.log(`✅ API: Encontradas ${cotizacionesValidas.length} cotizaciones`);
 
-    res.json({ success: true, cotizaciones });
+    res.json({ 
+      success: true, 
+      cotizaciones: cotizacionesValidas 
+    });
   } catch (error) {
     console.error('❌ Error al obtener lista de cotizaciones:', error);
-    res.status(500).send('Error al obtener lista de cotizaciones');
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error al obtener lista de cotizaciones',
+      cotizaciones: [] // Devolver array vacío en caso de error
+    });
   }
 });
 

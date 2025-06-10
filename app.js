@@ -8,8 +8,26 @@ const helmet          = require('helmet');
 const cors            = require('cors');
 const expressLayouts  = require('express-ejs-layouts');
 const sequelize       = require('./config/database');
-const apiRoutes       = require('./routes/api');
+
+// Importar todas las rutas
+const routes = require('./routes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const notificacionesRoutes = require('./routes/notificacionesRoutes');
+const cotizacionRoutes = require('./routes/cotizacionRoutes');
+const precioresiduosRoutes = require('./routes/precioresiduosRoutes');
+const visitaRoutes = require('./routes/visitaRoutes');
+const clientesApiRoutes = require('./routes/api/clientesRoutes');
+const cotizacionesApiRoutes = require('./routes/api/cotizacionesRoutes');
+const apiRoutes = require('./routes/api/apiRoutes');
 const contactoRoutes = require('./routes/contactoRoutes');
+const empleadosApiRoutes = require('./routes/api/empleadosRoutes');
+const visitasApiRoutes = require('./routes/api/visitasRoutes');
+const notificacionesApiRoutes = require('./routes/api/notificacionesRoutes');
+const portalClienteRoutes = require('./routes/api/portalClienteRoutes');
+
+// NUEVA IMPORTACIÓN - Rutas de certificados
+const certificadosClienteRoutes = require('./routes/api/certificadosClienteRoutes');
 
 const app = express();
 
@@ -185,37 +203,25 @@ app.get('/admin/cotizaciones', (req, res) => {
   });
 });
 
-// Importar rutas
-const routes = require('./routes');
-const dashboardRoutes = require('./routes/dashboardRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const notificacionesRoutes = require('./routes/notificacionesRoutes');
-const cotizacionRoutes = require('./routes/cotizacionRoutes');
-
 // === USAR RUTAS ===
 app.use('/', routes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/admin', adminRoutes);
 app.use('/notificaciones', notificacionesRoutes);
-
-// === RUTAS DE COTIZACIONES (IMPORTANTE) ===
 app.use('/cotizaciones', cotizacionRoutes);
-console.log('✅ Rutas de cotizaciones cargadas en /cotizaciones');
-
-// Rutas API - IMPORTANTE: cargar las rutas de clientes
-const clientesApiRoutes = require('./routes/api/clientesRoutes');
-app.use('/api', clientesApiRoutes);
-
-// Rutas API de cotizaciones
-const cotizacionesApiRoutes = require('./routes/api/cotizacionesRoutes');
-app.use('/cotizaciones', cotizacionesApiRoutes);
-console.log('✅ Rutas de cotizaciones API cargadas correctamente');
-
-// Otras rutas API
-app.use('/api/cmf', require('./routes/api/cmfBancos.routes'));
+app.use('/precios-residuos', precioresiduosRoutes);
+app.use('/visitas', visitaRoutes);
 app.use('/api', apiRoutes);
+app.use('/api', clientesApiRoutes);
+app.use('/api', cotizacionesApiRoutes);
+app.use('/api', empleadosApiRoutes);
+app.use('/api', visitasApiRoutes);
+app.use('/api', notificacionesApiRoutes);
+app.use('/api', portalClienteRoutes);
+app.use('/api', certificadosClienteRoutes);
+app.use('/contacto', contactoRoutes);
 
-// Rutas de contacto
+// === RUTAS DE CONTACTO ===
 app.use('/contacto', contactoRoutes);
 
 // Manejo de errores
@@ -238,6 +244,7 @@ sequelize.sync()
             console.log(`📊 Clientes: http://localhost:${PORT}/dashboard/clientes`);
             console.log(`📝 Cotizaciones: http://localhost:${PORT}/admin/cotizaciones`);
             console.log(`💰 Cotizar: http://localhost:${PORT}/cotizaciones/cotizar`);
+            console.log(`🏆 Certificados: http://localhost:${PORT}/certificados`);
         });
     })
     .catch(err => {

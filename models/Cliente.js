@@ -64,11 +64,34 @@ const Cliente = sequelize.define('Cliente', {
     validate: {
       notEmpty: true
     }
+  },
+  usuarioId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'usuarios',
+      key: 'id'
+    }
   }
 }, {
   tableName: 'clientes',
   underscored: true,
   timestamps: true
 });
+
+// Definir asociaciones
+Cliente.associate = function(models) {
+  // Asociación con Usuario
+  Cliente.belongsTo(models.Usuario, {
+    foreignKey: 'usuarioId',
+    as: 'usuario'
+  });
+  
+  // Asociación con SolicitudRetiro
+  Cliente.hasMany(models.SolicitudRetiro, {
+    foreignKey: 'cliente_id',
+    as: 'solicitudes'
+  });
+};
 
 module.exports = Cliente;

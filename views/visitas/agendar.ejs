@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Visita - Felmart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #00616e;
+            --primary-dark: #004d57;
+            --primary-light: #00818f;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-hover: 0 8px 30px rgba(0,0,0,0.12);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .page-title {
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            padding: 0.75rem 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 97, 110, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 97, 110, 0.2);
+        }
+
+        .alert {
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .required-field::after {
+            content: " *";
+            color: var(--danger-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Agendar Visita</h1>
+            <p class="page-subtitle">Complete el formulario para programar una visita de retiro</p>
+        </div>
+
+        <% if (error) { %>
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <%= error %>
+            </div>
+        <% } %>
+
+        <% if (success) { %>
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle me-2"></i>
+                <%= success %>
+            </div>
+        <% } %>
+
+        <form action="/visitas/agendar" method="POST" id="visitaForm">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label required-field">Fecha de Visita</label>
+                    <input type="date" class="form-control" id="fechaVisita" name="fechaVisita" required 
+                           min="<%= new Date().toISOString().split('T')[0] %>">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label required-field">Hora de Visita</label>
+                    <input type="time" class="form-control" id="horaVisita" name="horaVisita" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label required-field">Duración Estimada (minutos)</label>
+                    <input type="number" class="form-control" id="duracionEstimada" name="duracionEstimada" 
+                           value="60" min="15" max="480" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Dirección de Visita</label>
+                    <input type="text" class="form-control" id="direccionVisita" name="direccionVisita" 
+                           placeholder="Dirección específica (opcional)">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Observaciones</label>
+                <textarea class="form-control" id="observaciones" name="observaciones" rows="3" 
+                          placeholder="Observaciones adicionales..."></textarea>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-calendar-check me-2"></i>
+                    Agendar Visita
+                </button>
+                <a href="/dashboard/cliente" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Volver al Dashboard
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('visitaForm');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validar fecha
+                const fechaVisita = new Date(document.getElementById('fechaVisita').value);
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+                
+                if (fechaVisita < hoy) {
+                    alert('La fecha de visita no puede ser anterior a hoy');
+                    return;
+                }
+                
+                // Validar hora
+                const horaVisita = document.getElementById('horaVisita').value;
+                const [horas, minutos] = horaVisita.split(':').map(Number);
+                
+                if (horas < 8 || horas > 18 || (horas === 18 && minutos > 0)) {
+                    alert('Las visitas solo pueden ser programadas entre las 8:00 y las 18:00');
+                    return;
+                }
+                
+                // Si todo está bien, enviar el formulario
+                form.submit();
+            });
+        });
+    </script>
+</body>
+</html> 

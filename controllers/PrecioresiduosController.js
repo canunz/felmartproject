@@ -443,8 +443,16 @@ module.exports = {
           iva: iva,
           total: totalFinal,
           estado: 'pendiente',
-          observaciones: `Contacto: ${nombre}, Rut: ${rut}, Correo: ${correo}, Teléfono: ${telefono}` +
-            (esEmpresa === 'si' ? `, Empresa: ${nombreEmpresa} (${rutEmpresa})` : ''),
+          // Guardar datos del cliente en campos específicos
+          cliente_nombre: nombre,
+          cliente_rut: rut,
+          cliente_email: correo,
+          cliente_telefono: telefono,
+          cliente_empresa: esEmpresa === 'si' ? nombreEmpresa : null,
+          cliente_direccion: direccion || null,
+          cliente_comuna: comuna || null,
+          // Dejar observaciones vacías por defecto
+          observaciones: null,
           detallesJson: JSON.stringify({
             datosContacto: {
               nombre,
@@ -557,4 +565,30 @@ module.exports = {
       });
     }
   },
+
+  /**
+   * API endpoint para obtener todos los precios de residuos activos
+   * @param {Object} req - Objeto de solicitud
+   * @param {Object} res - Objeto de respuesta
+   */
+  obtenerPreciosAPI: async (req, res) => {
+    try {
+      const precios = await PrecioResiduo.findAll({ 
+        where: { activo: 1 },
+        order: [['descripcion', 'ASC']]
+      });
+      
+      res.json({
+        success: true,
+        precios: precios
+      });
+    } catch (error) {
+      console.error('Error al obtener precios de residuos:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error al obtener los precios de residuos',
+        error: error.message
+      });
+    }
+  }
 };

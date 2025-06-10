@@ -3,11 +3,15 @@ const express = require('express');
 const router = express.Router();
 const usuarioController = require('../controllers/usuarioController');
 const dashboardController = require('../controllers/dashboardController');
+const notificacionController = require('../controllers/notificacionController');
+const { isAuthenticated } = require('../middlewares/auth');
 
 // Importar rutas
 const dashboardRoutes = require('./dashboardRoutes');
-const clienteRoutes = require('./api/clienteRoutes');
+const clienteRoutes = require('./api/clientesRoutes');
 const usuarioRoutes = require('./usuarioRoutes');
+const cotizacionRoutes = require('./cotizacionRoutes');
+const visitasRoutes = require('./api/visitasRoutes');
 
 // En tu controlador o route handler
 router.get('/', (req, res) => {
@@ -22,8 +26,7 @@ router.get('/', (req, res) => {
 // routes/index.js o el archivo donde tengas tus rutas
 router.get('/sobre-nosotros', (req, res) => {
   res.render('sobre-nosotros', {
-    titulo: 'Sobre Nosotros - Felmart',
-    usuario: req.session.usuario || null
+    titulo: 'Sobre Nosotros - Felmart'
   });
 });
 
@@ -34,13 +37,18 @@ router.get('/login', usuarioController.mostrarLogin);
 router.post('/login', usuarioController.login);
 router.get('/logout', usuarioController.logout);
 
+// Rutas de notificaciones (protegidas)
+router.get('/notificaciones/no-leidas', isAuthenticated, notificacionController.obtenerNoLeidas);
+router.post('/notificaciones/marcar-leida/:id', isAuthenticated, notificacionController.marcarComoLeida);
+router.post('/notificaciones/marcar-todas-leidas', isAuthenticated, notificacionController.marcarTodasLeidas);
+
 // Ruta del dashboard
 router.get('/dashboard', (req, res) => {
   // Protección restaurada: redirige a login si no hay sesión
   if (!req.session.usuario) {
     return res.redirect('/login');
   }
-
+  
   // Redirigir según el rol como estaba originalmente
   switch (req.session.usuario.rol) {
     case 'administrador':
@@ -65,24 +73,11 @@ router.get('/dashboard', (req, res) => {
   }
 });
 
-// Ruta para manejar /cotizacion/resultado (compatibilidad)
-router.get('/cotizacion/resultado', (req, res) => {
-  res.render('cotizaciones/resultado', {
-    titulo: 'Cotización - Felmart',
-    layout: false,
-    nombre: 'Usuario',
-    mensaje: 'Acceso directo a página de resultado',
-    usuario: req.session.usuario || null,
-    success: true,
-    numeroCotizacion: 'COT-DIRECT'
-  });
-});
-
 // Rutas de la aplicación
 router.use('/dashboard', dashboardRoutes);
-router.use('/usuarios', usuarioRoutes);
-
-// Rutas de la API
 router.use('/api/clientes', clienteRoutes);
+router.use('/usuarios', usuarioRoutes);
+router.use('/cotizaciones', cotizacionRoutes);
+router.use('/api/visitas', visitasRoutes);
 
 module.exports = router;

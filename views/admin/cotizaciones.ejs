@@ -291,11 +291,39 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
 // Variables globales
-let cotizaciones = [];
+let cotizaciones = []; // Inicializar como array vacío
 let cotizacionActual = null;
 let residuosEditables = [];
+let residuosDisponibles = []; // Para almacenar la lista de residuos de la BD
 
 // Funciones principales
+
+// Función para cargar residuos disponibles de la BD
+async function cargarResiduosDisponibles() {
+    try {
+        const response = await fetch('/residuos/api/precios', {
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && Array.isArray(data.precios)) {
+                residuosDisponibles = data.precios.filter(residuo => residuo.activo === 1);
+                console.log('Residuos cargados:', residuosDisponibles.length);
+            } else {
+                console.warn('No se pudieron cargar los residuos:', data);
+                residuosDisponibles = [];
+            }
+        } else {
+            console.error('Error al cargar residuos:', response.status);
+            residuosDisponibles = [];
+        }
+    } catch (error) {
+        console.error('Error al cargar residuos:', error);
+        residuosDisponibles = [];
+    }
+}
+
 async function cargarCotizaciones() {
     try {
         mostrarCargando(true);
@@ -312,16 +340,24 @@ async function cargarCotizaciones() {
         
         const data = await response.json();
         if (data.success) {
-            cotizaciones = data.cotizaciones;
+            // Asegurar que cotizaciones sea siempre un array
+            cotizaciones = Array.isArray(data.cotizaciones) ? data.cotizaciones : [];
             console.log('Cotizaciones cargadas:', cotizaciones); // Para debug
             mostrarCotizaciones(cotizaciones);
             actualizarContadores();
             mostrarToast('Cotizaciones cargadas correctamente', 'success');
         } else {
-            mostrarToast('Error al cargar las cotizaciones: ' + data.message, 'error');
+            // En caso de error, usar el array de cotizaciones del response si existe, sino array vacío
+            cotizaciones = Array.isArray(data.cotizaciones) ? data.cotizaciones : [];
+            mostrarCotizaciones(cotizaciones);
+            actualizarContadores();
+            mostrarToast('Error al cargar las cotizaciones: ' + (data.message || 'Error desconocido'), 'error');
         }
     } catch (error) {
         console.error('Error completo:', error);
+        // En caso de error, inicializar como array vacío
+        cotizaciones = [];
+        mostrarCotizaciones(cotizaciones);
         mostrarToast('Error de conexión al cargar las cotizaciones: ' + error.message, 'error');
     } finally {
         mostrarCargando(false);
@@ -351,6 +387,12 @@ function mostrarCotizaciones(lista) {
     if (!tbody) return;
     
     tbody.innerHTML = '';
+    
+    // Validar que lista sea un array válido
+    if (!Array.isArray(lista)) {
+        console.warn('mostrarCotizaciones: lista no es un array válido:', lista);
+        lista = [];
+    }
     
     if (lista.length === 0) {
         tbody.innerHTML = `
@@ -452,15 +494,26 @@ function getEstadoBadge(estado) {
 }
 
 function actualizarContadores() {
+    // Validar que cotizaciones sea un array válido
+    if (!Array.isArray(cotizaciones)) {
+        console.warn('actualizarContadores: cotizaciones no es un array válido:', cotizaciones);
+        cotizaciones = [];
+    }
+    
     const total = cotizaciones.length;
     const pendientes = cotizaciones.filter(c => c.estado === 'pendiente').length;
     const aceptadas = cotizaciones.filter(c => c.estado === 'aceptada').length;
     const rechazadas = cotizaciones.filter(c => c.estado === 'rechazada').length;
     
-    document.getElementById('totalCotizaciones').textContent = total;
-    document.getElementById('pendientesCotizaciones').textContent = pendientes;
-    document.getElementById('aceptadasCotizaciones').textContent = aceptadas;
-    document.getElementById('rechazadasCotizaciones').textContent = rechazadas;
+    const totalElement = document.getElementById('totalCotizaciones');
+    const pendientesElement = document.getElementById('pendientesCotizaciones');
+    const aceptadasElement = document.getElementById('aceptadasCotizaciones');
+    const rechazadasElement = document.getElementById('rechazadasCotizaciones');
+    
+    if (totalElement) totalElement.textContent = total;
+    if (pendientesElement) pendientesElement.textContent = pendientes;
+    if (aceptadasElement) aceptadasElement.textContent = aceptadas;
+    if (rechazadasElement) rechazadasElement.textContent = rechazadas;
 }
 
 // Función para ver detalle (solo lectura)
@@ -502,6 +555,21 @@ function mostrarDetalleModal(cotizacion) {
         cliente = detalles.datosContacto || detalles.cliente || {};
     }
     
+    // PRIORIDAD: Usar datos directos de la cotización (campos de la BD)
+    if (cotizacion.cliente_nombre || cotizacion.cliente_email) {
+        cliente = {
+            nombre: cotizacion.cliente_nombre || cliente.nombre || null,
+            rut: cotizacion.cliente_rut || cliente.rut || null,
+            correo: cotizacion.cliente_email || cliente.correo || cliente.email || null,
+            email: cotizacion.cliente_email || cliente.email || cliente.correo || null,
+            telefono: cotizacion.cliente_telefono || cliente.telefono || null,
+            empresa: cotizacion.cliente_empresa || cliente.empresa || null,
+            direccion: cotizacion.cliente_direccion || cliente.direccion || null,
+            comuna: cotizacion.cliente_comuna || cliente.comuna || null
+        };
+        console.log('✅ DETALLE - Usando datos directos de cotización para cliente:', cliente);
+    }
+    
     const residuos = detalles.residuos || [];
     const fecha = new Date(cotizacion.fechaCotizacion).toLocaleDateString('es-CL');
     
@@ -523,8 +591,8 @@ function mostrarDetalleModal(cotizacion) {
                                     <p><strong>Email:</strong> ${cliente.correo || 'N/A'}</p>
                                     <p><strong>Teléfono:</strong> ${cliente.telefono || 'N/A'}</p>
                                     <p><strong>Empresa:</strong> ${cliente.empresa || 'N/A'}</p>
-                                    <p><strong>Dirección:</strong> ${detalles.direccion || 'N/A'}</p>
-                                    <p><strong>Comuna:</strong> ${detalles.comuna || 'N/A'}</p>
+                                    <p><strong>Dirección:</strong> ${cliente.direccion || detalles.direccion || 'N/A'}</p>
+                                    <p><strong>Comuna:</strong> ${cliente.comuna || detalles.comuna || 'N/A'}</p>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -633,7 +701,7 @@ async function modificarCotizacion(id) {
             }
             
             residuosEditables = [...(detalles.residuos || [])];
-            mostrarModalModificar(data.cotizacion);
+            await mostrarModalModificar(data.cotizacion);
         } else {
             mostrarToast('Error al cargar la cotización: ' + (data.message || 'Cotización no encontrada'), 'error');
         }
@@ -642,7 +710,7 @@ async function modificarCotizacion(id) {
     }
 }
 
-function mostrarModalModificar(cotizacion) {
+async function mostrarModalModificar(cotizacion) {
     let detalles = {}, cliente = {};
     
     // Manejar diferentes formatos de datos como en el código original
@@ -661,8 +729,61 @@ function mostrarModalModificar(cotizacion) {
         cliente = detalles.datosContacto || detalles.cliente || {};
     }
     
+    // PRIORIDAD: Usar datos directos de la cotización (campos de la BD)
+    if (cotizacion.cliente_nombre || cotizacion.cliente_email) {
+        cliente = {
+            nombre: cotizacion.cliente_nombre || cliente.nombre || null,
+            rut: cotizacion.cliente_rut || cliente.rut || null,
+            correo: cotizacion.cliente_email || cliente.correo || cliente.email || null,
+            email: cotizacion.cliente_email || cliente.email || cliente.correo || null,
+            telefono: cotizacion.cliente_telefono || cliente.telefono || null,
+            empresa: cotizacion.cliente_empresa || cliente.empresa || null,
+            direccion: cotizacion.cliente_direccion || cliente.direccion || null,
+            comuna: cotizacion.cliente_comuna || cliente.comuna || null
+        };
+        console.log('✅ Usando datos directos de cotización para cliente:', cliente);
+    }
+    
     const residuos = detalles.residuos || [];
     const fecha = new Date(cotizacion.fechaCotizacion).toLocaleDateString('es-CL');
+    
+    // Intentar cargar información completa del cliente desde la cotización como backup
+    try {
+        console.log('🔍 Cargando información del cliente para cotización ID:', cotizacion.id);
+        const response = await fetch(`/cotizaciones/api/${cotizacion.id}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        
+        console.log('📡 Respuesta de API cotización status:', response.status);
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('📊 Datos recibidos de API:', data);
+            
+            if (data.success && data.cliente) {
+                // Solo actualizar campos que estén vacíos
+                cliente = {
+                    nombre: cliente.nombre || data.cliente.nombre || null,
+                    rut: cliente.rut || data.cliente.rut || null,
+                    correo: cliente.correo || data.cliente.correo || data.cliente.email || null,
+                    email: cliente.email || data.cliente.email || data.cliente.correo || null,
+                    telefono: cliente.telefono || data.cliente.telefono || null,
+                    empresa: cliente.empresa || data.cliente.empresa || null,
+                    direccion: cliente.direccion || data.cliente.direccion || null,
+                    comuna: cliente.comuna || data.cliente.comuna || null
+                };
+                console.log('✅ Información del cliente combinada desde BD:', cliente);
+            } else {
+                console.log('⚠️ API devolvió success=false o sin cliente:', data);
+            }
+        } else {
+            console.error('❌ Error en respuesta API cotización:', response.status, response.statusText);
+        }
+    } catch (error) {
+        console.error('❌ Error al cargar información adicional del cliente:', error);
+    }
     
     const modalContent = `
         <div class="modal fade" id="modificarModal" tabindex="-1">
@@ -675,15 +796,22 @@ function mostrarModalModificar(cotizacion) {
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <h6><i class="fas fa-user me-2"></i>Información del Cliente (Solo lectura)</h6>
+                                <h6><i class="fas fa-user me-2"></i>Información del Cliente</h6>
                                 <div class="p-3 bg-light rounded">
-                                    <p><strong>Nombre:</strong> ${cliente.nombre || 'N/A'}</p>
-                                    <p><strong>RUT:</strong> ${cliente.rut || 'N/A'}</p>
-                                    <p><strong>Email:</strong> ${cliente.correo || 'N/A'}</p>
-                                    <p><strong>Teléfono:</strong> ${cliente.telefono || 'N/A'}</p>
-                                    <p><strong>Empresa:</strong> ${cliente.empresa || 'N/A'}</p>
-                                    <p><strong>Dirección:</strong> ${detalles.direccion || 'N/A'}</p>
-                                    <p><strong>Comuna:</strong> ${detalles.comuna || 'N/A'}</p>
+                                    <p><strong>Nombre:</strong> <span id="clienteNombre">${cliente.nombre || 'Cargando...'}</span></p>
+                                    <p><strong>RUT:</strong> <span id="clienteRut">${cliente.rut || 'No disponible'}</span></p>
+                                    <p><strong>Email:</strong> <span id="clienteEmail">${cliente.correo || cliente.email || 'No disponible'}</span></p>
+                                    <p><strong>Teléfono:</strong> <span id="clienteTelefono">${cliente.telefono || 'No disponible'}</span></p>
+                                    <p><strong>Empresa:</strong> <span id="clienteEmpresa">${cliente.empresa || 'No disponible'}</span></p>
+                                    <p><strong>Dirección:</strong> <span id="clienteDireccion">${detalles.direccion || cliente.direccion || 'No disponible'}</span></p>
+                                    <p class="mb-0"><strong>Comuna:</strong> <span id="clienteComuna">${cliente.comuna || 'No disponible'}</span></p>
+                                </div>
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Si no aparece información del cliente, esta cotización no tiene cliente asociado.
+                                        El correo se enviará con los datos disponibles.
+                                    </small>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -707,7 +835,13 @@ function mostrarModalModificar(cotizacion) {
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Observaciones:</label>
-                                    <textarea class="form-control" id="observacionesModificar" rows="3">${cotizacion.observaciones || ''}</textarea>
+                                    <textarea class="form-control" id="observacionesModificar" rows="4">${cotizacion.observaciones || ''}</textarea>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="enviarCorreo" checked>
+                                    <label class="form-check-label" for="enviarCorreo">
+                                        <i class="fas fa-envelope me-1"></i>Enviar cotización por correo
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -757,12 +891,7 @@ function mostrarModalModificar(cotizacion) {
                         <div class="mt-4">
                             <div class="row">
                                 <div class="col-md-8">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="enviarCorreo" checked>
-                                        <label class="form-check-label" for="enviarCorreo">
-                                            <i class="fas fa-envelope me-1"></i>Enviar cotización actualizada por correo al cliente
-                                        </label>
-                                    </div>
+                                    <!-- Checkbox movido a la columna de configuración -->
                                 </div>
                                 <div class="col-md-4">
                                     <div class="p-3 bg-light rounded">
@@ -806,9 +935,113 @@ function mostrarModalModificar(cotizacion) {
     // Mostrar modal
     const modal = new bootstrap.Modal(document.getElementById('modificarModal'));
     modal.show();
+    
+    // Actualizar información del cliente en el DOM después de cargar el modal
+    setTimeout(() => {
+        console.log('🔄 Actualizando DOM del cliente con datos:', cliente);
+        
+        const actualizarCampo = (id, valor) => {
+            const elemento = document.getElementById(id);
+            if (elemento) {
+                elemento.textContent = valor || 'N/A';
+                console.log(`✅ Campo ${id} actualizado a:`, valor || 'N/A');
+            } else {
+                console.warn(`⚠️ No se encontró elemento con ID: ${id}`);
+            }
+        };
+        
+        actualizarCampo('clienteNombre', cliente.nombre);
+        actualizarCampo('clienteRut', cliente.rut);
+        actualizarCampo('clienteEmail', cliente.correo || cliente.email);
+        actualizarCampo('clienteTelefono', cliente.telefono);
+        actualizarCampo('clienteEmpresa', cliente.empresa);
+        actualizarCampo('clienteDireccion', cliente.direccion);
+        
+        // También actualizar el campo comuna si existe
+        const comunaElement = document.getElementById('clienteComuna');
+        if (comunaElement) {
+            comunaElement.textContent = cliente.comuna || 'N/A';
+        }
+    }, 100); // Pequeño delay para asegurar que el DOM esté completamente cargado
 }
 
 // Funciones para manejar residuos en el modal de modificar
+// Función para manejar la selección de residuo del dropdown
+async function seleccionarResiduo(index, selectElement) {
+    if (!residuosEditables[index]) return;
+    
+    const option = selectElement.options[selectElement.selectedIndex];
+    
+    if (option.value) {
+        const residuoId = option.value;
+        const precio = parseFloat(option.dataset.precio) || 0;
+        const unidad = option.dataset.unidad || 'IBC';
+        const moneda = option.dataset.moneda || 'UF';
+        const descripcion = option.textContent;
+        
+        // Calcular precio en CLP si es UF
+        let precioUnitario = precio;
+        if (moneda === 'UF') {
+            try {
+                // Obtener valor UF actual
+                const response = await fetch('/api/valor-uf', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const valorUF = data.valorUF || 37000; // Valor por defecto
+                    precioUnitario = precio * valorUF;
+                } else {
+                    precioUnitario = precio * 37000; // Valor UF por defecto
+                }
+            } catch (error) {
+                console.warn('Error al obtener valor UF:', error);
+                precioUnitario = precio * 37000; // Valor UF por defecto
+            }
+        }
+        
+        // Actualizar el objeto residuo
+        residuosEditables[index].residuoId = residuoId;
+        residuosEditables[index].descripcion = descripcion;
+        residuosEditables[index].unidad = unidad;
+        residuosEditables[index].moneda = moneda;
+        residuosEditables[index].precioUnitario = Math.round(precioUnitario);
+        
+        // Actualizar la UI
+        const fila = selectElement.closest('tr');
+        const unidadSpan = fila.querySelector('td:nth-child(3) .form-control-plaintext');
+        const precioSpan = fila.querySelector(`#precioDisplay_${index}`);
+        const unidadInput = fila.querySelector('td:nth-child(3) input[type="hidden"]');
+        const precioInput = fila.querySelector('td:nth-child(4) input[type="hidden"]');
+        
+        if (unidadSpan) unidadSpan.textContent = unidad;
+        if (precioSpan) {
+            if (moneda === 'UF') {
+                precioSpan.textContent = `${precio.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 4 })} UF (${Math.round(precioUnitario).toLocaleString('es-CL')})`;
+            } else {
+                precioSpan.textContent = `$${Math.round(precioUnitario).toLocaleString('es-CL')}`;
+            }
+        }
+        if (unidadInput) unidadInput.value = unidad;
+        if (precioInput) precioInput.value = Math.round(precioUnitario);
+        
+        // Recalcular subtotal
+        actualizarResiduo(index, 'precioUnitario', Math.round(precioUnitario));
+    } else {
+        // Si no se selecciona residuo, limpiar
+        residuosEditables[index].residuoId = '';
+        residuosEditables[index].descripcion = 'Seleccione un residuo';
+        residuosEditables[index].precioUnitario = 0;
+        
+        const fila = selectElement.closest('tr');
+        const precioSpan = fila.querySelector(`#precioDisplay_${index}`);
+        if (precioSpan) precioSpan.textContent = '$0';
+        
+        recalcularTotalesModificar();
+    }
+}
+
 function actualizarResiduo(index, campo, valor) {
     if (!residuosEditables[index]) return;
     
@@ -817,12 +1050,13 @@ function actualizarResiduo(index, campo, valor) {
     if (campo === 'cantidad' || campo === 'precioUnitario') {
         const cantidad = parseFloat(residuosEditables[index].cantidad) || 0;
         const precio = parseFloat(residuosEditables[index].precioUnitario) || 0;
-        const subtotal = cantidad * precio;
+        // Redondear el subtotal para evitar problemas de precisión
+        const subtotal = Math.round(cantidad * precio);
         residuosEditables[index].subtotal = subtotal;
         
         const subtotalElement = document.getElementById(`subtotalModificar_${index}`);
         if (subtotalElement) {
-            subtotalElement.textContent = parseInt(subtotal).toLocaleString('es-CL');
+            subtotalElement.textContent = subtotal.toLocaleString('es-CL');
         }
     }
     
@@ -831,9 +1065,11 @@ function actualizarResiduo(index, campo, valor) {
 
 function agregarResiduo() {
     const nuevoResiduo = {
-        descripcion: 'Nuevo residuo',
+        residuoId: '',
+        descripcion: 'Seleccione un residuo',
         cantidad: 1,
-        unidad: 'kg',
+        unidad: 'IBC',
+        moneda: 'UF',
         precioUnitario: 0,
         subtotal: 0
     };
@@ -841,20 +1077,31 @@ function agregarResiduo() {
     residuosEditables.push(nuevoResiduo);
     const index = residuosEditables.length - 1;
     
+    // Generar opciones para el select de residuos
+    const opcionesResiduos = residuosDisponibles.map(residuo => 
+        `<option value="${residuo.id}" data-precio="${residuo.precio}" data-unidad="${residuo.unidad}" data-moneda="${residuo.moneda}">
+            ${residuo.descripcion}
+        </option>`
+    ).join('');
+    
     const cuerpoResiduos = document.getElementById('cuerpoResiduosModificar');
     const nuevaFila = `
         <tr data-index="${index}">
-            <td><input type="text" class="form-control" value="${nuevoResiduo.descripcion}" onchange="actualizarResiduo(${index}, 'descripcion', this.value)"></td>
-            <td><input type="number" class="form-control" value="${nuevoResiduo.cantidad}" min="0.1" step="0.1" onchange="actualizarResiduo(${index}, 'cantidad', this.value)"></td>
             <td>
-                <select class="form-select" onchange="actualizarResiduo(${index}, 'unidad', this.value)">
-                    <option value="kg" selected>kg</option>
-                    <option value="ton">ton</option>
-                    <option value="m3">m³</option>
-                    <option value="unidad">unidad</option>
+                <select class="form-select" onchange="seleccionarResiduo(${index}, this)">
+                    <option value="">-- Seleccione un residuo --</option>
+                    ${opcionesResiduos}
                 </select>
             </td>
-            <td><input type="number" class="form-control" value="${nuevoResiduo.precioUnitario}" min="0" onchange="actualizarResiduo(${index}, 'precioUnitario', this.value)"></td>
+            <td><input type="number" class="form-control" value="${nuevoResiduo.cantidad}" min="0.1" step="0.1" onchange="actualizarResiduo(${index}, 'cantidad', this.value)"></td>
+            <td>
+                <span class="form-control-plaintext">${nuevoResiduo.unidad}</span>
+                <input type="hidden" value="${nuevoResiduo.unidad}" onchange="actualizarResiduo(${index}, 'unidad', this.value)">
+            </td>
+            <td>
+                <span class="form-control-plaintext" id="precioDisplay_${index}">$0</span>
+                <input type="hidden" value="${nuevoResiduo.precioUnitario}" onchange="actualizarResiduo(${index}, 'precioUnitario', this.value)">
+            </td>
             <td><span class="fw-bold">$<span id="subtotalModificar_${index}">0</span></span></td>
             <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarResiduo(${index})"><i class="fas fa-trash"></i></button></td>
         </tr>
@@ -882,20 +1129,41 @@ function actualizarTablaResiduos() {
     cuerpoResiduos.innerHTML = '';
     
     residuosEditables.forEach((r, index) => {
+        // Generar opciones para el select de residuos
+        const opcionesResiduos = residuosDisponibles.map(residuo => 
+            `<option value="${residuo.id}" data-precio="${residuo.precio}" data-unidad="${residuo.unidad}" data-moneda="${residuo.moneda}" 
+                ${r.residuoId == residuo.id ? 'selected' : ''}>
+                ${residuo.descripcion}
+            </option>`
+        ).join('');
+        
+        // Formatear precio según moneda
+        let precioDisplay;
+        if (r.moneda === 'UF') {
+            const precioUF = r.precioUnitario / 37000; // Estimación para mostrar
+            precioDisplay = `${precioUF.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 4 })} UF ($${Math.round(r.precioUnitario).toLocaleString('es-CL')})`;
+        } else {
+            precioDisplay = `$${Math.round(r.precioUnitario).toLocaleString('es-CL')}`;
+        }
+        
         const fila = `
             <tr data-index="${index}">
-                <td><input type="text" class="form-control" value="${r.descripcion}" onchange="actualizarResiduo(${index}, 'descripcion', this.value)"></td>
-                <td><input type="number" class="form-control" value="${r.cantidad}" min="0.1" step="0.1" onchange="actualizarResiduo(${index}, 'cantidad', this.value)"></td>
                 <td>
-                    <select class="form-select" onchange="actualizarResiduo(${index}, 'unidad', this.value)">
-                        <option value="kg" ${r.unidad === 'kg' ? 'selected' : ''}>kg</option>
-                        <option value="ton" ${r.unidad === 'ton' ? 'selected' : ''}>ton</option>
-                        <option value="m3" ${r.unidad === 'm3' ? 'selected' : ''}>m³</option>
-                        <option value="unidad" ${r.unidad === 'unidad' ? 'selected' : ''}>unidad</option>
+                    <select class="form-select" onchange="seleccionarResiduo(${index}, this)">
+                        <option value="">-- Seleccione un residuo --</option>
+                        ${opcionesResiduos}
                     </select>
                 </td>
-                <td><input type="number" class="form-control" value="${r.precioUnitario}" min="0" onchange="actualizarResiduo(${index}, 'precioUnitario', this.value)"></td>
-                <td><span class="fw-bold">$<span id="subtotalModificar_${index}">${parseInt(r.subtotal || 0).toLocaleString('es-CL')}</span></span></td>
+                <td><input type="number" class="form-control" value="${r.cantidad}" min="0.1" step="0.1" onchange="actualizarResiduo(${index}, 'cantidad', this.value)"></td>
+                <td>
+                    <span class="form-control-plaintext">${r.unidad || 'IBC'}</span>
+                    <input type="hidden" value="${r.unidad || 'IBC'}" onchange="actualizarResiduo(${index}, 'unidad', this.value)">
+                </td>
+                <td>
+                    <span class="form-control-plaintext" id="precioDisplay_${index}">${precioDisplay}</span>
+                    <input type="hidden" value="${r.precioUnitario}" onchange="actualizarResiduo(${index}, 'precioUnitario', this.value)">
+                </td>
+                <td><span class="fw-bold">$<span id="subtotalModificar_${index}">${Math.round(r.subtotal || 0).toLocaleString('es-CL')}</span></span></td>
                 <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarResiduo(${index})"><i class="fas fa-trash"></i></button></td>
             </tr>
         `;
@@ -904,15 +1172,18 @@ function actualizarTablaResiduos() {
 }
 
 function recalcularTotalesModificar() {
-    const subtotalResiduos = residuosEditables.reduce((sum, residuo) => sum + (parseFloat(residuo.subtotal) || 0), 0);
-    const costoOperativo = parseFloat(document.getElementById('costoOperativo')?.value) || 0;
+    // Redondear números para evitar problemas de precisión de punto flotante
+    const subtotalResiduos = Math.round(residuosEditables.reduce((sum, residuo) => sum + (parseFloat(residuo.subtotal) || 0), 0));
+    const costoOperativo = Math.round(parseFloat(document.getElementById('costoOperativo')?.value) || 0);
     const descuentoPorcentaje = parseFloat(document.getElementById('descuento')?.value) || 0;
-    const descuentoDinero = (subtotalResiduos + costoOperativo) * (descuentoPorcentaje / 100);
-    const subtotalFinal = subtotalResiduos + costoOperativo - descuentoDinero;
-    const iva = subtotalFinal * 0.19;
-    const total = subtotalFinal + iva;
     
-    // Actualizar elementos del DOM
+    // Calcular descuento y redondear
+    const descuentoDinero = Math.round((subtotalResiduos + costoOperativo) * (descuentoPorcentaje / 100));
+    const subtotalFinal = Math.round(subtotalResiduos + costoOperativo - descuentoDinero);
+    const iva = Math.round(subtotalFinal * 0.19);
+    const total = Math.round(subtotalFinal + iva);
+    
+    // Actualizar elementos del DOM con números redondeados
     const elementos = {
         'subtotalResiduosModificar': subtotalResiduos,
         'resumenOperativoModificar': costoOperativo,
@@ -925,7 +1196,7 @@ function recalcularTotalesModificar() {
     Object.keys(elementos).forEach(id => {
         const elemento = document.getElementById(id);
         if (elemento) {
-            elemento.textContent = parseInt(elementos[id]).toLocaleString('es-CL');
+            elemento.textContent = elementos[id].toLocaleString('es-CL');
         }
     });
 }
@@ -939,12 +1210,15 @@ async function guardarModificaciones(id) {
         const observaciones = document.getElementById('observacionesModificar').value;
         const enviarCorreo = document.getElementById('enviarCorreo').checked;
         
-        // Calcular totales
-        const subtotalResiduos = residuosEditables.reduce((sum, residuo) => sum + (parseFloat(residuo.subtotal) || 0), 0);
-        const descuentoDinero = (subtotalResiduos + costoOperativo) * (descuento / 100);
-        const subtotalFinal = subtotalResiduos + costoOperativo - descuentoDinero;
-        const iva = subtotalFinal * 0.19;
-        const total = subtotalFinal + iva;
+        // Obtener email del cliente desde la información mostrada (solo lectura)
+        const emailCliente = document.getElementById('clienteEmail').textContent;
+        
+        // Calcular totales con redondeo para evitar problemas de precisión
+        const subtotalResiduos = Math.round(residuosEditables.reduce((sum, residuo) => sum + (parseFloat(residuo.subtotal) || 0), 0));
+        const descuentoDinero = Math.round((subtotalResiduos + costoOperativo) * (descuento / 100));
+        const subtotalFinal = Math.round(subtotalResiduos + costoOperativo - descuentoDinero);
+        const iva = Math.round(subtotalFinal * 0.19);
+        const total = Math.round(subtotalFinal + iva);
         
         // Datos a enviar (formato compatible con tu backend)
         const datosActualizados = {
@@ -953,13 +1227,18 @@ async function guardarModificaciones(id) {
                 residuos: residuosEditables,
                 costoOperativo: costoOperativo,
                 descuento: descuento,
+                datosContacto: {
+                    correo: emailCliente,
+                    email: emailCliente
+                },
                 ...cotizacionActual.detalles
             }),
             subtotal: subtotalFinal,
             iva: iva,
             total: total,
             observaciones: observaciones,
-            enviarCorreo: enviarCorreo
+            enviarCorreo: enviarCorreo,
+            emailCliente: emailCliente
         };
         
         // Intentar primero con la ruta de estado (que probablemente ya existe)
@@ -1053,6 +1332,12 @@ function filtrarCotizaciones() {
     const filtro = document.getElementById('filtroEstado')?.value;
     const busqueda = document.getElementById('busquedaCotizacion')?.value?.toLowerCase();
     
+    // Validar que cotizaciones sea un array válido
+    if (!Array.isArray(cotizaciones)) {
+        console.warn('filtrarCotizaciones: cotizaciones no es un array válido:', cotizaciones);
+        cotizaciones = [];
+    }
+    
     let cotizacionesFiltradas = [...cotizaciones];
     
     // Filtrar por estado
@@ -1074,7 +1359,8 @@ function filtrarCotizaciones() {
 
 // Función para exportar cotizaciones
 function exportarCotizaciones() {
-    if (cotizaciones.length === 0) {
+    // Validar que cotizaciones sea un array válido
+    if (!Array.isArray(cotizaciones) || cotizaciones.length === 0) {
         mostrarToast('No hay cotizaciones para exportar', 'warning');
         return;
     }
@@ -1156,8 +1442,10 @@ function mostrarToast(mensaje, tipo = 'info') {
 }
 
 // Event Listeners
-document.addEventListener('DOMContentLoaded', function() {
-    // Cargar cotizaciones al inicio
+document.addEventListener('DOMContentLoaded', async function() {
+    // Cargar residuos disponibles primero
+    await cargarResiduosDisponibles();
+    // Luego cargar cotizaciones al inicio
     cargarCotizaciones();
     
     // Configurar filtros

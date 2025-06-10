@@ -1,6 +1,6 @@
-// models/Notificacion.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const Usuario = require('./Usuario');
 
 const Notificacion = sequelize.define('Notificacion', {
   id: {
@@ -11,10 +11,7 @@ const Notificacion = sequelize.define('Notificacion', {
   usuarioId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'usuarios',
-      key: 'id'
-    }
+    field: 'usuario_id'
   },
   titulo: {
     type: DataTypes.STRING,
@@ -25,8 +22,8 @@ const Notificacion = sequelize.define('Notificacion', {
     allowNull: false
   },
   tipo: {
-    type: DataTypes.ENUM('info', 'warning', 'success', 'error'),
-    defaultValue: 'info'
+    type: DataTypes.STRING,
+    allowNull: false
   },
   leida: {
     type: DataTypes.BOOLEAN,
@@ -34,11 +31,17 @@ const Notificacion = sequelize.define('Notificacion', {
   },
   fechaCreacion: {
     type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
+    defaultValue: DataTypes.NOW,
+    field: 'fecha_creacion'
   }
 }, {
   tableName: 'notificaciones',
-  timestamps: true
+  timestamps: false
 });
 
-module.exports = Notificacion;
+Notificacion.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'usuario'
+});
+
+module.exports = Notificacion; 
