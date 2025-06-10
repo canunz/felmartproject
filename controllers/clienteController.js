@@ -1,5 +1,5 @@
 // controllers/clienteController.js
-const { Cliente, Usuario, SolicitudRetiro } = require('../models');
+const { Cliente, Usuario, SolicitudRetiro, Certificado, sequelize } = require('../models');
 const { Op } = require('sequelize');
 
 // Función para validar solo el formato del RUT chileno
@@ -31,6 +31,73 @@ const formatearRut = (rut) => {
   // Retornar RUT formateado con guión
   return rutFormateado + '-' + dv;
 };
+
+// Función auxiliar para generar contenido del PDF
+function generarContenidoPDF(doc, certificado) {
+  const fechaActual = new Date().toLocaleDateString('es-ES');
+  
+  // Header del certificado
+  doc.fontSize(20).text('CERTIFICADO DE DISPOSICIÓN FINAL', 50, 50, { align: 'center' });
+  doc.fontSize(16).text('FELMART - GESTIÓN DE RESIDUOS', 50, 80, { align: 'center' });
+  
+  // Línea separadora
+  doc.moveTo(50, 110).lineTo(550, 110).stroke();
+  
+  // Información del certificado
+  doc.fontSize(12);
+  
+  // Número y fecha
+  doc.text(`Certificado N°: ${certificado.numero_certificado || certificado.id}`, 50, 130);
+  doc.text(`Fecha de emisión: ${fechaActual}`, 350, 130);
+  
+  // Información del cliente
+  doc.text('INFORMACIÓN DEL CLIENTE', 50, 170, { underline: true });
+  doc.text(`Empresa: ${certificado.SolicitudRetiro?.Cliente?.nombre_empresa || 'N/A'}`, 50, 190);
+  doc.text(`RUT: ${certificado.SolicitudRetiro?.Cliente?.rut || 'N/A'}`, 50, 210);
+  doc.text(`Dirección: ${certificado.SolicitudRetiro?.Cliente?.direccion || 'N/A'}`, 50, 230);
+  doc.text(`Comuna: ${certificado.SolicitudRetiro?.Cliente?.comuna || 'N/A'}`, 50, 250);
+  
+  // Información del residuo
+  doc.text('INFORMACIÓN DEL RESIDUO', 50, 290, { underline: true });
+  doc.text(`Solicitud N°: ${certificado.SolicitudRetiro?.numero_solicitud || 'N/A'}`, 50, 310);
+  doc.text(`Tipo de residuo: ${certificado.SolicitudRetiro?.tipo_residuo || 'N/A'}`, 50, 330);
+  doc.text(`Cantidad: ${certificado.SolicitudRetiro?.cantidad || 'N/A'} ${certificado.SolicitudRetiro?.unidad || ''}`, 50, 350);
+  doc.text(`Descripción: ${certificado.SolicitudRetiro?.descripcion || 'N/A'}`, 50, 370);
+  
+  // Información de disposición
+  doc.text('INFORMACIÓN DE DISPOSICIÓN', 50, 410, { underline: true });
+  doc.text(`Fecha de disposición: ${certificado.fecha_disposicion ? new Date(certificado.fecha_disposicion).toLocaleDateString('es-ES') : 'N/A'}`, 50, 430);
+  doc.text(`Planta de disposición: ${certificado.planta_disposicion || 'N/A'}`, 50, 450);
+  doc.text(`Método de disposición: ${certificado.metodo_disposicion || 'N/A'}`, 50, 470);
+  doc.text(`Técnico responsable: ${certificado.tecnico_responsable || 'N/A'}`, 50, 490);
+  
+  // Observaciones
+  if (certificado.observaciones_disposicion) {
+    doc.text('OBSERVACIONES', 50, 530, { underline: true });
+    doc.text(certificado.observaciones_disposicion, 50, 550, { width: 500 });
+  }
+  
+  // Autorizaciones
+  const yPos = certificado.observaciones_disposicion ? 600 : 550;
+  doc.text('AUTORIZACIONES Y CUMPLIMIENTO', 50, yPos, { underline: true });
+  
+  if (certificado.autorizacion_sag) {
+    doc.text('✓ Autorización SAG (Servicio Agrícola y Ganadero)', 70, yPos + 20);
+  }
+  if (certificado.autorizacion_sernageomin) {
+    doc.text('✓ Autorización SERNAGEOMIN', 70, yPos + 40);
+  }
+  if (certificado.cumplimiento_ds148) {
+    doc.text('✓ Cumplimiento DS 148/2003 - Reglamento Sanitario', 70, yPos + 60);
+  }
+  
+  // Footer
+  const footerY = yPos + 120;
+  doc.moveTo(50, footerY).lineTo(550, footerY).stroke();
+  doc.text('Este certificado es válido ante las autoridades ambientales y sanitarias correspondientes.', 50, footerY + 10, { align: 'center' });
+  doc.text('FELMART - Puerto Montt, Chile', 50, footerY + 30, { align: 'center' });
+  doc.text(`Generado el: ${fechaActual}`, 50, footerY + 50, { align: 'center' });
+}
 
 const clienteController = {
   // Listar todos los clientes con sus usuarios asociados
@@ -358,6 +425,535 @@ const clienteController = {
       res.status(500).render('error', {
         titulo: 'Error',
         mensaje: 'Error al cargar la página'
+      });
+    }
+  },
+
+  // Obtener solicitudes del cliente autenticado (API)
+  obtenerSolicitudesCliente: async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({ 
+          success: false, 
+          message: 'No autenticado' 
+        });
+      }
+
+      // Buscar el cliente asociado al usuario
+      const cliente = await Cliente.findOne({ 
+        where: { usuarioId: req.user.id }
+      });
+
+      if (!cliente) {
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Cliente no encontrado' 
+        });
+      }
+
+      // Buscar solicitudes de retiro del cliente
+      const solicitudes = await SolicitudRetiro.findAll({
+        where: { clienteId: cliente.id },
+        order: [['created_at', 'DESC']],
+        include: [
+          { 
+            model: Cliente, 
+            as: 'cliente', 
+            attributes: ['id', 'nombre_empresa', 'direccion'] 
+          }
+        ]
+      });
+
+      // Formatear las solicitudes para el frontend
+      const solicitudesFormateadas = solicitudes.map(solicitud => ({
+        id: solicitud.id,
+        numero_solicitud: solicitud.numero_solicitud,
+        fecha_solicitud: solicitud.created_at,
+        estado: solicitud.estado,
+        tipo_residuo: solicitud.tipo_residuo || 'No especificado',
+        cantidad: solicitud.cantidad || 'No especificada',
+        unidad: solicitud.unidad || 'kg',
+        direccion_retiro: solicitud.direccion_especifica || solicitud.ubicacion,
+        observaciones: solicitud.observaciones,
+        certificado_disponible: solicitud.certificado_disponible,
+        fecha_programada: solicitud.fecha_programada,
+        hora_programada: solicitud.hora_programada,
+        tecnico_asignado: solicitud.tecnico_asignado,
+        monto_total: solicitud.monto_total,
+        contacto_nombre: solicitud.contacto_nombre,
+        contacto_telefono: solicitud.contacto_telefono
+      }));
+
+      res.json({ 
+        success: true, 
+        solicitudes: solicitudesFormateadas 
+      });
+    } catch (error) {
+      console.error('Error al obtener solicitudes del cliente:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error al obtener solicitudes del cliente: ' + error.message
+      });
+    }
+  },
+
+  // Crear una nueva solicitud
+  crearSolicitud: async (req, res) => {
+    try {
+      const usuario = req.session.usuario;
+      if (!usuario) {
+        return res.status(401).json({ success: false, message: 'No autenticado' });
+      }
+
+      const cliente = await Cliente.findOne({ where: { usuarioId: usuario.id } });
+      if (!cliente) {
+        return res.status(404).json({ success: false, message: 'Cliente no encontrado' });
+      }
+
+      const { tipoResiduo, cantidad, direccionRetiro, observaciones } = req.body;
+
+      // Validar datos requeridos
+      if (!tipoResiduo || !cantidad || !direccionRetiro) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Faltan datos requeridos' 
+        });
+      }
+
+      // Crear la solicitud
+      const solicitud = await SolicitudRetiro.create({
+        clienteId: cliente.id,
+        estado: 'pendiente',
+        direccionRetiro,
+        observaciones
+      });
+
+      // Crear el detalle del residuo
+      await DetalleResiduo.create({
+        solicitudId: solicitud.id,
+        residuoId: tipoResiduo,
+        cantidad,
+        observaciones
+      });
+
+      res.json({ 
+        success: true, 
+        message: 'Solicitud creada exitosamente',
+        solicitud: {
+          id: solicitud.id,
+          numero_solicitud: `SR-${solicitud.id.toString().padStart(4, '0')}`,
+          fecha_solicitud: solicitud.createdAt,
+          estado: solicitud.estado
+        }
+      });
+    } catch (error) {
+      console.error('Error al crear solicitud:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error al crear la solicitud',
+        error: error.message 
+      });
+    }
+  },
+
+  // Obtener una solicitud específica del cliente
+  obtenerSolicitudCliente: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const usuario = req.session.usuario;
+
+      if (!usuario) {
+        return res.status(401).json({ success: false, message: 'No autenticado' });
+      }
+
+      // Buscar el cliente asociado al usuario
+      const cliente = await Cliente.findOne({ where: { usuarioId: usuario.id } });
+      if (!cliente) {
+        return res.status(404).json({ success: false, message: 'Cliente no encontrado' });
+      }
+
+      // Buscar la solicitud específica
+      const solicitud = await SolicitudRetiro.findOne({
+        where: { 
+          id: id,
+          clienteId: cliente.id
+        },
+        include: [
+          { model: Cliente, attributes: ['nombreEmpresa', 'direccion'] },
+          { model: DetalleResiduo, include: [{ model: Residuo }] }
+        ]
+      });
+
+      if (!solicitud) {
+        return res.status(404).json({ success: false, message: 'Solicitud no encontrada' });
+      }
+
+      // Formatear la solicitud para el frontend
+      const solicitudFormateada = {
+        id: solicitud.id,
+        numero_solicitud: `SR-${solicitud.id.toString().padStart(4, '0')}`,
+        fecha_solicitud: solicitud.createdAt,
+        estado: solicitud.estado,
+        tipo_residuo: solicitud.DetalleResiduos[0]?.Residuo?.nombre || 'No especificado',
+        cantidad: solicitud.DetalleResiduos[0]?.cantidad || 'No especificada',
+        direccion_retiro: solicitud.direccionRetiro,
+        observaciones: solicitud.observaciones,
+        certificado_disponible: solicitud.estado === 'completada',
+        detalles: solicitud.DetalleResiduos.map(detalle => ({
+          residuo: detalle.Residuo?.nombre,
+          cantidad: detalle.cantidad,
+          observaciones: detalle.observaciones
+        }))
+      };
+
+      res.json({ success: true, solicitud: solicitudFormateada });
+    } catch (error) {
+      console.error('Error al obtener solicitud del cliente:', error);
+      res.status(500).json({ success: false, message: 'Error al obtener la solicitud' });
+    }
+  },
+
+  // Cancelar una solicitud del cliente
+  cancelarSolicitudCliente: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const usuario = req.session.usuario;
+
+      if (!usuario) {
+        return res.status(401).json({ success: false, message: 'No autenticado' });
+      }
+
+      // Buscar el cliente asociado al usuario
+      const cliente = await Cliente.findOne({ where: { usuarioId: usuario.id } });
+      if (!cliente) {
+        return res.status(404).json({ success: false, message: 'Cliente no encontrado' });
+      }
+
+      // Buscar la solicitud
+      const solicitud = await SolicitudRetiro.findOne({
+        where: { 
+          id: id,
+          clienteId: cliente.id
+        }
+      });
+
+      if (!solicitud) {
+        return res.status(404).json({ success: false, message: 'Solicitud no encontrada' });
+      }
+
+      // Verificar que la solicitud esté en estado pendiente
+      if (solicitud.estado !== 'pendiente') {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Solo se pueden cancelar solicitudes en estado pendiente' 
+        });
+      }
+
+      // Actualizar estado de la solicitud
+      solicitud.estado = 'cancelada';
+      await solicitud.save();
+
+      res.json({ success: true, message: 'Solicitud cancelada exitosamente' });
+    } catch (error) {
+      console.error('Error al cancelar solicitud:', error);
+      res.status(500).json({ success: false, message: 'Error al cancelar la solicitud' });
+    }
+  },
+
+  // Obtener información del cliente autenticado (API)
+  obtenerInfoClienteLogueado: async (req, res) => {
+    try {
+      const usuario = req.session.usuario;
+      if (!usuario) {
+        return res.status(401).json({ success: false, message: 'No autenticado' });
+      }
+      // Buscar el cliente asociado al usuario
+      const cliente = await Cliente.findOne({ where: { usuarioId: usuario.id } });
+      if (!cliente) {
+        return res.status(404).json({ success: false, message: 'Cliente no encontrado' });
+      }
+      res.json({ success: true, cliente });
+    } catch (error) {
+      console.error('Error al obtener info del cliente:', error);
+      res.status(500).json({ success: false, message: 'Error al obtener información del cliente' });
+    }
+  },
+
+  // ===== FUNCIONES DE CERTIFICADOS =====
+
+  // Obtener certificados del cliente
+  obtenerCertificadosCliente: async (req, res) => {
+    try {
+      const usuarioId = req.session.usuario.id;
+      
+      // Buscar el cliente asociado al usuario
+      const cliente = await Cliente.findOne({
+        where: { usuarioId: usuarioId }
+      });
+
+      if (!cliente) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cliente no encontrado'
+        });
+      }
+
+      // Buscar certificados asociados a las solicitudes del cliente
+      const certificados = await Certificado.findAll({
+        include: [{
+          model: SolicitudRetiro,
+          where: { clienteId: cliente.id },
+          include: [{
+            model: Cliente,
+            attributes: ['nombre_empresa', 'rut']
+          }]
+        }],
+        order: [['created_at', 'DESC']]
+      });
+
+      res.json({
+        success: true,
+        data: certificados
+      });
+
+    } catch (error) {
+      console.error('Error obteniendo certificados:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor',
+        error: error.message
+      });
+    }
+  },
+
+  // Obtener detalles de un certificado específico
+  obtenerDetalleCertificado: async (req, res) => {
+    try {
+      const { certificadoId } = req.params;
+      const usuarioId = req.session.usuario.id;
+      
+      // Buscar el cliente asociado al usuario
+      const cliente = await Cliente.findOne({
+        where: { usuarioId: usuarioId }
+      });
+
+      if (!cliente) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cliente no encontrado'
+        });
+      }
+
+      // Buscar el certificado específico del cliente
+      const certificado = await Certificado.findOne({
+        where: { id: certificadoId },
+        include: [{
+          model: SolicitudRetiro,
+          where: { clienteId: cliente.id },
+          include: [{
+            model: Cliente,
+            attributes: ['nombre_empresa', 'rut', 'direccion', 'comuna', 'ciudad']
+          }]
+        }]
+      });
+
+      if (!certificado) {
+        return res.status(404).json({
+          success: false,
+          message: 'Certificado no encontrado'
+        });
+      }
+
+      res.json({
+        success: true,
+        data: certificado
+      });
+
+    } catch (error) {
+      console.error('Error obteniendo detalle del certificado:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor',
+        error: error.message
+      });
+    }
+  },
+
+  // Descargar certificado en PDF
+  descargarCertificado: async (req, res) => {
+    try {
+      const { certificadoId } = req.params;
+      const usuarioId = req.session.usuario.id;
+      
+      // Buscar el cliente asociado al usuario
+      const cliente = await Cliente.findOne({
+        where: { usuarioId: usuarioId }
+      });
+
+      if (!cliente) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cliente no encontrado'
+        });
+      }
+
+      // Buscar el certificado específico del cliente
+      const certificado = await Certificado.findOne({
+        where: { id: certificadoId },
+        include: [{
+          model: SolicitudRetiro,
+          where: { clienteId: cliente.id },
+          include: [{
+            model: Cliente,
+            attributes: ['nombre_empresa', 'rut', 'direccion', 'comuna', 'ciudad', 'contacto_principal']
+          }]
+        }]
+      });
+
+      if (!certificado) {
+        return res.status(404).json({
+          success: false,
+          message: 'Certificado no encontrado'
+        });
+      }
+
+      // Si el certificado ya tiene un archivo PDF, enviarlo
+      if (certificado.archivo_pdf) {
+        const path = require('path');
+        const fs = require('fs');
+        
+        const filePath = path.join(__dirname, '../uploads/certificados', certificado.archivo_pdf);
+        
+        if (fs.existsSync(filePath)) {
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', `attachment; filename="certificado_${certificado.numero_certificado || certificado.id}.pdf"`);
+          return res.sendFile(filePath);
+        }
+      }
+
+      // Si no existe el archivo, generar el PDF dinámicamente
+      const PDFDocument = require('pdfkit');
+      const doc = new PDFDocument();
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="certificado_${certificado.numero_certificado || certificado.id}.pdf"`);
+      
+      doc.pipe(res);
+
+      // Generar contenido del PDF
+      generarContenidoPDF(doc, certificado);
+      
+      doc.end();
+
+    } catch (error) {
+      console.error('Error descargando certificado:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error al descargar el certificado',
+        error: error.message
+      });
+    }
+  },
+
+  // Exportar listado de certificados en CSV
+  exportarListadoCertificados: async (req, res) => {
+    try {
+      const usuarioId = req.session.usuario.id;
+      
+      // Buscar el cliente asociado al usuario
+      const cliente = await Cliente.findOne({
+        where: { usuarioId: usuarioId }
+      });
+
+      if (!cliente) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cliente no encontrado'
+        });
+      }
+
+      // Buscar certificados del cliente
+      const certificados = await Certificado.findAll({
+        include: [{
+          model: SolicitudRetiro,
+          where: { clienteId: cliente.id },
+          attributes: ['numero_solicitud', 'tipo_residuo', 'cantidad', 'unidad', 'fecha_programada']
+        }],
+        order: [['created_at', 'DESC']]
+      });
+
+      // Generar CSV
+      const csvHeader = 'Número Certificado,Solicitud,Tipo Residuo,Cantidad,Fecha Disposición,Planta,Método,Estado\n';
+      const csvRows = certificados.map(cert => {
+        const estado = cert.archivo_pdf ? 'Disponible' : (cert.fecha_disposicion && new Date(cert.fecha_disposicion) <= new Date() ? 'En Proceso' : 'Pendiente');
+        return [
+          cert.numero_certificado || cert.id,
+          cert.SolicitudRetiro?.numero_solicitud || 'N/A',
+          cert.SolicitudRetiro?.tipo_residuo || 'N/A',
+          `${cert.SolicitudRetiro?.cantidad || 'N/A'} ${cert.SolicitudRetiro?.unidad || ''}`,
+          cert.fecha_disposicion ? new Date(cert.fecha_disposicion).toLocaleDateString('es-ES') : 'N/A',
+          cert.planta_disposicion || 'N/A',
+          cert.metodo_disposicion || 'N/A',
+          estado
+        ].join(',');
+      }).join('\n');
+
+      const csvContent = csvHeader + csvRows;
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="certificados_${cliente.nombre_empresa}_${new Date().toISOString().split('T')[0]}.csv"`);
+      res.send(csvContent);
+
+    } catch (error) {
+      console.error('Error exportando listado:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error al exportar el listado',
+        error: error.message
+      });
+    }
+  },
+
+  // Renderizar página de certificados del cliente
+  renderCertificadosCliente: async (req, res) => {
+    try {
+      const usuarioId = req.session.usuario.id;
+      // Buscar el cliente asociado al usuario
+      const cliente = await Cliente.findOne({
+        where: { usuarioId: usuarioId },
+        include: [{
+          model: Usuario,
+          attributes: ['nombre', 'email']
+        }]
+      });
+      if (!cliente) {
+        return res.redirect('/login?error=cliente_no_encontrado');
+      }
+      // Buscar certificados del cliente
+      const Certificado = require('../models/Certificado');
+      const SolicitudRetiro = require('../models/SolicitudRetiro');
+      const certificados = await Certificado.findAll({
+        include: [{
+          model: SolicitudRetiro,
+          where: { clienteId: cliente.id },
+          required: true
+        }],
+        order: [['created_at', 'DESC']]
+      });
+      res.render('certificados/index', {
+        titulo: 'Mis Certificados - Felmart',
+        usuario: {
+          nombre: cliente.nombre_empresa,
+          email: cliente.email
+        },
+        cliente: cliente,
+        certificados: certificados
+      });
+    } catch (error) {
+      console.error('Error renderizando página de certificados:', error);
+      res.status(500).render('error', {
+        titulo: 'Error - Felmart',
+        mensaje: 'Error interno del servidor'
       });
     }
   }

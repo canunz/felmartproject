@@ -53,6 +53,42 @@ const Cotizacion = sequelize.define('Cotizacion', {
     defaultValue: '',
     field: 'detalles_json'
   },
+  // Campos de información del cliente
+  cliente_nombre: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'cliente_nombre'
+  },
+  cliente_rut: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+    field: 'cliente_rut'
+  },
+  cliente_email: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'cliente_email'
+  },
+  cliente_telefono: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+    field: 'cliente_telefono'
+  },
+  cliente_empresa: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'cliente_empresa'
+  },
+  cliente_direccion: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'cliente_direccion'
+  },
+  cliente_comuna: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    field: 'cliente_comuna'
+  },
   createdAt: {
     type: DataTypes.DATE,
     field: 'createdAt'

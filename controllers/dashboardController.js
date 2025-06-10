@@ -237,6 +237,25 @@ function formatDate(date) {
 }
 
 const dashboardController = {
+    // Renderizar dashboard administrativo
+    renderAdminDashboard: async (req, res) => {
+        try {
+            const stats = await dashboardController.getAdminStats();
+            
+            res.render('dashboard/admin', {
+                usuario: req.session.usuario,
+                titulo: 'Panel de Administración',
+                ...stats,
+                error: req.flash('error'),
+                success: req.flash('success')
+            });
+        } catch (error) {
+            console.error('Error al renderizar dashboard:', error);
+            req.flash('error', 'Error al cargar el dashboard');
+            res.redirect('/');
+        }
+    },
+
     // Obtener estadísticas para el dashboard administrativo
     getAdminStats: async () => {
         try {
@@ -285,23 +304,6 @@ const dashboardController = {
         } catch (error) {
             console.error('Error al obtener estadísticas:', error);
             throw error;
-        }
-    },
-
-    // Renderizar dashboard administrativo
-    renderAdminDashboard: async (req, res) => {
-        try {
-            const stats = await dashboardController.getAdminStats();
-            
-            res.render('dashboard/admin', {
-                usuario: req.session.usuario,
-                titulo: 'Panel de Administración',
-                ...stats
-            });
-        } catch (error) {
-            console.error('Error al renderizar dashboard:', error);
-            req.flash('error', 'Error al cargar el dashboard');
-            res.redirect('/');
         }
     }
 };

@@ -26,15 +26,24 @@ const VisitaRetiro = sequelize.define('VisitaRetiro', {
   },
   fechaProgramada: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      isDate: true
+    }
   },
   horaInicio: {
     type: DataTypes.TIME,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      is: /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/
+    }
   },
   horaFin: {
     type: DataTypes.TIME,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      is: /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/
+    }
   },
   estado: {
     type: DataTypes.ENUM('programada', 'en_proceso', 'completada', 'cancelada'),
@@ -45,7 +54,18 @@ const VisitaRetiro = sequelize.define('VisitaRetiro', {
   }
 }, {
   timestamps: true,
-  tableName: 'visitas_retiro'
+  tableName: 'visitas_retiro',
+  hooks: {
+    beforeValidate: (visita) => {
+      // Asegurar que las horas tengan el formato correcto
+      if (visita.horaInicio && !visita.horaInicio.includes(':')) {
+        visita.horaInicio = `${visita.horaInicio}:00`;
+      }
+      if (visita.horaFin && !visita.horaFin.includes(':')) {
+        visita.horaFin = `${visita.horaFin}:00`;
+      }
+    }
+  }
 });
 
 module.exports = VisitaRetiro;

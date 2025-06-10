@@ -1,4 +1,4 @@
-// models/index.js
+// models/index.js - Versión actualizada
 const Usuario = require('./Usuario');
 const Cliente = require('./Cliente');
 const Residuo = require('./Residuo');
@@ -28,12 +28,23 @@ Cliente.belongsTo(Usuario, {
 });
 
 // Cliente - SolicitudRetiro
-Cliente.hasMany(SolicitudRetiro, { foreignKey: 'clienteId' });
-SolicitudRetiro.belongsTo(Cliente, { foreignKey: 'clienteId' });
+Cliente.hasMany(SolicitudRetiro, { 
+    foreignKey: 'clienteId',
+    as: 'solicitudes'
+});
+SolicitudRetiro.belongsTo(Cliente, { 
+    foreignKey: 'clienteId',
+    as: 'cliente'
+});
 
 // SolicitudRetiro - DetalleResiduo
-SolicitudRetiro.hasMany(DetalleResiduo, { foreignKey: 'solicitudRetiroId' });
-DetalleResiduo.belongsTo(SolicitudRetiro, { foreignKey: 'solicitudRetiroId' });
+SolicitudRetiro.hasMany(DetalleResiduo, { 
+    foreignKey: 'solicitudRetiroId',
+    as: 'DetalleResiduos'
+});
+DetalleResiduo.belongsTo(SolicitudRetiro, { 
+    foreignKey: 'solicitudRetiroId'
+});
 
 // Residuo - DetalleResiduo
 Residuo.hasMany(DetalleResiduo, { foreignKey: 'residuoId' });
@@ -51,9 +62,9 @@ VisitaRetiro.belongsTo(SolicitudRetiro, { foreignKey: 'solicitudRetiroId' });
 Usuario.hasMany(VisitaRetiro, { foreignKey: 'operadorId' });
 VisitaRetiro.belongsTo(Usuario, { as: 'Operador', foreignKey: 'operadorId' });
 
-// VisitaRetiro - Certificado
-VisitaRetiro.hasMany(Certificado, { foreignKey: 'visitaRetiroId' });
-Certificado.belongsTo(VisitaRetiro, { foreignKey: 'visitaRetiroId' });
+// SolicitudRetiro - Certificado (relación directa)
+SolicitudRetiro.hasMany(Certificado, { foreignKey: 'solicitudRetiroId' });
+Certificado.belongsTo(SolicitudRetiro, { foreignKey: 'solicitudRetiroId' });
 
 // Usuario - Notificacion
 Usuario.hasMany(Notificacion, { foreignKey: 'usuarioId' });

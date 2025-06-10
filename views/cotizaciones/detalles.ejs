@@ -63,20 +63,32 @@
                                 <div class="card-body">
                                     <table class="table table-bordered">
                                         <tr>
-                                            <th style="width: 40%">Cliente</th>
-                                            <td><%= cotizacion.SolicitudRetiro.Cliente.nombre %></td>
+                                            <th style="width: 40%">Nombre</th>
+                                            <td><%= cliente && cliente.nombre ? cliente.nombre : 'N/A' %></td>
                                         </tr>
                                         <tr>
-                                            <th>RUC</th>
-                                            <td><%= cotizacion.SolicitudRetiro.Cliente.ruc %></td>
+                                            <th>RUT</th>
+                                            <td><%= cliente && cliente.rut ? cliente.rut : 'N/A' %></td>
                                         </tr>
                                         <tr>
-                                            <th>Dirección</th>
-                                            <td><%= cotizacion.SolicitudRetiro.Cliente.direccion %></td>
+                                            <th>Email</th>
+                                            <td><%= cliente && cliente.email ? cliente.email : 'N/A' %></td>
                                         </tr>
                                         <tr>
                                             <th>Teléfono</th>
-                                            <td><%= cotizacion.SolicitudRetiro.Cliente.telefono %></td>
+                                            <td><%= cliente && cliente.telefono ? cliente.telefono : 'N/A' %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Empresa</th>
+                                            <td><%= cliente && cliente.empresa ? cliente.empresa : 'N/A' %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Dirección</th>
+                                            <td><%= cliente && cliente.direccion ? cliente.direccion : 'N/A' %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Comuna</th>
+                                            <td><%= cliente && cliente.comuna ? cliente.comuna : 'N/A' %></td>
                                         </tr>
                                     </table>
                                 </div>

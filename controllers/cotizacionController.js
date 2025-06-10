@@ -131,9 +131,50 @@ const cotizacionController = {
       
       console.log('Cotización encontrada:', cotizacion);
       
+      // Incluir información del cliente directamente en la respuesta
+      let clienteInfo = null;
+      
+      // Método 1: Obtener información desde los campos directos de la tabla cotizaciones
+      if (cotizacion.cliente_nombre || cotizacion.cliente_email) {
+        clienteInfo = {
+          nombre: cotizacion.cliente_nombre || null,
+          rut: cotizacion.cliente_rut || null,
+          correo: cotizacion.cliente_email || null,
+          email: cotizacion.cliente_email || null,
+          telefono: cotizacion.cliente_telefono || null,
+          empresa: cotizacion.cliente_empresa || null,  
+          direccion: cotizacion.cliente_direccion || null,
+          comuna: cotizacion.cliente_comuna || null
+        };
+      }
+      
+      // Método 2: Si no hay información en campos directos, buscar en detalles JSON
+      if (!clienteInfo && cotizacion.detalles_json) {
+        try {
+          const detalles = JSON.parse(cotizacion.detalles_json);
+          if (detalles.datosContacto) {
+            clienteInfo = {
+              nombre: detalles.datosContacto.nombre || null,
+              rut: detalles.datosContacto.rut || null,
+              correo: detalles.datosContacto.correo || detalles.datosContacto.email || null,
+              email: detalles.datosContacto.correo || detalles.datosContacto.email || null,
+              telefono: detalles.datosContacto.telefono || null,
+              empresa: detalles.datosContacto.empresa || null,
+              direccion: detalles.datosContacto.direccion || null,
+              comuna: detalles.datosContacto.comuna || null
+            };
+          }
+        } catch (e) {
+          console.warn('Error al parsear detallesJson para cliente:', e.message);
+        }
+      }
+      
+      console.log('DEBUG OBTENER API - Cliente info final:', clienteInfo);
+      
       res.json({
         success: true,
-        cotizacion: cotizacion
+        cotizacion: cotizacion,
+        cliente: clienteInfo
       });
     } catch (error) {
       console.error('Error al obtener cotización API:', error);
@@ -148,7 +189,7 @@ const cotizacionController = {
   actualizarEstadoAPI: async (req, res) => {
     try {
       const { id } = req.params;
-      const { estado, detalles, subtotal, iva, total, observaciones, enviarCorreo } = req.body;
+      const { estado, detalles, subtotal, iva, total, observaciones, enviarCorreo, emailCliente } = req.body;
       
       console.log('Actualizando cotización ID:', id);
       console.log('Datos recibidos:', { estado, subtotal, iva, total, observaciones, enviarCorreo });
@@ -179,17 +220,50 @@ const cotizacionController = {
       if (enviarCorreo) {
         try {
           const detallesObj = JSON.parse(detalles || '{}');
-          let emailCliente = null;
+          let emailDelCliente = null;
           
-          // Buscar email en los detalles JSON
-          if (detallesObj.datosContacto) {
-            emailCliente = detallesObj.datosContacto.correo || detallesObj.datosContacto.email;
+          // Método 0: Usar el email enviado desde el frontend (prioridad más alta)
+          if (emailCliente && emailCliente.trim()) {
+            emailDelCliente = emailCliente.trim();
+          }
+          // Método 1: Buscar email en los detalles JSON
+          else if (detallesObj.datosContacto) {
+            emailDelCliente = detallesObj.datosContacto.correo || detallesObj.datosContacto.email;
           }
           
-          if (emailCliente) {
-            correoEnviado = await enviarCotizacionPorCorreo(cotizacion, emailCliente, detallesObj);
+          // Método 2: Buscar en los campos directos de la cotización (PRIORIDAD ALTA)
+          if (!emailDelCliente && cotizacion.cliente_email) {
+            emailDelCliente = cotizacion.cliente_email;
+            console.log('📧 Email encontrado en campo directo cliente_email:', emailDelCliente);
+          }
+          
+          // Método 3: Buscar en la relación con SolicitudRetiro -> Cliente
+          if (!emailDelCliente && cotizacion.SolicitudRetiro && cotizacion.SolicitudRetiro.Cliente) {
+            emailDelCliente = cotizacion.SolicitudRetiro.Cliente.email;
+          }
+          
+          // Método 4: Si aún no hay email, intentar cargar la cotización con relaciones
+          if (!emailDelCliente) {
+            const cotizacionCompleta = await Cotizacion.findByPk(id, {
+              include: [
+                { 
+                  model: SolicitudRetiro,
+                  include: [{ model: Cliente }]
+                }
+              ]
+            });
+            
+            if (cotizacionCompleta && cotizacionCompleta.SolicitudRetiro && cotizacionCompleta.SolicitudRetiro.Cliente) {
+              emailDelCliente = cotizacionCompleta.SolicitudRetiro.Cliente.email;
+            }
+          }
+          
+          if (emailDelCliente) {
+            console.log('📧 Email del cliente encontrado:', emailDelCliente);
+            correoEnviado = await enviarCotizacionPorCorreo(cotizacion, emailDelCliente, detallesObj);
           } else {
             console.warn('No se encontró email del cliente para la cotización', id);
+            errorCorreo = 'No se encontró el email del cliente. Asegúrate de que la cotización tenga un cliente asociado.';
           }
         } catch (error) {
           errorCorreo = error.message || 'Error desconocido al enviar correo';
@@ -262,8 +336,117 @@ const cotizacionController = {
         message: 'Error al eliminar la cotización: ' + error.message
       });
     }
+    },
+
+  // API: Obtener información del cliente de una cotización
+  obtenerClienteAPI: async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Buscar cotización con los campos directos del cliente
+      const cotizacion = await Cotizacion.findByPk(id);
+      
+      if (!cotizacion) {
+        return res.json({
+          success: false,
+          message: 'Cotización no encontrada'
+        });
+      }
+      
+      console.log('Datos de cotización encontrados:', {
+        cliente_nombre: cotizacion.cliente_nombre,
+        cliente_rut: cotizacion.cliente_rut,
+        cliente_email: cotizacion.cliente_email,
+        cliente_telefono: cotizacion.cliente_telefono,
+        cliente_empresa: cotizacion.cliente_empresa,
+        cliente_direccion: cotizacion.cliente_direccion,
+        cliente_comuna: cotizacion.cliente_comuna
+      });
+      
+      let clienteInfo = null;
+      
+      // Método 1: Obtener información desde los campos directos de la tabla cotizaciones
+      if (cotizacion.cliente_nombre || cotizacion.cliente_email) {
+        clienteInfo = {
+          nombre: cotizacion.cliente_nombre || null,
+          rut: cotizacion.cliente_rut || null,
+          correo: cotizacion.cliente_email || null,
+          email: cotizacion.cliente_email || null,
+          telefono: cotizacion.cliente_telefono || null,
+          empresa: cotizacion.cliente_empresa || null,
+          direccion: cotizacion.cliente_direccion || null,
+          comuna: cotizacion.cliente_comuna || null
+        };
+      }
+      
+      // Método 2: Si no hay información en campos directos, buscar en detalles JSON
+      if (!clienteInfo && cotizacion.detalles_json) {
+        try {
+          const detalles = JSON.parse(cotizacion.detalles_json);
+          if (detalles.datosContacto) {
+            clienteInfo = {
+              nombre: detalles.datosContacto.nombre || null,
+              rut: detalles.datosContacto.rut || null,
+              correo: detalles.datosContacto.correo || detalles.datosContacto.email || null,
+              email: detalles.datosContacto.correo || detalles.datosContacto.email || null,
+              telefono: detalles.datosContacto.telefono || null,
+              empresa: detalles.datosContacto.empresa || null,
+              direccion: detalles.datosContacto.direccion || null,
+              comuna: detalles.datosContacto.comuna || null
+            };
+          }
+        } catch (e) {
+          console.warn('Error al parsear detallesJson para cliente:', e.message);
+        }
+      }
+      
+      // Método 3: Buscar en relaciones como fallback
+      if (!clienteInfo) {
+        try {
+          const cotizacionConRelaciones = await Cotizacion.findByPk(id, {
+            include: [
+              { 
+                model: SolicitudRetiro,
+                include: [{ model: Cliente }]
+              }
+            ]
+          });
+          
+          if (cotizacionConRelaciones && cotizacionConRelaciones.SolicitudRetiro && cotizacionConRelaciones.SolicitudRetiro.Cliente) {
+            const cliente = cotizacionConRelaciones.SolicitudRetiro.Cliente;
+            clienteInfo = {
+              nombre: cliente.nombre || cliente.razonSocial || null,
+              rut: cliente.rut || null,
+              correo: cliente.email || null,
+              email: cliente.email || null,
+              telefono: cliente.telefono || null,
+              empresa: cliente.empresa || cliente.razonSocial || null,
+              direccion: cliente.direccion || null,
+              comuna: cliente.comuna || null
+            };
+          }
+        } catch (error) {
+          console.warn('Error al buscar relaciones del cliente:', error.message);
+        }
+      }
+      
+      console.log('Cliente info final:', clienteInfo);
+      
+      res.json({
+        success: true,
+        cliente: clienteInfo,
+        message: clienteInfo ? 'Cliente encontrado' : 'No se encontró información del cliente'
+      });
+      
+    } catch (error) {
+      console.error('Error al obtener información del cliente:', error);
+      res.json({
+        success: false,
+        message: 'Error al obtener información del cliente: ' + error.message
+      });
+    }
   },
-  
+
   // ========== MÉTODOS ORIGINALES ==========
   
   // Ver detalles de una cotización
@@ -304,9 +487,77 @@ const cotizacionController = {
         }
       }
       
+      // Obtener información del cliente desde múltiples fuentes
+      let clienteInfo = null;
+      
+      console.log('DEBUG DETALLES - Cotización ID:', id);
+      console.log('DEBUG DETALLES - Datos cotización:', {
+        cliente_nombre: cotizacion.cliente_nombre,
+        cliente_rut: cotizacion.cliente_rut,
+        cliente_email: cotizacion.cliente_email,
+        cliente_telefono: cotizacion.cliente_telefono,
+        cliente_empresa: cotizacion.cliente_empresa,
+        cliente_direccion: cotizacion.cliente_direccion,
+        cliente_comuna: cotizacion.cliente_comuna
+      });
+      
+      // Método 1: Obtener información desde los campos directos de la tabla cotizaciones (PRIORIDAD)
+      if (cotizacion.cliente_nombre || cotizacion.cliente_email) {
+        clienteInfo = {
+          nombre: cotizacion.cliente_nombre || null,
+          rut: cotizacion.cliente_rut || null,
+          correo: cotizacion.cliente_email || null,
+          email: cotizacion.cliente_email || null,
+          telefono: cotizacion.cliente_telefono || null,
+          empresa: cotizacion.cliente_empresa || null,
+          direccion: cotizacion.cliente_direccion || null,
+          comuna: cotizacion.cliente_comuna || null
+        };
+        console.log('DEBUG DETALLES - Cliente info desde campos directos:', clienteInfo);
+      }
+      
+      // Método 2: Si no hay información en campos directos, buscar en detalles JSON
+      if (!clienteInfo && cotizacion.detallesJson) {
+        try {
+          const detallesData = JSON.parse(cotizacion.detallesJson);
+          if (detallesData.datosContacto) {
+            clienteInfo = {
+              nombre: detallesData.datosContacto.nombre || null,
+              rut: detallesData.datosContacto.rut || null,
+              correo: detallesData.datosContacto.correo || detallesData.datosContacto.email || null,
+              email: detallesData.datosContacto.correo || detallesData.datosContacto.email || null,
+              telefono: detallesData.datosContacto.telefono || null,
+              empresa: detallesData.datosContacto.empresa || null,
+              direccion: detallesData.direccion || detallesData.datosContacto.direccion || null,
+              comuna: detallesData.comuna || detallesData.datosContacto.comuna || null
+            };
+          }
+        } catch (e) {
+          console.warn('Error al parsear detallesJson para cliente:', e.message);
+        }
+      }
+      
+      // Método 3: Como fallback, buscar en las relaciones
+      if (!clienteInfo && cotizacion.SolicitudRetiro && cotizacion.SolicitudRetiro.Cliente) {
+        const cliente = cotizacion.SolicitudRetiro.Cliente;
+        clienteInfo = {
+          nombre: cliente.nombre || cliente.razonSocial || null,
+          rut: cliente.rut || null,
+          correo: cliente.email || null,
+          email: cliente.email || null,
+          telefono: cliente.telefono || null,
+          empresa: cliente.empresa || cliente.razonSocial || null,
+          direccion: cliente.direccion || null,
+          comuna: cliente.comuna || null
+        };
+      }
+      
+      console.log('DEBUG DETALLES - Cliente info final enviado a vista:', clienteInfo);
+      
       res.render('cotizaciones/detalles', {
         titulo: 'Detalles de Cotización',
         cotizacion,
+        cliente: clienteInfo,
         detalles,
         usuario,
         error: req.flash('error'),
@@ -484,7 +735,15 @@ const cotizacionController = {
         total,
         validezCotizacion,
         observaciones,
-        estado: 'pendiente'
+        estado: 'pendiente',
+        // Guardar datos del cliente en campos específicos
+        cliente_nombre: solicitud.Cliente?.nombre || null,
+        cliente_rut: solicitud.Cliente?.rut || null,
+        cliente_email: solicitud.Cliente?.email || null,
+        cliente_telefono: solicitud.Cliente?.telefono || null,
+        cliente_empresa: solicitud.Cliente?.empresa || null,
+        cliente_direccion: solicitud.Cliente?.direccion || null,
+        cliente_comuna: solicitud.Cliente?.comuna || null
       });
       
       // Crear detalles de cotización y almacenarlos en formato JSON
@@ -843,15 +1102,80 @@ const enviarCotizacionPorCorreo = async (cotizacion, emailCliente, detallesObj) 
   try {
     console.log('Iniciando envío de correo...');
     console.log('Email destinatario:', emailCliente);
+    console.log('DetallesObj recibido:', detallesObj);
     
     const residuos = detallesObj.residuos || [];
     const cliente = detallesObj.datosContacto || detallesObj.cliente || {};
     
-    // Si no hay datos del cliente en detallesObj, intentar obtenerlos de la cotización
-    let nombreCliente = cliente.nombre;
-    if (!nombreCliente && cotizacion.SolicitudRetiro && cotizacion.SolicitudRetiro.Cliente) {
-      nombreCliente = cotizacion.SolicitudRetiro.Cliente.nombre || cotizacion.SolicitudRetiro.Cliente.razonSocial;
+    // Intentar obtener información completa del cliente desde múltiples fuentes
+    let infoCliente = {
+      nombre: cliente.nombre || 'Cliente',
+      rut: cliente.rut || 'No especificado',
+      correo: emailCliente,
+      telefono: cliente.telefono || 'No especificado',
+      empresa: cliente.empresa || 'No especificado',
+      direccion: detallesObj.direccion || cliente.direccion || 'No especificado',
+      comuna: detallesObj.comuna || cliente.comuna || 'No especificado'
+    };
+    
+    // Método 1: Usar información directa de los campos de la tabla cotizaciones (PRIORIDAD MÁS ALTA)
+    if (cotizacion.cliente_nombre || cotizacion.cliente_email) {
+      infoCliente = {
+        nombre: cotizacion.cliente_nombre || infoCliente.nombre,
+        rut: cotizacion.cliente_rut || infoCliente.rut,
+        correo: cotizacion.cliente_email || emailCliente,
+        telefono: cotizacion.cliente_telefono || infoCliente.telefono,
+        empresa: cotizacion.cliente_empresa || infoCliente.empresa,
+        direccion: cotizacion.cliente_direccion || infoCliente.direccion,
+        comuna: cotizacion.cliente_comuna || infoCliente.comuna
+      };
+      console.log('✅ Información del cliente obtenida desde campos directos de cotizaciones');
     }
+    
+    // Si no hay datos del cliente en detallesObj, intentar obtenerlos de la cotización con relaciones
+    if (!cliente.nombre && cotizacion.SolicitudRetiro && cotizacion.SolicitudRetiro.Cliente) {
+      const clienteDB = cotizacion.SolicitudRetiro.Cliente;
+      infoCliente = {
+        nombre: clienteDB.nombre || clienteDB.razonSocial || 'Cliente',
+        rut: clienteDB.rut || 'No especificado',
+        correo: clienteDB.email || emailCliente,
+        telefono: clienteDB.telefono || 'No especificado',
+        empresa: clienteDB.empresa || clienteDB.razonSocial || 'No especificado',
+        direccion: clienteDB.direccion || 'No especificado',
+        comuna: clienteDB.comuna || 'No especificado'
+      };
+    }
+    
+    // Si aún no tenemos datos, intentar cargar la cotización completa
+    if (infoCliente.nombre === 'Cliente') {
+      try {
+        const cotizacionCompleta = await Cotizacion.findByPk(cotizacion.id, {
+          include: [
+            { 
+              model: SolicitudRetiro,
+              include: [{ model: Cliente }]
+            }
+          ]
+        });
+        
+        if (cotizacionCompleta && cotizacionCompleta.SolicitudRetiro && cotizacionCompleta.SolicitudRetiro.Cliente) {
+          const clienteDB = cotizacionCompleta.SolicitudRetiro.Cliente;
+          infoCliente = {
+            nombre: clienteDB.nombre || clienteDB.razonSocial || 'Cliente',
+            rut: clienteDB.rut || 'No especificado',
+            correo: clienteDB.email || emailCliente,
+            telefono: clienteDB.telefono || 'No especificado',
+            empresa: clienteDB.empresa || clienteDB.razonSocial || 'No especificado',
+            direccion: clienteDB.direccion || 'No especificado',
+            comuna: clienteDB.comuna || 'No especificado'
+          };
+        }
+      } catch (error) {
+        console.warn('No se pudo cargar información adicional del cliente:', error.message);
+      }
+    }
+    
+    console.log('Información del cliente compilada:', infoCliente);
     
     const htmlContent = `
       <!DOCTYPE html>
@@ -956,8 +1280,21 @@ const enviarCotizacionPorCorreo = async (cotizacion, emailCliente, detallesObj) 
           
           <div class="content">
             <div class="section">
-              <h3>Estimado/a ${nombreCliente || 'Cliente'},</h3>
+              <h3>Estimado/a ${infoCliente.nombre},</h3>
               <p>Esperamos que se encuentre muy bien. Adjuntamos la cotización solicitada con el siguiente detalle:</p>
+            </div>
+            
+            <div class="section">
+              <h3>👤 Información del Cliente</h3>
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                <p><strong>Nombre:</strong> ${infoCliente.nombre}</p>
+                <p><strong>RUT:</strong> ${infoCliente.rut}</p>
+                <p><strong>Email:</strong> ${infoCliente.correo}</p>
+                <p><strong>Teléfono:</strong> ${infoCliente.telefono}</p>
+                <p><strong>Empresa:</strong> ${infoCliente.empresa}</p>
+                <p><strong>Dirección:</strong> ${infoCliente.direccion}</p>
+                <p><strong>Comuna:</strong> ${infoCliente.comuna}</p>
+              </div>
             </div>
             
             <div class="section">

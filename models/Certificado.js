@@ -8,40 +8,63 @@ const Certificado = sequelize.define('Certificado', {
     primaryKey: true,
     autoIncrement: true
   },
-  visitaRetiroId: {
+  numero_certificado: {
+    type: DataTypes.STRING(50),
+    unique: true,
+    allowNull: true
+  },
+  solicitudRetiroId: {
     type: DataTypes.INTEGER,
-    references: {
-      model: 'visitas_retiro',
-      key: 'id'
-    },
-    allowNull: false
-  },
-  numeroCertificado: {
-    type: DataTypes.STRING,
     allowNull: false,
-    unique: true
+    references: {
+      model: 'solicitudes_retiro',
+      key: 'id'
+    }
   },
-  fechaEmision: {
+  fecha_disposicion: {
     type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  },
-  tipoTratamiento: {
-    type: DataTypes.STRING,
     allowNull: false
   },
-  plantaDestino: {
-    type: DataTypes.STRING,
+  planta_disposicion: {
+    type: DataTypes.STRING(100),
     allowNull: false
   },
-  observaciones: {
-    type: DataTypes.TEXT
+  metodo_disposicion: {
+    type: DataTypes.STRING(100),
+    allowNull: false
   },
-  rutaPdf: {
-    type: DataTypes.STRING
+  tecnico_responsable: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  observaciones_disposicion: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  autorizacion_sag: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  autorizacion_sernageomin: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  cumplimiento_ds148: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  archivo_pdf: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  estado: {
+    type: DataTypes.ENUM('pendiente', 'procesando', 'completado'),
+    defaultValue: 'pendiente'
   }
 }, {
-  timestamps: true,
-  tableName: 'certificados'
+  tableName: 'certificados',
+  underscored: true,
+  timestamps: true
 });
 
 module.exports = Certificado;
