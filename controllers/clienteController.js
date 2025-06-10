@@ -2,24 +2,92 @@
 const { Cliente, Usuario, SolicitudRetiro } = require('../models');
 const { Op } = require('sequelize');
 
+// Función para validar solo el formato del RUT chileno
+const validarRut = (rut) => {
+  // Eliminar puntos y guión
+  const rutLimpio = rut.replace(/[.-]/g, '');
+  // Validar formato básico (debe tener entre 7 y 8 dígitos + dígito verificador)
+  if (!/^[0-9]{7,8}[0-9kK]$/.test(rutLimpio)) {
+    return { valido: false, error: 'formato' };
+  }
+  return { valido: true };
+};
+
+// Función para formatear RUT
+const formatearRut = (rut) => {
+  // Eliminar puntos y guión
+  const rutLimpio = rut.replace(/[.-]/g, '');
+  
+  // Separar número y dígito verificador
+  const numero = rutLimpio.slice(0, -1);
+  const dv = rutLimpio.slice(-1).toLowerCase();
+  
+  // Asegurar que el número tenga 8 dígitos (rellenar con 0 a la izquierda)
+  const numeroCompleto = numero.padStart(8, '0');
+  
+  // Formatear número con puntos
+  const rutFormateado = numeroCompleto.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  
+  // Retornar RUT formateado con guión
+  return rutFormateado + '-' + dv;
+};
+
 const clienteController = {
-  // Listar todos los clientes
+  // Listar todos los clientes con sus usuarios asociados
   listarClientes: async (req, res) => {
     try {
       const clientes = await Cliente.findAll({
-        include: [{
-          model: Usuario,
-          attributes: ['email', 'activo']
-        }],
+        include: [
+          {
+            model: Usuario,
+            attributes: ['id', 'email', 'activo']
+          }
+        ],
         order: [['createdAt', 'DESC']]
       });
-      
-      res.json({ success: true, clientes });
+
+      res.json({
+        success: true,
+        clientes: clientes
+      });
     } catch (error) {
       console.error('Error al listar clientes:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: 'Error al obtener la lista de clientes' 
+      res.status(500).json({
+        success: false,
+        message: 'Error al cargar los clientes'
+      });
+    }
+  },
+
+  // Obtener un cliente específico
+  obtenerCliente: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const cliente = await Cliente.findByPk(id, {
+        include: [
+          {
+            model: Usuario,
+            attributes: ['id', 'email', 'activo']
+          }
+        ]
+      });
+
+      if (!cliente) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cliente no encontrado'
+        });
+      }
+
+      res.json({
+        success: true,
+        cliente: cliente
+      });
+    } catch (error) {
+      console.error('Error al obtener cliente:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error al cargar el cliente'
       });
     }
   },
@@ -30,82 +98,102 @@ const clienteController = {
       const { 
         rut, 
         nombreEmpresa, 
+        email, 
+        telefono, 
+        contactoPrincipal, 
         direccion, 
         comuna, 
-        ciudad, 
-        telefono, 
-        email, 
-        contactoPrincipal 
+        ciudad 
       } = req.body;
 
-      // Verificar si el RUT ya existe
-      const clienteExistente = await Cliente.findOne({ where: { rut } });
-      if (clienteExistente) {
+      // Validar campos requeridos
+      if (!rut || !nombreEmpresa || !email || !telefono || !contactoPrincipal || !direccion || !comuna || !ciudad) {
         return res.status(400).json({
           success: false,
-          message: 'El RUT ya está registrado'
+          message: 'Todos los campos son obligatorios'
         });
       }
 
-      // Crear usuario asociado
+      // Validar formato del RUT
+      const resultadoRut = validarRut(rut);
+      if (!resultadoRut.valido) {
+        return res.status(400).json({
+          success: false,
+          message: 'El formato del RUT es incorrecto. Debe ser: 12.345.678-9'
+        });
+      }
+
+      // Formatear RUT antes de guardar
+      const rutFormateado = formatearRut(rut);
+
+      // Verificar si ya existe un cliente con ese RUT
+      const clienteExistente = await Cliente.findOne({ where: { rut: rutFormateado } });
+      if (clienteExistente) {
+        return res.status(400).json({
+          success: false,
+          message: 'Ya existe un cliente con ese RUT'
+        });
+      }
+
+      // Verificar si ya existe un usuario con ese email
+      const usuarioExistente = await Usuario.findOne({ where: { email } });
+      if (usuarioExistente) {
+        return res.status(400).json({
+          success: false,
+          message: 'Ya existe un usuario registrado con ese correo electrónico'
+        });
+      }
+
+      // Crear usuario asociado al cliente
       const usuario = await Usuario.create({
-        email,
-        password: Math.random().toString(36).slice(-8), // Contraseña temporal
+        nombre: contactoPrincipal,
+        email: email,
+        password: 'temporal123', // Password temporal
         rol: 'cliente',
         activo: true
       });
 
-      // Crear cliente
-      const cliente = await Cliente.create({
-        rut,
-        nombreEmpresa,
+      // Crear el cliente
+      const nuevoCliente = await Cliente.create({
+        rut: rutFormateado,
+        nombre_empresa: nombreEmpresa,
+        email,
+        telefono,
+        contacto_principal: contactoPrincipal,
         direccion,
         comuna,
         ciudad,
-        telefono,
-        email,
-        contactoPrincipal,
         usuarioId: usuario.id
       });
 
-      res.json({ 
-        success: true, 
+      res.status(201).json({
+        success: true,
         message: 'Cliente creado exitosamente',
-        cliente 
+        cliente: nuevoCliente
       });
+
     } catch (error) {
       console.error('Error al crear cliente:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: 'Error al crear el cliente' 
-      });
-    }
-  },
-
-  // Obtener un cliente
-  obtenerCliente: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const cliente = await Cliente.findByPk(id, {
-        include: [{
-          model: Usuario,
-          attributes: ['email', 'activo']
-        }]
-      });
-
-      if (!cliente) {
-        return res.status(404).json({ 
-          success: false, 
-          message: 'Cliente no encontrado' 
-        });
+      
+      // Manejar errores específicos
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        if (error.errors && error.errors[0].path === 'email') {
+          return res.status(400).json({
+            success: false,
+            message: 'Ya existe un usuario registrado con ese correo electrónico'
+          });
+        }
+        if (error.errors && error.errors[0].path === 'rut') {
+          return res.status(400).json({
+            success: false,
+            message: 'Ya existe un cliente con ese RUT'
+          });
+        }
       }
 
-      res.json({ success: true, cliente });
-    } catch (error) {
-      console.error('Error al obtener cliente:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: 'Error al obtener el cliente' 
+      res.status(500).json({
+        success: false,
+        message: 'Error al crear el cliente. Por favor, intente nuevamente.'
       });
     }
   },
@@ -117,68 +205,94 @@ const clienteController = {
       const { 
         rut, 
         nombreEmpresa, 
+        email, 
+        telefono, 
+        contactoPrincipal, 
         direccion, 
         comuna, 
-        ciudad, 
-        telefono, 
-        email, 
-        contactoPrincipal 
+        ciudad 
       } = req.body;
 
       const cliente = await Cliente.findByPk(id);
       if (!cliente) {
-        return res.status(404).json({ 
-          success: false, 
-          message: 'Cliente no encontrado' 
+        return res.status(404).json({
+          success: false,
+          message: 'Cliente no encontrado'
         });
       }
 
-      // Verificar si el nuevo RUT ya existe en otro cliente
-      if (rut && rut !== cliente.rut) {
-        const rutExistente = await Cliente.findOne({
-          where: {
-            rut,
+      // Validar formato del RUT si ha cambiado
+      if (rut !== cliente.rut) {
+        const resultadoRut = validarRut(rut);
+        if (!resultadoRut.valido) {
+          return res.status(400).json({
+            success: false,
+            message: 'El formato del RUT es incorrecto. Debe ser: 12.345.678-9'
+          });
+        }
+
+        const rutFormateado = formatearRut(rut);
+        
+        // Verificar si el RUT ya existe en otro cliente
+        const rutExistente = await Cliente.findOne({ 
+          where: { 
+            rut: rutFormateado,
             id: { [Op.ne]: id }
           }
         });
-        
         if (rutExistente) {
           return res.status(400).json({
             success: false,
-            message: 'El RUT ya está registrado para otro cliente'
+            message: 'Ya existe otro cliente con ese RUT'
           });
         }
+
+        // Actualizar cliente con el RUT formateado
+        await cliente.update({
+          rut: rutFormateado,
+          nombre_empresa: nombreEmpresa,
+          email,
+          telefono,
+          contacto_principal: contactoPrincipal,
+          direccion,
+          comuna,
+          ciudad
+        });
+      } else {
+        // Actualizar cliente sin cambiar el RUT
+        await cliente.update({
+          nombre_empresa: nombreEmpresa,
+          email,
+          telefono,
+          contacto_principal: contactoPrincipal,
+          direccion,
+          comuna,
+          ciudad
+        });
       }
 
-      await cliente.update({
-        rut: rut || cliente.rut,
-        nombreEmpresa: nombreEmpresa || cliente.nombreEmpresa,
-        direccion: direccion || cliente.direccion,
-        comuna: comuna || cliente.comuna,
-        ciudad: ciudad || cliente.ciudad,
-        telefono: telefono || cliente.telefono,
-        email: email || cliente.email,
-        contactoPrincipal: contactoPrincipal || cliente.contactoPrincipal
-      });
-
-      // Actualizar email del usuario si cambió
-      if (email && email !== cliente.email) {
+      // Actualizar usuario asociado si existe
+      if (cliente.usuarioId) {
         await Usuario.update(
-          { email },
+          {
+            nombre: contactoPrincipal,
+            email: email
+          },
           { where: { id: cliente.usuarioId } }
         );
       }
 
-      res.json({ 
-        success: true, 
+      res.json({
+        success: true,
         message: 'Cliente actualizado exitosamente',
-        cliente 
+        cliente: cliente
       });
+
     } catch (error) {
       console.error('Error al actualizar cliente:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: 'Error al actualizar el cliente' 
+      res.status(500).json({
+        success: false,
+        message: 'Error al actualizar el cliente'
       });
     }
   },
@@ -187,458 +301,64 @@ const clienteController = {
   eliminarCliente: async (req, res) => {
     try {
       const { id } = req.params;
+
       const cliente = await Cliente.findByPk(id);
-      
       if (!cliente) {
-        return res.status(404).json({ 
-          success: false, 
-          message: 'Cliente no encontrado' 
+        return res.status(404).json({
+          success: false,
+          message: 'Cliente no encontrado'
         });
       }
 
-      // Eliminar usuario asociado
-      await Usuario.destroy({ where: { id: cliente.usuarioId } });
-      
+      // Verificar si el cliente tiene solicitudes asociadas
+      const solicitudes = await SolicitudRetiro.findOne({
+        where: { cliente_id: id }
+      });
+
+      if (solicitudes) {
+        return res.status(400).json({
+          success: false,
+          message: 'No se puede eliminar el cliente porque tiene solicitudes asociadas'
+        });
+      }
+
+      // Eliminar usuario asociado si existe
+      if (cliente.usuarioId) {
+        await Usuario.destroy({ where: { id: cliente.usuarioId } });
+      }
+
       // Eliminar cliente
       await cliente.destroy();
 
-      res.json({ 
-        success: true, 
-        message: 'Cliente eliminado exitosamente' 
+      res.json({
+        success: true,
+        message: 'Cliente eliminado exitosamente'
       });
+
     } catch (error) {
       console.error('Error al eliminar cliente:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: 'Error al eliminar el cliente' 
+      res.status(500).json({
+        success: false,
+        message: 'Error al eliminar el cliente'
       });
     }
   },
 
-  // Listar clientes (admin)
-  listar: async (req, res) => {
+  // Mostrar dashboard de clientes (render)
+  mostrarDashboard: async (req, res) => {
     try {
-      const clientes = await Cliente.findAll({
-        include: [{ model: Usuario }],
-        order: [['createdAt', 'DESC']]
-      });
-      
-      res.render('clientes/listar', {
+      // Esta función renderiza la vista, las otras son para API
+      res.render('admin/clientes', {
+        layout: false,
         titulo: 'Gestión de Clientes',
-        clientes,
-        usuario: req.session.usuario,
-        error: req.flash('error'),
-        success: req.flash('success')
+        usuario: req.session.usuario
       });
     } catch (error) {
-      console.error('Error al listar clientes:', error);
-      req.flash('error', 'Error al cargar la lista de clientes');
-      res.redirect('/dashboard');
-    }
-  },
-  
-  // Ver detalles de cliente
-  detalles: async (req, res) => {
-    try {
-      const { id } = req.params;
-      
-      const cliente = await Cliente.findByPk(id, {
-        include: [{ model: Usuario }]
+      console.error('Error al mostrar dashboard:', error);
+      res.status(500).render('error', {
+        titulo: 'Error',
+        mensaje: 'Error al cargar la página'
       });
-      
-      if (!cliente) {
-        req.flash('error', 'Cliente no encontrado');
-        return res.redirect('/clientes');
-      }
-      
-      // Obtener solicitudes del cliente
-      const solicitudes = await SolicitudRetiro.findAll({
-        where: { clienteId: cliente.id },
-        order: [['fechaSolicitud', 'DESC']],
-        limit: 10
-      });
-      
-      res.render('clientes/detalles', {
-        titulo: 'Detalles del Cliente',
-        cliente,
-        solicitudes,
-        usuario: req.session.usuario,
-        error: req.flash('error'),
-        success: req.flash('success')
-      });
-    } catch (error) {
-      console.error('Error al mostrar detalles del cliente:', error);
-      req.flash('error', 'Error al cargar detalles del cliente');
-      res.redirect('/clientes');
-    }
-  },
-  
-  // Mostrar formulario para crear cliente
-  mostrarCrear: async (req, res) => {
-    try {
-      // Si es admin, mostrar lista de usuarios disponibles
-      let usuarios = [];
-      if (req.session.usuario.rol === 'administrador') {
-        usuarios = await Usuario.findAll({
-          where: {
-            rol: 'cliente',
-            id: {
-              [Op.notIn]: Sequelize.literal(
-                '(SELECT usuarioId FROM clientes WHERE usuarioId IS NOT NULL)'
-              )
-            }
-          }
-        });
-      }
-      
-      res.render('clientes/crear', {
-        titulo: 'Registrar Cliente',
-        usuario: req.session.usuario,
-        usuarios,
-        error: req.flash('error'),
-        success: req.flash('success')
-      });
-    } catch (error) {
-      console.error('Error al mostrar formulario de creación:', error);
-      req.flash('error', 'Error al cargar el formulario');
-      res.redirect('/clientes');
-    }
-  },
-  
-  // Mostrar formulario para editar cliente
-  mostrarEditar: async (req, res) => {
-    try {
-      const { id } = req.params;
-      
-      // Verificar acceso
-      if (req.session.usuario.rol === 'cliente' && req.session.clienteId != id) {
-        req.flash('error', 'No tienes permiso para editar este cliente');
-        return res.redirect('/dashboard');
-      }
-      
-      const cliente = await Cliente.findByPk(id);
-      if (!cliente) {
-        req.flash('error', 'Cliente no encontrado');
-        return res.redirect('/clientes');
-      }
-      
-      // Si es admin, obtener usuarios disponibles
-      let usuarios = [];
-      if (req.session.usuario.rol === 'administrador') {
-        usuarios = await Usuario.findAll({
-          where: {
-            rol: 'cliente',
-            [Op.or]: [
-              { id: cliente.usuarioId },
-              {
-                id: {
-                  [Op.notIn]: Sequelize.literal(
-                    '(SELECT usuarioId FROM clientes WHERE usuarioId IS NOT NULL)'
-                  )
-                }
-              }
-            ]
-          }
-        });
-      }
-      
-      res.render('clientes/editar', {
-        titulo: 'Editar Cliente',
-        cliente,
-        usuarios,
-        usuario: req.session.usuario,
-        error: req.flash('error'),
-        success: req.flash('success')
-      });
-    } catch (error) {
-      console.error('Error al mostrar formulario de edición:', error);
-      req.flash('error', 'Error al cargar el formulario');
-      if (req.session.usuario.rol === 'administrador') {
-        return res.redirect('/clientes');
-      } else {
-        return res.redirect('/dashboard');
-      }
-    }
-  },
-  
-  // Mostrar perfil de cliente (para clientes)
-  mostrarPerfil: async (req, res) => {
-    try {
-      const usuarioId = req.session.usuario.id;
-      
-      // Buscar cliente asociado al usuario
-      const cliente = await Cliente.findOne({ 
-        where: { usuarioId } 
-      });
-      
-      if (cliente) {
-        // Si ya tiene perfil, mostrar formulario de edición
-        res.render('clientes/perfil', {
-          titulo: 'Mi Perfil',
-          cliente,
-          usuario: req.session.usuario,
-          error: req.flash('error'),
-          success: req.flash('success')
-        });
-      } else {
-        // Si no tiene perfil, mostrar formulario de creación
-        res.render('clientes/crear-perfil', {
-          titulo: 'Completar Perfil',
-          usuario: req.session.usuario,
-          error: req.flash('error'),
-          success: req.flash('success')
-        });
-      }
-    } catch (error) {
-      console.error('Error al mostrar perfil de cliente:', error);
-      req.flash('error', 'Error al cargar el perfil');
-      res.redirect('/dashboard');
-    }
-  },
-  
-  // Actualizar perfil de cliente (para clientes)
-  actualizarPerfil: async (req, res) => {
-    try {
-      const usuarioId = req.session.usuario.id;
-      const { 
-        rut, 
-        nombreEmpresa, 
-        direccion, 
-        comuna, 
-        ciudad, 
-        telefono, 
-        email, 
-        contactoPrincipal 
-      } = req.body;
-      
-      // Validar campos
-      if (!rut || !nombreEmpresa || !direccion || !comuna || !ciudad || !telefono || !email || !contactoPrincipal) {
-        req.flash('error', 'Todos los campos son obligatorios');
-        return res.redirect('/clientes/perfil');
-      }
-      
-      // Buscar cliente existente
-      let cliente = await Cliente.findOne({ where: { usuarioId } });
-      
-      if (cliente) {
-        // Verificar si el RUT ya existe en otro cliente
-        if (rut !== cliente.rut) {
-          const rutExistente = await Cliente.findOne({ 
-            where: { 
-              rut,
-              id: { [Op.ne]: cliente.id }
-            } 
-          });
-          
-          if (rutExistente) {
-            req.flash('error', 'El RUT ya está registrado para otro cliente');
-            return res.redirect('/clientes/perfil');
-          }
-        }
-        
-        // Actualizar cliente existente
-        cliente.rut = rut;
-        cliente.nombreEmpresa = nombreEmpresa;
-        cliente.direccion = direccion;
-        cliente.comuna = comuna;
-        cliente.ciudad = ciudad;
-        cliente.telefono = telefono;
-        cliente.email = email;
-        cliente.contactoPrincipal = contactoPrincipal;
-        
-        await cliente.save();
-      } else {
-        // Verificar si el RUT ya existe
-        const rutExistente = await Cliente.findOne({ where: { rut } });
-        if (rutExistente) {
-          req.flash('error', 'El RUT ya está registrado');
-          return res.redirect('/clientes/perfil');
-        }
-        
-        // Crear nuevo cliente
-        cliente = await Cliente.create({
-          rut,
-          nombreEmpresa,
-          direccion,
-          comuna,
-          ciudad,
-          telefono,
-          email,
-          contactoPrincipal,
-          usuarioId
-        });
-        
-        // Guardar clienteId en sesión
-        req.session.clienteId = cliente.id;
-      }
-      
-      req.flash('success', 'Perfil actualizado correctamente');
-      res.redirect('/dashboard');
-    } catch (error) {
-      console.error('Error al actualizar perfil de cliente:', error);
-      req.flash('error', 'Error al actualizar perfil');
-      res.redirect('/clientes/perfil');
-    }
-  },
-
-  // Obtener todos los clientes
-  getClientes: async (req, res) => {
-    try {
-      const clientes = await Cliente.findAll({
-        attributes: [
-          'id', 
-          'rut',
-          ['nombre_empresa', 'nombre_empresa'],
-          'email', 
-          'telefono', 
-          ['contacto_principal', 'contacto_principal'],
-          'direccion',
-          'comuna',
-          'ciudad'
-        ],
-        order: [['nombre_empresa', 'ASC']]
-      });
-
-      const clientesFormateados = clientes.map(cliente => {
-        const data = cliente.toJSON();
-        return {
-          id: data.id,
-          rut: data.rut,
-          nombre_empresa: data.nombre_empresa,
-          email: data.email,
-          telefono: data.telefono,
-          contacto_principal: data.contacto_principal,
-          direccion: data.direccion,
-          comuna: data.comuna,
-          ciudad: data.ciudad
-        };
-      });
-
-      res.json({ 
-        success: true, 
-        clientes: clientesFormateados
-      });
-    } catch (error) {
-      console.error('Error al obtener clientes:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: 'Error al obtener los clientes',
-        error: error.message 
-      });
-    }
-  },
-
-  // Obtener un cliente por ID
-  getClienteById: async (req, res) => {
-    try {
-      const cliente = await Cliente.findByPk(req.params.id);
-      if (!cliente) {
-        return res.status(404).json({ success: false, message: 'Cliente no encontrado' });
-      }
-      res.json({ success: true, cliente });
-    } catch (error) {
-      console.error('Error al obtener cliente:', error);
-      res.status(500).json({ success: false, message: 'Error al obtener el cliente' });
-    }
-  },
-
-  // Crear un nuevo cliente
-  createCliente: async (req, res) => {
-    try {
-      const clienteExistente = await Cliente.findOne({ where: { rut: req.body.rut } });
-      if (clienteExistente) {
-        return res.status(400).json({ success: false, message: 'Ya existe un cliente con este RUT' });
-      }
-
-      const cliente = await Cliente.create({
-        rut: req.body.rut,
-        nombre_empresa: req.body.nombreEmpresa,
-        email: req.body.email,
-        telefono: req.body.telefono,
-        contacto_principal: req.body.contactoPrincipal,
-        direccion: req.body.direccion,
-        comuna: req.body.comuna,
-        ciudad: req.body.ciudad
-      });
-
-      res.json({ success: true, message: 'Cliente creado exitosamente', cliente });
-    } catch (error) {
-      console.error('Error al crear cliente:', error);
-      if (error.name === 'SequelizeValidationError') {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Error de validación', 
-          errors: error.errors.map(e => e.message) 
-        });
-      }
-      res.status(500).json({ success: false, message: 'Error al crear el cliente' });
-    }
-  },
-
-  // Actualizar un cliente
-  updateCliente: async (req, res) => {
-    try {
-      const cliente = await Cliente.findByPk(req.params.id);
-      if (!cliente) {
-        return res.status(404).json({ success: false, message: 'Cliente no encontrado' });
-      }
-
-      // Verificar si el nuevo RUT ya existe (si se está cambiando)
-      if (req.body.rut !== cliente.rut) {
-        const clienteExistente = await Cliente.findOne({ where: { rut: req.body.rut } });
-        if (clienteExistente) {
-          return res.status(400).json({ success: false, message: 'Ya existe un cliente con este RUT' });
-        }
-      }
-
-      await cliente.update({
-        rut: req.body.rut,
-        nombre_empresa: req.body.nombreEmpresa,
-        email: req.body.email,
-        telefono: req.body.telefono,
-        contacto_principal: req.body.contactoPrincipal,
-        direccion: req.body.direccion,
-        comuna: req.body.comuna,
-        ciudad: req.body.ciudad
-      });
-
-      res.json({ success: true, message: 'Cliente actualizado exitosamente', cliente });
-    } catch (error) {
-      console.error('Error al actualizar cliente:', error);
-      if (error.name === 'SequelizeValidationError') {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Error de validación', 
-          errors: error.errors.map(e => e.message) 
-        });
-      }
-      res.status(500).json({ success: false, message: 'Error al actualizar el cliente' });
-    }
-  },
-
-  // Eliminar un cliente
-  deleteCliente: async (req, res) => {
-    try {
-      const cliente = await Cliente.findByPk(req.params.id);
-      if (!cliente) {
-        return res.status(404).json({ success: false, message: 'Cliente no encontrado' });
-      }
-
-      await cliente.destroy();
-      res.json({ success: true, message: 'Cliente eliminado exitosamente' });
-    } catch (error) {
-      console.error('Error al eliminar cliente:', error);
-      res.status(500).json({ success: false, message: 'Error al eliminar el cliente' });
-    }
-  },
-
-  // Renderizar la vista de clientes
-  renderClientes: async (req, res) => {
-    try {
-      res.render('dashboard/clientes');
-    } catch (error) {
-      console.error('Error al renderizar vista:', error);
-      res.status(500).send('Error al cargar la página');
     }
   }
 };

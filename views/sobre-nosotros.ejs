@@ -22,9 +22,87 @@
           <a href="/" class="logo-link">
             <img src="/img/logo.png" alt="Felmart Logo" class="logo-img">
           </a>
-          <div class="auth-buttons">
-            <a href="/login" class="btn btn-outline-light btn-sm">Iniciar sesión</a>
-            <a href="/registro" class="btn btn-outline-light btn-sm ms-2">Registrarse</a>
+          <div class="auth-buttons position-relative">
+            <% if (!usuario) { %>
+              <a href="/login" class="btn btn-outline-light btn-sm">Iniciar sesión</a>
+              <a href="/registro" class="btn btn-outline-light btn-sm ms-2">Registrarse</a>
+            <% } else { %>
+              <div class="dropdown">
+                <button class="btn p-0 border-0 bg-transparent d-flex align-items-center dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <span class="user-avatar-lg d-flex align-items-center justify-content-center me-2">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <div class="d-none d-md-flex flex-column align-items-start text-start">
+                    <span class="fw-bold text-white" style="line-height:1; font-size:1.1rem;"><%= usuario.nombre %></span>
+                    <span class="user-role" style="font-size:0.95rem; color: #d1e7ea; text-transform: lowercase;">
+                      <%= usuario.rol === 'administrador' ? 'administrador' : (usuario.rol === 'cliente' ? 'cliente' : usuario.rol) %>
+                    </span>
+                  </div>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end mt-2 user-dropdown-menu" aria-labelledby="userDropdown">
+                  <li class="text-center pt-3 pb-2 border-bottom">
+                    <span class="user-avatar-lg d-inline-flex align-items-center justify-content-center mb-2">
+                      <i class="fas fa-user"></i>
+                    </span>
+                    <div class="fw-bold" style="font-size:1.1rem;"><%= usuario.nombre %></div>
+                    <div class="text-muted" style="font-size:0.95rem;text-transform:lowercase;">
+                      <%= usuario.rol === 'administrador' ? 'administrador' : (usuario.rol === 'cliente' ? 'cliente' : usuario.rol) %>
+                    </div>
+                  </li>
+                  <li><a class="dropdown-item d-flex align-items-center gap-2" href="/dashboard"><i class="fas fa-tachometer-alt"></i>Panel Principal</a></li>
+                  <li><a class="dropdown-item d-flex align-items-center gap-2" href="/admin/perfil"><i class="fas fa-user"></i>Mi Perfil</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item text-danger d-flex align-items-center gap-2" href="/logout"><i class="fas fa-sign-out-alt"></i>Cerrar sesión</a></li>
+                </ul>
+              </div>
+              <style>
+                .user-avatar-lg {
+                  width: 48px;
+                  height: 48px;
+                  background: #00616e;
+                  border-radius: 50%;
+                  color: white;
+                  font-size: 1.7rem;
+                  justify-content: center;
+                  align-items: center;
+                  display: inline-flex;
+                }
+                .user-role {
+                  font-size: 0.95rem;
+                  color: #d1e7ea;
+                }
+                .user-dropdown-menu {
+                  min-width: 220px;
+                  border-radius: 16px;
+                  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+                  border: none;
+                  padding-top: 0;
+                  padding-bottom: 0;
+                }
+                .user-dropdown-menu .dropdown-item {
+                  font-size: 1rem;
+                  padding: 0.75rem 1.5rem;
+                }
+                .user-dropdown-menu .dropdown-item i {
+                  width: 22px;
+                  text-align: center;
+                  font-size: 1.1rem;
+                }
+                .user-dropdown-menu .dropdown-item.text-danger {
+                  color: #dc3545 !important;
+                }
+                .user-dropdown-menu .dropdown-item.text-danger:hover {
+                  background: #ffeaea;
+                }
+                .user-dropdown-menu .dropdown-divider {
+                  margin: 0.3rem 0;
+                }
+                @media (max-width: 768px) {
+                  .user-avatar-lg { width: 38px; height: 38px; font-size: 1.3rem; }
+                  .user-dropdown-menu { min-width: 170px; }
+                }
+              </style>
+            <% } %>
           </div>
         </div>
       </div>
@@ -112,32 +190,15 @@
             <div class="founder-image-placeholder">
               <span>Foto de Ángel</span>
             </div>
-            <div class="founder-social">
-              <a href="#" class="social-link linkedin"><i class="fab fa-linkedin-in"></i></a>
-              <a href="#" class="social-link twitter"><i class="fab fa-twitter"></i></a>
+            <div class="founder-social justify-content-center" style="gap: 18px;">
+              <a href="https://wa.me/56932799172" target="_blank" class="social-link whatsapp" title="Contactar por WhatsApp" style="background-color: #25D366; color: white; font-size: 1.3rem;">
+                <i class="fab fa-whatsapp"></i>
+              </a>
             </div>
             <div class="founder-info">
               <h3>Ángel</h3>
               <p class="founder-position">Director de Operaciones</p>
               <p class="founder-description">Especialista en logística y operaciones en terreno, con amplia experiencia en el sector de gestión de residuos.</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-lg-4 col-md-6 mb-4">
-          <div class="founder-card">
-            <!-- Placeholder en lugar de la imagen -->
-            <div class="founder-image-placeholder">
-              <span>Foto de Pablo</span>
-            </div>
-            <div class="founder-social">
-              <a href="#" class="social-link linkedin"><i class="fab fa-linkedin-in"></i></a>
-              <a href="#" class="social-link twitter"><i class="fab fa-twitter"></i></a>
-            </div>
-            <div class="founder-info">
-              <h3>Pablo</h3>
-              <p class="founder-position">Director Administrativo y Comercial</p>
-              <p class="founder-description">Experto en administración y desarrollo de negocios, encargado de la gestión comercial y estratégica de la empresa.</p>
             </div>
           </div>
         </div>
@@ -154,11 +215,23 @@
       <div class="col-lg-5 mb-4 mb-lg-0">
         <h2 class="section-title">Dónde Estamos Ubicados</h2>
         <div class="section-divider"></div>
-        <p class="location-address">
-          <i class="fas fa-map-marker-alt location-icon"></i>
-          Ruta 5 Sur Km 23 lote #3 Sector Trapen<br>
-          Comuna Puerto Montt, Región de Los Lagos
-        </p>
+        <div class="location-card p-4 mb-3" style="background: #f8fafc; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+          <div class="d-flex align-items-start mb-2">
+            <span class="location-icon-box d-flex align-items-center justify-content-center me-3" style="background:#00616e;width:44px;height:44px;border-radius:50%;color:white;font-size:1.5rem;">
+              <i class="fas fa-map-marker-alt"></i>
+            </span>
+            <div>
+              <div class="fw-bold" style="font-size:1.1rem; color:#00616e;">Felmart</div>
+              <div style="font-size:1rem; color:#333;">
+                Ruta 5 Sur Km 23 lote #3 Sector Trapen<br>
+                Comuna Puerto Montt, Región de Los Lagos
+              </div>
+            </div>
+          </div>
+          <a href="https://maps.app.goo.gl/ovvaF9bnj4BzEBHR9" target="_blank" class="btn btn-success btn-sm mt-2 w-100" style="background:#25D366;border:none;">
+            <i class="fas fa-map"></i> Ver en Google Maps
+          </a>
+        </div>
         <p class="contact-info">
           <i class="fas fa-phone-alt contact-icon"></i> Logística: +56 987163342<br>
           <i class="fas fa-phone-alt contact-icon"></i> Administración: +56 982944826<br>
@@ -168,13 +241,12 @@
       </div>
       
       <div class="col-lg-7">
-        <div class="map-container">
-          <!-- OpenStreetMap iframe -->
-          <iframe width="100%" height="450" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
-                 src="https://www.openstreetmap.org/export/embed.html?bbox=-73.12519073486328%2C-41.42578293888413%2C-73.09383392333986%2C-41.405761885188224&amp;layer=mapnik&amp;marker=-41.41578471193693%2C-73.10951232910156" 
-                 style="border: 1px solid #ddd; border-radius: 8px;"></iframe>
+        <div class="map-container text-center">
+          <a href="https://www.google.com/maps/search/?api=1&query=Ruta+5+Sur+Km+23+lote+%233+Sector+Trapen,+Puerto+Montt,+Regi%C3%B3n+de+Los+Lagos" target="_blank" style="display:block;">
+            <img src="https://maps.googleapis.com/maps/api/staticmap?center=Ruta+5+Sur+Km+23+lote+%233+Sector+Trapen,+Puerto+Montt,+Regi%C3%B3n+de+Los+Lagos&zoom=15&size=600x400&markers=color:red%7Clabel:F%7CRuta+5+Sur+Km+23+lote+%233+Sector+Trapen,+Puerto+Montt,+Regi%C3%B3n+de+Los+Lagos&key=AIzaSyA-EXAMPLE-KEY" alt="Mapa ubicación Felmart" style="width:100%;max-width:600px;border-radius:8px;border:1px solid #ddd;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+          </a>
           <p class="text-center mt-2">
-            <a href="https://maps.app.goo.gl/ovvaF9bnj4BzEBHR9" target="_blank">Ver en Google Maps</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=Ruta+5+Sur+Km+23+lote+%233+Sector+Trapen,+Puerto+Montt,+Regi%C3%B3n+de+Los+Lagos" target="_blank">Ver en Google Maps</a>
           </p>
         </div>
       </div>
@@ -214,3 +286,42 @@
     </div>
   </div>
 </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+  .social-link.whatsapp {
+    background-color: #25D366 !important;
+    color: white !important;
+    font-size: 1.3rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .social-link.whatsapp:hover {
+    background-color: #1ebe57 !important;
+    color: white !important;
+  }
+  .location-card {
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .location-icon-box {
+    background: #00616e;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+  }
+</style>
+</body>
+</html>

@@ -79,4 +79,47 @@
     </div>
 </div>
 
-<%- include('../partials/footer') %> 
+<%- include('../partials/footer') %>
+
+<nav>
+    <ul class="nav-menu">
+        <li class="nav-item">
+            <a href="/dashboard" class="nav-link">
+                <i class="fas fa-home"></i>
+                <span>Inicio</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/clientes" class="nav-link">
+                <i class="fas fa-users"></i>
+                <span>Clientes</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/cotizaciones" class="nav-link">
+                <i class="fas fa-file-invoice"></i>
+                <span>Cotizaciones</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/solicitudes" class="nav-link">
+                <i class="fas fa-file-alt"></i>
+                <span>Solicitudes</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/visitas" class="nav-link">
+                <i class="fas fa-calendar-check"></i>
+                <span>Visitas</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/dashboard">Inicio</a></li>
+        <li class="breadcrumb-item"><a href="/admin/clientes">Clientes</a></li>
+        <li class="breadcrumb-item active">Detalles</li>
+    </ol>
+</nav> 

@@ -22,7 +22,7 @@ const Cotizacion = sequelize.define('Cotizacion', {
   fechaCotizacion: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
-    field: 'fechaCotizacion'
+    field: 'fecha_cotizacion'
   },
   subtotal: {
     type: DataTypes.DECIMAL(10, 2),
@@ -44,7 +44,8 @@ const Cotizacion = sequelize.define('Cotizacion', {
     type: DataTypes.TEXT
   },
   rutaPdf: {
-    type: DataTypes.STRING
+    type: DataTypes.STRING,
+    field: 'ruta_pdf'
   },
   detallesJson: {
     type: DataTypes.TEXT,
